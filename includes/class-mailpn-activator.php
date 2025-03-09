@@ -1,0 +1,50 @@
+<?php
+/**
+ * Fired during plugin activation.
+ *
+ * This class defines all code necessary to run during the plugin's activation.
+ *
+ * @link       padresenlanube.com/
+ * @since      1.0.0
+ * @package    mailpn
+ * @subpackage mailpn/includes
+ * @author     Padres en la Nube <info@padresenlanube.com>
+ */
+class MAILPN_Activator {
+	/**
+   * Plugin activation functions
+   *
+   * Functions to be loaded on plugin activation. This actions creates roles, options and post information attached to the plugin.
+	 *
+	 * @since    1.0.0
+	 */
+	public static function activate() {
+    $post_functions = new MAILPN_Functions_Post();
+    $attachment_functions = new MAILPN_Functions_Attachment();
+
+    add_role('mailpn_role_manager', esc_html(__('Mailing Manager - PN', 'mailpn')));
+
+    $role_admin = get_role('administrator');
+    $mailpn_role_manager = get_role('mailpn_role_manager');
+
+    $mailpn_role_manager->add_cap('upload_files'); 
+    $mailpn_role_manager->add_cap('read'); 
+
+    foreach (MAILPN_ROLE_CAPABILITIES as $cap_key => $cap_value) {
+      $role_admin->add_cap($cap_value); 
+      $mailpn_role_manager->add_cap($cap_value); 
+    }
+
+    if (empty(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_mail', 'post_status' => 'any', ]))) {
+      $mailpn_title = __('Test email', 'mailpn');
+      $mailpn_post_content = __('Test email content', 'mailpn');
+      $mailpn_id = $post_functions->insert_post(esc_html($mailpn_title), $mailpn_post_content, '', sanitize_title(esc_html($mailpn_title)), 'mailpn_mail', 'publish', 1);
+
+      update_post_meta($mailpn_id, 'mailpn_type', 'email_one_time');
+      update_post_meta($mailpn_id, 'mailpn_distribution', 'private_user');
+      update_post_meta($mailpn_id, 'mailpn_distribution_user', [get_current_user_id()]);
+    }
+
+    update_option('mailpn_options_changed', true);
+  }
+}
