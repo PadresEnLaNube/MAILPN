@@ -126,6 +126,6 @@ class MAILPN_Functions_User {
       update_user_meta($user_id, 'mailpn_last_login', current_time('timestamp'));
     }
 
-    update_user_meta($user_id, 'userswph_newsletter_active', true);
+    update_user_meta($user_id, 'userspn_newsletter_active', true);
   }
 }

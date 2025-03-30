@@ -16,7 +16,7 @@ class MAILPN_Taxonomies_Mail {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function register_taxonomies() {
+	public static function mailpn_register_taxonomies() {
 		$taxonomies = [
 			'mailpn_mail_category' => [
 				'name'               	=> _x('Mail categories', 'Taxonomy general name', 'mailpn'),

@@ -58,12 +58,12 @@
         if ($.parseJSON(response)['error_key'] == 'mailpn_form_save_error_unlogged') {
           mailpn_get_main_message(mailpn_i18n.user_unlogged);
 
-          if (!$('.userswph-profile-wrapper .user-unlogged').length) {
-            $('.userswph-profile-wrapper').prepend('<div class="userswph-alert userswph-alert-warning user-unlogged">' + mailpn_i18n.user_unlogged + '</div>');
+          if (!$('.userspn-profile-wrapper .user-unlogged').length) {
+            $('.userspn-profile-wrapper').prepend('<div class="userspn-alert userspn-alert-warning user-unlogged">' + mailpn_i18n.user_unlogged + '</div>');
           }
 
-          $.fancybox.open($('#userswph-profile-popup'), {touch: false});
-          $('#userswph-login input#user_login').focus();
+          $.fancybox.open($('#userspn-profile-popup'), {touch: false});
+          $('#userspn-login input#user_login').focus();
         }else if ($.parseJSON(response)['error_key'] == 'mailpn_form_save_error') {
           mailpn_get_main_message(mailpn_i18n.an_error_has_occurred);
         }else {

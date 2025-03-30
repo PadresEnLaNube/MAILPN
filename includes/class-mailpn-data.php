@@ -25,7 +25,7 @@ class MAILPN_Data {
 	 *
 	 * @since    1.0.0
 	 */
-	public function load_plugin_data() {
+	public function mailpn_load_plugin_data() {
 		$this->data['user_id'] = get_current_user_id();
 
 		if (is_admin()) {
@@ -42,7 +42,7 @@ class MAILPN_Data {
 	 *
 	 * @since    1.0.0
 	 */
-	public function flush_rewrite_rules() {
+	public function mailpn_flush_rewrite_rules() {
     if (get_option('mailpn_options_changed')) {
       flush_rewrite_rules();
       update_option('mailpn_options_changed', false);
@@ -50,19 +50,19 @@ class MAILPN_Data {
   }
 
   /**
-	 * Get buttons mini loader.
+	 * Gets the mini loader.
 	 *
 	 * @since    1.0.0
 	 */
-	public static function loader() {
+	public static function mailpn_loader($display = false) {
 		?>
-			<div class="mailpn-waiting mailpn-display-none">
+			<div class="mailpn-waiting <?php echo ($display) ? 'mailpn-display-block' : 'mailpn-display-none'; ?>">
 				<div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div>
 			</div>
 		<?php
   }
 
-  public static function mail_types() {
+  public static function mailpn_mail_types() {
 		// MAILPN_Data::mail_types();
 		return ['email_one_time' => __('One time email', 'mailpn'), 'email_periodic' => __('Periodic time email', 'mailpn'), 'email_published_content' => __('Published content email', 'mailpn'), 'email_welcome' => __('Welcome email', 'mailpn'), 'newsletter_welcome' => __('Newsletter welcome email', 'mailpn'), 'email_verify_code' => __('Account verification code', 'mailpn'), 'email_coded' => __('Email sent from code', 'mailpn'), ];
 	}

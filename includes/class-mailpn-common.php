@@ -47,7 +47,7 @@ class MAILPN_Common {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function mailpn_enqueue_styles() {
 		if (!wp_style_is($this->plugin_name . '-material-icons-outlined', 'enqueued')) {
 			wp_enqueue_style($this->plugin_name . '-material-icons-outlined', MAILPN_URL . 'assets/css/material-icons-outlined.min.css', [], $this->version, 'all');
     }
@@ -80,7 +80,7 @@ class MAILPN_Common {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function mailpn_enqueue_scripts() {
     if(!wp_script_is('jquery-ui-sortable', 'enqueued')) {
 			wp_enqueue_script('jquery-ui-sortable');
     }
@@ -175,62 +175,5 @@ class MAILPN_Common {
     }
 
 	  return $classes;
-  }
-
-  public function mailpn_wp_body_open() {
-    ?>
-      <?php if (!empty($_GET['mailpn_action'])): ?>
-        <div class="mailpn-text-align-center mailpn-mt-50 mailpn-mb-50"><div class="mailpn-loader-circle"><div></div><div></div><div></div><div></div></div></div>
-      <?php endif ?>
-
-      <?php if (!empty($_GET['mailpn_notice'])): ?>
-        <script>
-          jQuery(document).ready(function($) {
-            $.fancybox.open($('#mailpn-popup-notice'), {touch: false});
-          });
-        </script>
-
-        <div id="mailpn-popup-notice" class="mailpn-display-none-soft">
-          <div class="mailpn-text-align-center mailpn-p-30 mailpn-z-index-top mailpn-bg-color-white">
-            <?php
-              switch ($_GET['mailpn_notice']) {
-                case 'subscription-unsubscribe-success':
-                  ?>
-                    <div class="mailpn-alert-success">
-                      <p class="mailpn-mb-20"><?php esc_html_e('All done! You have been unsubscribed.', 'mailpn'); ?></p>
-                      
-                      <?php if (class_exists('USERSWPH')): ?>
-                        <a href="#" class="users-wph-profile-popup-btn users-wph-btn users-wph-btn-mini" data-users-wph-action="notifications"><?php esc_html_e('Subscribe again', 'mailpn'); ?></a>
-                      <?php endif ?>
-                    </div>
-                  <?php
-                  break;
-                case 'subscription-unsubscribe-error':
-                  ?>
-                    <div class="mailpn-alert-error">
-                      <p><?php esc_html_e('Oppps! We are not able to unsubscribe your account.', 'mailpn'); ?></p>
-
-                      <?php if (is_user_logged_in()): ?>
-                        <p class="mailpn-mb-20"><?php esc_html_e('It looks like the link followed has expired. Please, set your notification preferences.', 'mailpn'); ?></p>
-
-                        <?php if (class_exists('USERSWPH')): ?>
-                          <a href="#" class="users-wph-profile-popup-btn users-wph-btn users-wph-btn-mini" data-users-wph-action="notifications"><?php esc_html_e('Notifications', 'mailpn'); ?></a>
-                        <?php endif ?>
-                      <?php else: ?>
-                        <p class="mailpn-mb-20"><?php esc_html_e('Please, login to edit your preferences.', 'mailpn'); ?></p>
-
-                        <?php if (class_exists('USERSWPH')): ?>
-                          <a href="#" class="users-wph-profile-popup-btn users-wph-btn users-wph-btn-mini" data-users-wph-action="login"><?php esc_html_e('Login', 'mailpn'); ?></a>
-                        <?php endif ?>
-                      <?php endif ?>
-                    </div>
-                  <?php
-                  break;
-              }
-            ?>
-          </div>
-        </div>
-      <?php endif ?>
-    <?php
   }
 }

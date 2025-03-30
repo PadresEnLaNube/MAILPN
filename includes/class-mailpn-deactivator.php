@@ -29,7 +29,7 @@ class MAILPN_Deactivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function deactivate() {
+	public static function mailpn_deactivate() {
 		$plugin_post = new MAILPN_Post_Type_Mail();
 		
 		if (get_option('mailpn_options_remove') == 'on') {

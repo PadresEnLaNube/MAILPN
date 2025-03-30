@@ -51,7 +51,7 @@ class MAILPN_Menus {
 	 * @since    1.0.0
 	 */
 	public function mailpn_admin_menu() {
-    // add_menu_page(__('Users manager', 'userswph'), __('Users manager', 'userswph'), 'administrator', 'userswph_options', [$this, 'userswph_options'], esc_url(USERSWPH_URL . 'assets/media/userswph-menu-icon.svg'));
+    // add_menu_page(__('Users manager', 'userspn'), __('Users manager', 'userspn'), 'administrator', 'userspn_options', [$this, 'userspn_options'], esc_url(USERSPN_URL . 'assets/media/userspn-menu-icon.svg'));
 		add_submenu_page('edit.php?post_type=mailpn_mail', esc_html(__('Settings', 'mailpn')), esc_html(__('Settings', 'mailpn')), 'manage_mailpn_options', 'mailpn-options', [$this, 'mailpn_options'], );
 	}
 

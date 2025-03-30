@@ -11,7 +11,7 @@
  * @author     Padres en la Nube <info@padresenlanube.com>
  */
 class MAILPN_Post_Type_Rec {
-  public function get_fields_meta() {
+  public function mailpn_get_fields_meta() {
     $mailpn_user_options = [];
     foreach (get_users(['fields' => 'ids', 'number' => -1, 'orderby' => 'display_name', 'order' => 'ASC', ]) as $user_id) {
       $mailpn_user_options[$user_id] = get_user_by('id', $user_id)->user_email . ' (ID#' . $user_id . ') ' . get_user_meta($user_id, 'first_name', true) . ' ' . get_user_meta($user_id, 'last_name', true);
@@ -77,7 +77,7 @@ class MAILPN_Post_Type_Rec {
    *
    * @since    1.0.0
    */
-  public function register_post_type() {
+  public function mailpn_register_post_type() {
     $labels = [
       'name'                => _x('Mail records', 'Post Type general name', 'mailpn'),
       'singular_name'       => _x('Mail record', 'Post Type singular name', 'mailpn'),
@@ -124,7 +124,7 @@ class MAILPN_Post_Type_Rec {
    *
    * @since    1.0.0
    */
-  public function add_meta_box() {
+  public function mailpn_add_meta_box() {
     add_meta_box('mailpn_meta_box', esc_html(__('Mail details', 'mailpn')), [$this, 'mailpn_meta_box_function'], 'mailpn_rec', 'normal', 'high', ['__block_editor_compatible_meta_box' => true,]);
   }
 
@@ -134,18 +134,18 @@ class MAILPN_Post_Type_Rec {
    * @since    1.0.0
    */
   public function mailpn_meta_box_function($post) {
-    foreach ($this->get_fields_meta() as $mailpn_field) {
+    foreach ($this->mailpnget_fields_meta() as $mailpn_field) {
       MAILPN_Forms::input_wrapper_builder($mailpn_field, 'post', $post->ID);
     }
   }
 
-  public function save_post($post_id, $cpt, $update) {
+  public function mailpn_save_post($post_id, $cpt, $update) {
     if (array_key_exists('mailpn_nonce', $_POST) && !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_nonce'])), 'mailpn-nonce')) {
       echo wp_json_encode(['error_key' => 'mailpn_nonce_error', ]);exit();
     }
 
     if (!array_key_exists('mailpn_duplicate', $_POST)) {
-      foreach ($this->get_fields_meta() as $wph_field) {
+      foreach ($this->mailpnget_fields_meta() as $wph_field) {
         $wph_input = array_key_exists('input', $wph_field) ? $wph_field['input'] : '';
 
         if (array_key_exists($wph_field['id'], $_POST) || $wph_input == 'html_multi') {
@@ -284,6 +284,7 @@ class MAILPN_Post_Type_Rec {
     unset($columns['date']);
 
     $columns['mailpn_rec_date_sent'] = __('Date sent', 'mailpn');
+    $columns['mailpn_rec_mail_template'] = __('Mail Template', 'mailpn');
     $columns['mailpn_rec_to'] = __('Recipient', 'mailpn');
     $columns['mailpn_rec_mail_result'] = __('Result', 'mailpn');
 
@@ -292,13 +293,21 @@ class MAILPN_Post_Type_Rec {
 
   public function mailpn_rec_posts_custom_column($column_slug, $post_id) {
     switch ($column_slug) {
+      case 'mailpn_rec_mail_template':
+        $mail_id = get_post_meta($post_id, 'mailpn_rec_mail_id', true);
+        $mail_type = get_post_meta($mail_id, 'mailpn_type', true);
+
+        ?>
+          <p><a href="<?php echo esc_url(admin_url('post.php?post=' . $mail_id . '&action=edit')); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i> #<?php echo esc_html($mail_id) ?> <?php echo esc_html(MAILPN_Data::mail_types()[$mail_type]); ?></a></p>
+        <?php
+        break;
       case 'mailpn_rec_to':
         $user_id = get_post_meta($post_id, 'mailpn_rec_to', true);
 
         if (get_userdata($user_id) !== false) {
           $user_info = get_userdata($user_id);
           ?>
-            <p><a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $user_id)); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i> #<?php echo esc_html($user_id); ?></a> <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?> (<a href="mailto:<?php echo esc_html($user_info->user_email); ?>" target="_blank"><?php echo esc_html($user_info->user_email); ?></a>)</p>
+            <p><a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $user_id)); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i> #<?php echo esc_html($user_id); ?> <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?></a> (<a href="mailto:<?php echo esc_html($user_info->user_email); ?>" target="_blank"><?php echo esc_html($user_info->user_email); ?></a>)</p>
           <?php
         }else{
           ?>

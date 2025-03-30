@@ -112,6 +112,18 @@ class MAILPN_Ajax {
             echo wp_json_encode(['error_key' => 'mailpn_mail_remove_error', 'error_' => esc_html(__('An error occurred while removing the baseCPT.', 'mailpn')), ]);exit();
           }
           break;
+        case 'mailpn_resend_errors':
+          if (!empty($mail_id)) {
+            $plugin_mailing = new MAILPN_Mailing();
+            $plugin_mailing->mailpn_resend_errors($mail_id);
+
+            update_post_meta($mail_id, 'mailpn_status', 'queue');
+          }else{
+            echo wp_json_encode(['error_key' => 'mailpn_resend_errors_error', 'error_content' => esc_html(__('An error occurred while resending the errors.', 'mailpn')), ]);exit();
+          }
+
+          echo wp_json_encode(['error_key' => '', ]);exit();
+          break;
       }
 
       echo wp_json_encode(['error_key' => 'mailpn_save_error', ]);exit();

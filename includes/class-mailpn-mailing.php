@@ -142,25 +142,28 @@ class MAILPN_Mailing {
 
     if (filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL)) {
       $mailpn_result = wp_mail($mailpn_user_to, $mailpn_subject, $mailpn_message, $headers, $mailpn_attachments);
-    }elseif (class_exists('USERSWPH') && (get_user_meta($mailpn_user_to, 'userswph_notifications', true) == 'on' || in_array($mailpn_type, ['email_verify_code'])) && !empty($user_email) && !(self::mailpn_once_mailed($mailpn_id, $mailpn_user_to, $mailpn_once, $mailpn_type))) {
+    }elseif (class_exists('USERSPN') && (get_user_meta($mailpn_user_to, 'userspn_notifications', true) == 'on' || in_array($mailpn_type, ['email_verify_code'])) && !empty($user_email) && !(self::mailpn_once_mailed($mailpn_id, $mailpn_user_to, $mailpn_once, $mailpn_type))) {
       $mailpn_result = wp_mail($user_email, $mailpn_subject, $mailpn_message, $headers, $mailpn_attachments);
     }else{
       $wph_meta_value = [
-        'mailpn_id' => $mailpn_id,
         'mailpn_user_to' => $mailpn_user_to,
         'user_email' => $user_email,
         'mailpn_type' => $mailpn_type,
         'mailpn_subject' => $mailpn_subject,
-        'notifications' => get_user_meta($mailpn_user_to, 'userswph_notifications', true),
+        'notifications' => get_user_meta($mailpn_user_to, 'userspn_notifications', true),
         'once' => !(self::mailpn_once_mailed($mailpn_id, $mailpn_user_to, $mailpn_once, $mailpn_type)),
       ];
 
-      if(empty(get_option('mailpn_error'))) {
-        update_option('mailpn_error', [strtotime('now') => $wph_meta_value]);
-      }else{
-        $wph_option_new = get_option('mailpn_error', true);
-        $wph_option_new[strtotime('now')] = $wph_meta_value;
-        update_option('mailpn_error', $wph_option_new);
+      $unique_id = strtotime('now') . '-' . $mailpn_user_to;
+
+      if(!empty($unique_id)) {
+        if(empty(get_option('mailpn_error'))) {
+          update_option('mailpn_error', [$mailpn_id => [$unique_id => $wph_meta_value]]);
+        }else{
+          $wph_option_new = get_option('mailpn_error', true);
+          $wph_option_new[$mailpn_id][] = [$unique_id => $wph_meta_value];
+          update_option('mailpn_error', $wph_option_new);
+        }
       }
         
       return false;
@@ -201,6 +204,13 @@ class MAILPN_Mailing {
 
   public function mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $user_id) {
     $mailpn_max_width = !empty(get_option('mailpn_max_width')) ? get_option('mailpn_max_width') : 700;
+
+    $mailpn_template_css = '.mailpn-content,.mailpn-content p,.mailpn-content li,.mailpn-content div,.mailpn-content span,.mailpn-content h1,.mailpn-content h2,.mailpn-content h3,.mailpn-content h4,.mailpn-content h5,.mailpn-content h6{background-color:transparent;color:#707070;color:#707070!important;max-width:' . esc_html($mailpn_max_width) . '}.mailpn-content h2,.mailpn-content h3{text-transform:uppercase;letter-spacing:8px;color:#3a3a3a;border:0;font-weight:normal;font-style:normal;mso-line-height-rule:exactly;-mso-line-height-rule:exactly;line-height:125%;margin-top:30px;margin-right:0;margin-bottom:0;margin-left:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;}.mailpn-content p,.mailpn-content li,.mailpn-content small{letter-spacing:1px;color:#656565;border:0;letter-spacing:normal;mso-line-height-rule:exactly;-mso-line-height-rule:exactly;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;vertical-align:top;word-wrap:break-word;}.mailpn-content p{line-height:150%;margin-top:1em;margin-right:0;margin-bottom:1em;margin-left:0;}.mailpn-content li{line-height:130%;margin-top:0.5em;margin-right:0;margin-bottom:0.5em;margin-left:0;}.mailpn-content small{line-height:120%;margin-top:1em;margin-right:0;margin-bottom:0.5em;margin-left:0;}.mailpn-content a,.mailpn-content p a,.mailpn-content li a,a{color:' . (!empty(get_option('mailpn_links_color')) ? esc_html(get_option('mailpn_links_color')) : '#86b3ac') . ';text-decoration:none;border:0;word-wrap:break-word;}.mailpn-content a[href].mailpn-btn{display:inline-block;padding:10px 40px;color:#ffffff;background:#0074a3;} .mailpn-content table.mailpn-table-main{border:0;border-collapse:collapse;clear:both;border:0;min-width:100%;margin:auto;margin-bottom:50px;} .mailpn-content table.mailpn-width:750px;-social{border:0;border-collapse:collapse;clear:both;border:0;width:200px;margin-bottom:50px;} .mailpn-content td.mailpn-td-social{border:0;border-collapse:collapse;border:0;padding-top:10px;padding-right:17px;padding-bottom:10px;padding-left:17px;vertical-align:top;} .mailpn-content td.mailpn-td-footer{padding:20px;}.mailpn-social-img,.mailpn-td-social{width:30px;height:30px;}.mailpn-text-align-center{text-align:center;}.mailpn-mt-30{margin-top:30px!important;}.mailpn-mb-50{margin-bottom:50px!important;}.mailpn-mb-30{margin-bottom:30px!important;}.mailpn-text-transform-lowercase{text-transform:lowercase;}table.mailpn-table-main p,table.mailpn-table-main ul,table.mailpn-table-main div{max-width:750px;margin:auto;}@media all and (max-width:768px){.mailpn-social-img,.mailpn-td-social{width:60px;height:60px;}}@media all and (max-width:450px){.mailpn-social-img,.mailpn-td-social{width:80px;height:80px;}}';
+
+    wp_register_style('mail-template-css', false);
+    wp_enqueue_style('mail-template-css');
+    wp_add_inline_style('mail-template-css', $mailpn_template_css);
+    
     ob_start();
     ?>
       <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -208,17 +218,15 @@ class MAILPN_Mailing {
         <head>
           <meta name="viewport" content="width=device-width" />
           <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-          <title><?php echo esc_html($mailpn_subject); ?></title>
+          <title><?php echo esc_html($mailpn_subject); ?></title>          
 
           <style>
-            .mailpn-content,.mailpn-content p,.mailpn-content li,.mailpn-content div,.mailpn-content span,.mailpn-content h1,.mailpn-content h2,.mailpn-content h3,.mailpn-content h4,.mailpn-content h5,.mailpn-content h6{background-color:transparent;color:#707070;color:#707070!important;max-width:<?php echo esc_html($mailpn_max_width); ?>}.mailpn-content h2,.mailpn-content h3{font-family:font-family:Poppins,Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;text-transform:uppercase;letter-spacing:8px;color:#3a3a3a;border:0;font-weight:normal;font-style:normal;mso-line-height-rule:exactly;-mso-line-height-rule:exactly;line-height:125%;margin-top:30px;margin-right:0;margin-bottom:0;margin-left:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;}.mailpn-content h2{font-size:24px;}.mailpn-content h3{font-size:20px;}.mailpn-content p,.mailpn-content li,.mailpn-content small{font-family:Poppins,Arial,Helvetica Neue,Helvetica,sans-serif;letter-spacing:1px;color:#656565;border:0;letter-spacing:normal;mso-line-height-rule:exactly;-mso-line-height-rule:exactly;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;vertical-align:top;word-wrap:break-word;}.mailpn-content p{font-size:16px;line-height:150%;margin-top:1em;margin-right:0;margin-bottom:1em;margin-left:0;}.mailpn-content li{font-size:16px;line-height:130%;margin-top:0.5em;margin-right:0;margin-bottom:0.5em;margin-left:0;}.mailpn-content small{font-size:13px;line-height:120%;margin-top:1em;margin-right:0;margin-bottom:0.5em;margin-left:0;}.mailpn-content a,.mailpn-content p a,.mailpn-content li a,a{font-size:16px;color:<?php echo (!empty(get_option('mailpn_links_color')) ? esc_html(get_option('mailpn_links_color')) : '#86b3ac'); ?>;text-decoration:none;border:0;word-wrap:break-word;}.mailpn-content a[href].mailpn-btn{display:inline-block;padding:10px 40px;color:#ffffff;background:#0074a3;} .mailpn-content table.mailpn-table-main{border:0;border-collapse:collapse;clear:both;border:0;min-width:100%;margin:auto;margin-bottom:50px;} .mailpn-content table.mailpn-width:750px;-social{border:0;border-collapse:collapse;clear:both;border:0;width:200px;margin-bottom:50px;} .mailpn-content td.mailpn-td-social{border:0;border-collapse:collapse;border:0;padding-top:10px;padding-right:17px;padding-bottom:10px;padding-left:17px;vertical-align:top;} .mailpn-content td.mailpn-td-footer{padding:20px;}.mailpn-social-img,.mailpn-td-social{width:30px;height:30px;}.mailpn-text-align-center{text-align:center;}.mailpn-mt-30{margin-top:30px!important;}.mailpn-mb-50{margin-bottom:50px!important;}.mailpn-mb-30{margin-bottom:30px!important;}.mailpn-text-transform-lowercase{text-transform:lowercase;}table.mailpn-table-main p,table.mailpn-table-main ul,table.mailpn-table-main div{max-width:750px;margin:auto;}
-            @media all and (max-width:768px){.mailpn-content h2{font-size:34px;}.mailpn-content h3{font-size:30px;}.mailpn-content p,.mailpn-content li,.mailpn-content a{font-size:26px;}.mailpn-content small{font-size:16px;}.mailpn-social-img,.mailpn-td-social{width:60px;height:60px;}}
-            @media all and (max-width:450px){.mailpn-content h2{font-size:40px;}.mailpn-content h3{font-size:35px;}.mailpn-content p,.mailpn-content li,.mailpn-content a{font-size:28px;}.mailpn-content small{font-size:24px;}.mailpn-social-img,.mailpn-td-social{width:80px;height:80px;}}
+            
           </style>
         </head>
 
         <body class="mailpn-content">
-          <table class="mailpn-table-main" style="width:100%;max-width:<?php echo esc_html($mailpn_max_width); ?>px;font-family:'Google Sans','Lucida', sans-serif;color:#3a3a3a;" align="center">
+          <table class="mailpn-table-main" align="center">
             <tbody>
               <?php if (!empty(get_option('mailpn_image_header'))): ?>
                 <tr style="text-align:center;">
@@ -271,11 +279,11 @@ class MAILPN_Mailing {
                       <p>© <?php echo esc_html($mailpn_legal_name); ?> <?php echo esc_html(gmdate('Y')); ?>.<br><?php esc_html_e('All rights reserved', 'mailpn'); ?>.</p>
                       <p><?php echo (!empty(get_option('mailpn_footer_reason')) ? esc_html(get_option('mailpn_footer_reason')) : esc_html(__('You receive this email for your relationship with the project.', 'mailpn'))); ?></p>
 
-                      <?php if (class_exists('USERSWPH') && !empty($user_id)): ?>
+                      <?php if (class_exists('USERSPN') && !empty($user_id)): ?>
                         <table align="center">
                           <tr>
                             <td align="center">
-                              <a href="<?php echo esc_url(home_url()) . '?mailpn_action=popup_open&mailpn_popup=userswph-profile-popup'; ?>"><small><?php esc_html_e('Manage subscription', 'mailpn'); ?></small></a>
+                              <a href="<?php echo esc_url(home_url()) . '?mailpn_action=popup_open&mailpn_popup=userspn-profile-popup'; ?>"><small><?php esc_html_e('Manage subscription', 'mailpn'); ?></small></a>
                             </td>
                             <td align="center">
                               <?php if (!filter_var($user_id, FILTER_VALIDATE_EMAIL)): ?>
@@ -392,78 +400,111 @@ class MAILPN_Mailing {
       <?php if (in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded'])): ?>
         <?php $mailpn_status = get_post_meta($post_id, 'mailpn_status', true); ?>
         
-        <div class="mailpn-progress">
-          <?php if ($mailpn_status == 'sent'): ?>
-            <p class="mailpn-alert-success"><?php esc_html_e('This mail has already been sent.', 'mailpn'); ?></p>
-          <?php elseif ($mailpn_status == 'queue'): ?>
-            <?php 
-              $emails_pending = count(get_option('mailpn_queue')[$post_id]);
-              $emails_sent = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id, 'orderby' => 'ID', 'order' => 'ASC', ]));
-              $emails_total = $emails_pending + $emails_sent;
-              $mails_sent_every_ten_minutes = (!empty(get_option('mailpn_sent_every_ten_minutes'))) ? get_option('mailpn_sent_every_ten_minutes') : 5;
-            ?>
-
-            <div class="mailpn-alert-warning mailpn-font-size-20">
-              <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <img class="mailpn-waiting" src="<?php echo esc_url(plugin_dir_url(__FILE__) . 'assets/ajax-loader.gif'); ?>" alt="<?php esc_html_e('Loading...', 'mailpn'); ?>">
-                
-              <div class="mailpn-progress-bar">
-                <p class="mailpn-font-weight-bold"><?php echo number_format(((intval($emails_sent) * 100) / intval($emails_total)), 1); ?>% <?php esc_html_e('of total job', 'mailpn'); ?> (<?php echo esc_html($emails_sent); ?> <?php esc_html_e('emails sent', 'mailpn'); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?>)</p>
-              </div>
-
-              <div class="mailpn-text-align-right">
-                <p>* <?php esc_html_e('Sending', 'mailpn'); ?> <?php echo esc_html($mails_sent_every_ten_minutes); ?> <?php esc_html_e('emails every ten minutes', 'mailpn'); ?>.</p>
-              </div>
-            </div>
-          <?php else: ?>
-            <p class="mailpn-alert-warning"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></p>
-          <?php endif ?>
-        </div>
-      <?php endif ?>
-
-      <div class="mailpn-sent-to">
-        <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec')); ?>" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View latest submissions', 'mailpn'); ?></a>
-        <!-- hamlet - poner un botón para acceder a los mails de este tipo que se han enviado ya. Que lleve al registro de correos filtrados por este mail -->
-      </div>
-
-      <?php if (in_array($mailpn_type, ['email_published_content'])): ?>
-        <?php
-          $post_type = !empty(get_post_meta($post_id, 'mailpn_updated_content_cpt', true)) ? get_post_meta($post_id, 'mailpn_updated_content_cpt', true) : 'post';
-
-          $posts_atts = [
-            'fields' => 'ids',
-            'numberposts' => -1,
-            'post_type' => $post_type,
-            'post_status' => 'future',
-            'orderby' => 'publish_date',
-            'order' => 'ASC',
-          ];
-          
-          if (class_exists('Polylang')) {
-            $posts_atts['lang'] = pll_current_language('slug');
-          }
-          
-          $posts = get_posts($posts_atts);
-        ?>
-          <h3><?php esc_html_e('Any content you publish in the post type selected will be sent.', 'mailpn'); ?></h3>
-          
-          <?php if (!empty($posts)): ?>
-            <h3><?php esc_html_e('Also there are new contents to be published in the future and sent by email.', 'mailpn'); ?></h3>
+        <?php if (!empty(get_option('mailpn_error')[$post_id])): ?>
+          <div class="mailpn-error">
+            <p class="mailpn-alert-error"><?php esc_html_e('Some errors have occurred. Please check if contacts have their notifications enabled.', 'mailpn'); ?></p>
 
             <ul class="mailpn-ml-20">
-              <?php foreach ($posts as $post_id): ?>
-                <li>
-                  <span><i class="material-icons-outlined mailpn-font-size-20 mailpn-vertical-align-middle">calendar_today</i> <?php echo esc_html(gmdate(get_option('date_format') . ' ' . get_option('time_format'), strtotime(get_post($post_id)->post_date))); ?></span>
-                  <a href="<?php echo esc_url(get_permalink($post_id)); ?>" target="_blank"><?php echo esc_html(get_the_title($post_id)); ?></a>  
-                </li>
+              <?php foreach (get_option('mailpn_error')[$post_id] as $unique_id => $mailpn_error): ?>
+                <?php $user_info = get_userdata($mailpn_error['mailpn_user_to']); ?>
+
+                <?php if (!empty($user_info)): ?>
+                  <li>
+                    <p><a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $mailpn_error['mailpn_user_to'])); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i> #<?php echo esc_html($mailpn_error['mailpn_user_to']); ?> <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?></a> (<a href="mailto:<?php echo esc_html($user_info->user_email); ?>" target="_blank"><?php echo esc_html($user_info->user_email); ?></a>)</p>
+                  </li>
+                <?php endif ?>
               <?php endforeach ?>
             </ul>
+
+            <a href="#" data-mailpn-post-id="<?php echo esc_html($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend emails', 'mailpn'); ?></a><?php echo esc_html(MAILPN_Data::loader()); ?>
+          </div>
+        <?php else: ?>
+          <div class="mailpn-progress">
+            <?php if ($mailpn_status == 'sent'): ?>
+              <p class="mailpn-alert-success"><?php esc_html_e('This mail has already been sent.', 'mailpn'); ?></p>
+            <?php elseif ($mailpn_status == 'queue'): ?>
+              <?php 
+                $emails_pending = count(get_option('mailpn_queue')[$post_id]);
+                $emails_sent = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id, 'orderby' => 'ID', 'order' => 'ASC', ]));
+                $emails_total = $emails_pending + $emails_sent;
+                $mails_sent_every_ten_minutes = (!empty(get_option('mailpn_sent_every_ten_minutes'))) ? get_option('mailpn_sent_every_ten_minutes') : 5;
+              ?>
+
+              <div class="mailpn-alert-warning mailpn-font-size-20">
+                <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <?php echo esc_html(MAILPN_Data::loader(true)); ?>
+                  
+                <div class="mailpn-progress-bar">
+                  <p class="mailpn-font-weight-bold"><?php echo number_format(((intval($emails_sent) * 100) / intval($emails_total)), 1); ?>% <?php esc_html_e('of total job', 'mailpn'); ?> (<?php echo esc_html($emails_sent); ?> <?php esc_html_e('emails sent', 'mailpn'); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?>)</p>
+                </div>
+
+                <div class="mailpn-text-align-right">
+                  <p>* <?php esc_html_e('Sending', 'mailpn'); ?> <?php echo esc_html($mails_sent_every_ten_minutes); ?> <?php esc_html_e('emails every ten minutes', 'mailpn'); ?>.</p>
+                </div>
+              </div>
+            <?php else: ?>
+              <p class="mailpn-alert-warning"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></p>
+            <?php endif ?>
+          </div>
+
+          <div class="mailpn-sent-to">
+            <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec')); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View latest submissions', 'mailpn'); ?></a>
+          </div>
+        <?php endif ?>
+
+        <?php if (in_array($mailpn_type, ['email_published_content'])): ?>
+          <?php
+            $post_type = !empty(get_post_meta($post_id, 'mailpn_updated_content_cpt', true)) ? get_post_meta($post_id, 'mailpn_updated_content_cpt', true) : 'post';
+
+            $posts_atts = [
+              'fields' => 'ids',
+              'numberposts' => -1,
+              'post_type' => $post_type,
+              'post_status' => 'future',
+              'orderby' => 'publish_date',
+              'order' => 'ASC',
+            ];
             
-          <?php endif ?>
+            if (class_exists('Polylang')) {
+              $posts_atts['lang'] = pll_current_language('slug');
+            }
+            
+            $posts = get_posts($posts_atts);
+          ?>
+            <h3><?php esc_html_e('Any content you publish in the post type selected will be sent.', 'mailpn'); ?></h3>
+            
+            <?php if (!empty($posts)): ?>
+              <h3><?php esc_html_e('Also there are new contents to be published in the future and sent by email.', 'mailpn'); ?></h3>
+
+              <ul class="mailpn-ml-20">
+                <?php foreach ($posts as $post_id): ?>
+                  <li>
+                    <span><i class="material-icons-outlined mailpn-font-size-20 mailpn-vertical-align-middle">calendar_today</i> <?php echo esc_html(gmdate(get_option('date_format') . ' ' . get_option('time_format'), strtotime(get_post($post_id)->post_date))); ?></span>
+                    <a href="<?php echo esc_url(get_permalink($post_id)); ?>" target="_blank"><?php echo esc_html(get_the_title($post_id)); ?></a>  
+                  </li>
+                <?php endforeach ?>
+              </ul>
+              
+            <?php endif ?>
+        <?php endif ?>
       <?php endif ?>
     <?php
     $mailpn_return_string = ob_get_contents(); 
     ob_end_clean(); 
     return $mailpn_return_string;
+  }
+
+  public function mailpn_resend_errors($post_id) {
+    $mailpn_error = get_option('mailpn_error');
+    $mailpn_error_data = $mailpn_error[$post_id];
+
+    if (!empty($mailpn_error_data)) {
+      foreach ($mailpn_error_data as $unique_id => $mailpn_error_data) {
+        self::mailpn_queue_add($post_id, $mailpn_error_data['mailpn_user_to']);
+      }
+    } 
+
+    $mailpn_error[$post_id] = [];
+    update_option('mailpn_error', $mailpn_error);
   }
 
   public function mailpn_subscription_unsubscribe_btn($user_id){
@@ -521,7 +562,8 @@ class MAILPN_Mailing {
               }
 
               if ($mailing_counter >= $mails_sent_every_ten_minutes) {
-                update_option('mailpn_mails_sent_today', $mailpn_mails_sent_today + $mailing_counter);
+                $mailpn_mails_sent_today = $mailpn_mails_sent_today + $mailing_counter;
+                update_option('mailpn_mails_sent_today', $mailpn_mails_sent_today);
 
                 if ($mailpn_mails_sent_today >= ($mails_sent_every_day - $mails_sent_every_ten_minutes)) {
                   update_option('mailpn_queue_paused', strtotime('now'));
@@ -535,7 +577,7 @@ class MAILPN_Mailing {
           }
         }
       }else{
-        if (strtotime(gmdate('+1 day', $mailpn_queue_paused)) < strtotime('now')) {
+        if (strtotime(datetime: date('+1 day', $mailpn_queue_paused)) < strtotime('now')) {
           delete_option('mailpn_queue_paused');
           delete_option('mailpn_mails_sent_today');
         }

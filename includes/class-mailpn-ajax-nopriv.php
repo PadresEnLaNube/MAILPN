@@ -78,9 +78,9 @@ class MAILPN_Ajax_Nopriv {
                   if (!in_array($mailpn_form_subtype, ['user_alt_new'])) {
                     if (empty($user_id)) {
                       if (MAILPN_Functions_User::is_user_admin(get_current_user_id())) {
-                        $user_login = $_POST['user_login'];
-                        $user_password = $_POST['user_password'];
-                        $user_email = $_POST['user_email'];
+                        $user_login = !empty($_POST['user_login']) ? MAILPN_Forms::sanitizer(wp_unslash($_POST['user_login'])) : 0;
+                        $user_password = !empty($_POST['user_password']) ? MAILPN_Forms::sanitizer(wp_unslash($_POST['user_password'])) : 0;
+                        $user_email = !empty($_POST['user_email']) ? MAILPN_Forms::sanitizer(wp_unslash($_POST['user_email'])) : 0;
 
                         $user_id = MAILPN_Functions_User::insert_user($user_login, $user_password, $user_email);
                       }

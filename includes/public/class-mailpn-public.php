@@ -47,7 +47,7 @@ class MAILPN_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function mailpn_enqueue_styles() {
 		wp_enqueue_style($this->plugin_name . '-public', MAILPN_URL . 'assets/css/public/mailpn-public.css', [], $this->version, 'all');
 	}
 
@@ -56,7 +56,7 @@ class MAILPN_Public {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function mailpn_enqueue_scripts() {
 		wp_enqueue_script($this->plugin_name . '-public', MAILPN_URL . 'assets/js/public/mailpn-public.js', ['jquery'], $this->version, false);
 	}
 }

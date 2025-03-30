@@ -2,7 +2,7 @@
 Contributors: felixmartinez, hamlet237
 Donate link: https://padresenlanube.com/
 Tags: email, mailing, notifications, sender, mail address
-Requires at least: 3.0.1
+Requires at least: 3.0
 Tested up to: 6.7
 Stable tag: 1.0.0
 License: GPLv2 or later

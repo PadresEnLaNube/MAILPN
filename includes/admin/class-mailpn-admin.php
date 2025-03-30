@@ -47,7 +47,7 @@ class MAILPN_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_styles() {
+	public function mailpn_enqueue_styles() {
 		wp_enqueue_style($this->plugin_name . '-admin', MAILPN_URL . 'assets/css/admin/mailpn-admin.css', [], $this->version, 'all');
 	}
 
@@ -56,7 +56,7 @@ class MAILPN_Admin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function enqueue_scripts() {
+	public function mailpn_enqueue_scripts() {
 		wp_enqueue_script($this->plugin_name . '-admin', MAILPN_URL . 'assets/js/admin/mailpn-admin.js', ['jquery'], $this->version, false);
 	}
 }

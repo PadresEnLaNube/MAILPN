@@ -1758,6 +1758,7 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   }
   .mailpn-section-wrapper label{
     color:var(--mailpn-color-main);
+    font-size:16px;
   }
   .mailpn-input-field-disabled input,.mailpn-input-field-disabled select,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--single,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__rendered,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__rendered input,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered input,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered li{
     border:0!important;

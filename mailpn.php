@@ -14,7 +14,7 @@
  * Plugin URI:        https://padresenlanube.com/plugins/mailpn/
  * Description:       Effortlessly manage your email campaigns with our WordPress Email Management Plugin. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
  * Version:           1.0.0
- * Requires at least: 3.0.1
+ * Requires at least: 3.0
  * Requires PHP:      7.2
  * Author:            Padres en la Nube
  * Author URI:        https://padresenlanube.com/
@@ -42,7 +42,7 @@ define('MAILPN_VERSION', '1.0.0');
  */
 function mailpn_activate() {
 	require_once plugin_dir_path(__FILE__) . 'includes/class-mailpn-activator.php';
-	MAILPN_Activator::activate();
+	MAILPN_Activator::mailpn_activate();
 }
 register_activation_hook(__FILE__, 'mailpn_activate');
 
@@ -52,7 +52,7 @@ register_activation_hook(__FILE__, 'mailpn_activate');
  */
 function mailpn_deactivate() {
 	require_once plugin_dir_path(__FILE__) . 'includes/class-mailpn-deactivator.php';
-	MAILPN_Deactivator::deactivate();
+	MAILPN_Deactivator::mailpn_deactivate();
 }
 register_deactivation_hook(__FILE__, 'mailpn_deactivate');
 
@@ -70,10 +70,10 @@ require plugin_dir_path(__FILE__) . 'includes/class-mailpn.php';
  */
 function mailpn_run() {
 	$plugin = new MAILPN();
-	$plugin->run();
+	$plugin->mailpn_run();
 
 	require_once plugin_dir_path(__FILE__) . 'includes/class-mailpn-activator.php';
-	MAILPN_Activator::activate();
+	MAILPN_Activator::mailpn_activate();
 }
 
 mailpn_run();

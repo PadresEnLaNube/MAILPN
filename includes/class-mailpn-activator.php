@@ -18,7 +18,7 @@ class MAILPN_Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
+	public static function mailpn_activate() {
     $post_functions = new MAILPN_Functions_Post();
     $attachment_functions = new MAILPN_Functions_Attachment();
 

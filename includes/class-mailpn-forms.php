@@ -439,7 +439,7 @@ class MAILPN_Forms {
             <a href="#" class="mailpn-toggle mailpn-width-100-percent mailpn-text-decoration-none">
               <div class="mailpn-display-table mailpn-width-100-percent mailpn-mb-20">
                 <div class="mailpn-display-inline-table mailpn-width-90-percent">
-                  <label class="mailpn-cursor-pointer mailpn-toggle mailpn-mb-20 mailpn-color-main-0"><?php echo wp_kses_post($input_array['label']); ?></label>
+                  <label class="mailpn-cursor-pointer mailpn-mb-20 mailpn-color-main-0"><?php echo wp_kses_post($input_array['label']); ?></label>
                 </div>
                 <div class="mailpn-display-inline-table mailpn-width-10-percent mailpn-text-align-right">
                   <i class="material-icons-outlined mailpn-cursor-pointer mailpn-color-main-0">add</i>

@@ -62,8 +62,8 @@ class MAILPN_Loader {
 	 * @param    int                  $priority         Optional. The priority at which the function should be fired. Default is 10.
 	 * @param    int                  $accepted_args    Optional. The number of arguments that should be passed to the $callback. Default is 1.
 	 */
-	public function add_action($hook, $component, $callback, $priority = 10, $accepted_args = 1) {
-		$this->actions = $this->add($this->actions, $hook, $component, $callback, $priority, $accepted_args);
+	public function mailpn_add_action($hook, $component, $callback, $priority = 10, $accepted_args = 1) {
+		$this->actions = $this->mailpn_add($this->actions, $hook, $component, $callback, $priority, $accepted_args);
 	}
 
 	/**
@@ -76,8 +76,8 @@ class MAILPN_Loader {
 	 * @param    int                  $priority         Optional. The priority at which the function should be fired. Default is 10.
 	 * @param    int                  $accepted_args    Optional. The number of arguments that should be passed to the $callback. Default is 1
 	 */
-	public function add_filter($hook, $component, $callback, $priority = 10, $accepted_args = 1) {
-		$this->filters = $this->add($this->filters, $hook, $component, $callback, $priority, $accepted_args);
+	public function mailpn_add_filter($hook, $component, $callback, $priority = 10, $accepted_args = 1) {
+		$this->filters = $this->mailpn_add($this->filters, $hook, $component, $callback, $priority, $accepted_args);
 	}
 
 	/**
@@ -90,8 +90,8 @@ class MAILPN_Loader {
 	 * @param    int                  $priority         Optional. The priority at which the function should be fired. Default is 10.
 	 * @param    int                  $accepted_args    Optional. The number of arguments that should be passed to the $callback. Default is 1
 	 */
-	public function add_shortcode($hook, $component, $callback, $priority = 0, $accepted_args = 0) {
-		$this->shortcodes = $this->add($this->shortcodes, $hook, $component, $callback, $priority, $accepted_args);
+	public function mailpn_add_shortcode($hook, $component, $callback, $priority = 0, $accepted_args = 0) {
+		$this->shortcodes = $this->mailpn_add($this->shortcodes, $hook, $component, $callback, $priority, $accepted_args);
 	}
 
 	/**
@@ -107,7 +107,7 @@ class MAILPN_Loader {
 	 * @param    int                  $accepted_args    The number of arguments that should be passed to the $callback.
 	 * @return   array                                  The collection of actions, filters and shortcodes registered with WordPress.
 	 */
-	private function add($hooks, $hook, $component, $callback, $priority, $accepted_args) {
+	private function mailpn_add($hooks, $hook, $component, $callback, $priority, $accepted_args) {
 		$hooks[] = [
 			'hook'          => $hook,
 			'component'     => $component,
@@ -124,7 +124,7 @@ class MAILPN_Loader {
 	 *
 	 * @since    1.0.0
 	 */
-	public function run() {
+	public function mailpn_run() {
 		foreach ($this->filters as $hook) {
 			add_filter($hook['hook'], [$hook['component'], $hook['callback']], $hook['priority'], $hook['accepted_args']);
 		}

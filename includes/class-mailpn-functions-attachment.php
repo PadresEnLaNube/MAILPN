@@ -31,9 +31,9 @@ class MAILPN_Functions_Attachment {
 	 */
 	public function insert_attachment_from_url($url, $parent_post_id = null) {
     if(!class_exists('WP_Http')){
-      include_once(ABSPATH . WPINC . '/class-http.php');
+      require_once(ABSPATH . 'wp-includes/class-http.php'); 
     }
-
+    
     $http = new WP_Http();
     $response = $http->request($url);
     $file_extension = pathinfo($url, PATHINFO_EXTENSION);

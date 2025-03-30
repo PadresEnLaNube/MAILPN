@@ -210,17 +210,26 @@ class MAILPN_Settings {
 	 */
 	public function mailpn_admin_menu() {
     add_menu_page(__('Mail Settings', 'mailpn'), __('Mail Settings', 'mailpn'), 'administrator', 'mailpn_options', [$this, 'mailpn_options'], esc_url(MAILPN_URL . 'assets/media/mailpn-menu-icon.svg'));
-    add_submenu_page('mailpn_options', esc_html(__('Mail templates', 'mailpn')), esc_html(__('Mail templates', 'mailpn')), 'administrator', 'edit.php?post_type=mailpn_mail');
-    add_submenu_page('mailpn_options', esc_html(__('Mail records', 'mailpn')), esc_html(__('Mail records', 'mailpn')), 'administrator', 'edit.php?post_type=mailpn_rec');
+    add_submenu_page('mailpn_options', esc_html(__('Mail Templates', 'mailpn')), esc_html(__('Mail Templates', 'mailpn')), 'administrator', 'edit.php?post_type=mailpn_mail');
+    add_submenu_page('mailpn_options', esc_html(__('Mail Records', 'mailpn')), esc_html(__('Mail Records', 'mailpn')), 'administrator', 'edit.php?post_type=mailpn_rec');
+
+    global $menu;
+    if (!empty($menu)) {
+      foreach ($menu as $menu_index => $menu_item) {
+        if ($menu_item[2] == 'mailpn_options') {
+          $menu[$menu_index][0] = esc_html(__('Mailing Manager', 'mailpn'));
+        }
+      }
+    }
 	}
 
 	public function mailpn_options() {
 	  ?>
 	    <div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
-        
-        <h1 class="mailpn-mb-30"><?php esc_html_e('Mailing Manager - PN Options', 'mailpn'); ?></h1>
+        <img src="<?php echo esc_url(MAILPN_URL . 'assets/media/banner-1544x500.png'); ?>" alt="<?php esc_html_e('Plugin main Banner', 'mailpn'); ?>" title="<?php esc_html_e('Plugin main Banner', 'mailpn'); ?>" class="mailpn-width-100-percent mailpn-border-radius-20 mailpn-mb-30">
+        <h1 class="mailpn-mb-30"><?php esc_html_e('Mailing Manager - MAILPN Settings', 'mailpn'); ?></h1>
         <div class="mailpn-options-fields mailpn-mb-30">
-          <form action="" method="post" id="mailpn_form" class="mailpn-form">
+          <form action="" method="post" id="mailpn_form" class="mailpn-form mailpn-p-30">
             <?php foreach (self::get_options() as $mailpn_option): ?>
               <?php MAILPN_Forms::input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half'); ?>
             <?php endforeach ?>
@@ -248,7 +257,7 @@ class MAILPN_Settings {
 
   public function mailpn_user_register($user_id) {
     if (get_option('mailpn_new_user_notifications') == 'on') {
-      update_user_meta($user_id, 'userswph_notifications', 'on');
+      update_user_meta($user_id, 'userspn_notifications', 'on');
     }
   }
 
@@ -256,8 +265,8 @@ class MAILPN_Settings {
     if (isset($_GET['mailpn_action'])) {
       switch ($_GET['mailpn_action']) {
         case 'subscription-unsubscribe':
-          if (wp_verify_nonce($_GET['subscription-unsubscribe-nonce'], 'subscription-unsubscribe')) {
-            update_user_meta($_GET['user'], 'userswph_notifications', '');
+          if (!isset($_GET['subscription-unsubscribe-nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['subscription-unsubscribe-nonce'])) , 'subscription-unsubscribe')) {
+            update_user_meta($_GET['user'], 'userspn_notifications', '');
             wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-success'));exit();
           }else{
             wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-error'));exit();

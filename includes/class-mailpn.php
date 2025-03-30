@@ -19,27 +19,27 @@ class MAILPN {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      MAILPN_Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      MAILPN_Loader    $mailpn_loader    Maintains and registers all hooks for the plugin.
 	 */
-	protected $loader;
+	protected $mailpn_loader;
 
 	/**
 	 * The unique identifier of this plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+	 * @var      string    $mailpn_plugin_name    The string used to uniquely identify this plugin.
 	 */
-	protected $plugin_name;
+	protected $mailpn_plugin_name;
 
 	/**
 	 * The current version of the plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
+	 * @var      string    $mailpn_version    The current version of the plugin.
 	 */
-	protected $version;
+	protected $mailpn_version;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -50,28 +50,29 @@ class MAILPN {
 	 */
 	public function __construct() {
 		if (defined('MAILPN_VERSION')) {
-			$this->version = MAILPN_VERSION;
+			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->version = '1.0.0';
+			$this->mailpn_version = '1.0.0';
 		}
 
-		$this->plugin_name = 'mailpn';
+		$this->mailpn_plugin_name = 'mailpn';
 
-		$this->define_constants();
-		$this->load_dependencies();
-		$this->set_i18n();
-		$this->define_common_hooks();
-		$this->define_admin_hooks();
-		$this->define_public_hooks();
-		$this->define_post_types();
-		$this->define_taxonomies();
-		$this->load_ajax();
-		$this->load_ajax_nopriv();
-		$this->load_data();
-		$this->load_templates();
-		$this->load_settings();
-		$this->load_shortcodes();
-		$this->load_cron();
+		self::define_constants();
+		self::load_dependencies();
+		self::set_i18n();
+		self::define_common_hooks();
+		self::define_admin_hooks();
+		self::define_public_hooks();
+		self::define_post_types();
+		self::define_taxonomies();
+		self::load_ajax();
+		self::load_ajax_nopriv();
+		self::load_data();
+		self::load_templates();
+		self::load_settings();
+		self::load_shortcodes();
+		self::load_cron();
+		self::load_notifications();
 	}
 
 	/**
@@ -86,7 +87,7 @@ class MAILPN {
 		
 		define('MAILPN_ROLE_CAPABILITIES', ['edit_post' => 'edit_wph_mail', 'edit_posts' => 'edit_mailpn', 'edit_private_posts' => 'edit_private_mailpn', 'edit_published_posts' => 'edit_published_mailpn', 'edit_others_posts' => 'edit_other_mailpn', 'publish_posts' => 'publish_mailpn', 'read_post' => 'read_wph_mail', 'read_private_posts' => 'read_private_mailpn', 'delete_post' => 'delete_wph_mail', 'delete_posts' => 'delete_mailpn', 'delete_private_posts' => 'delete_private_mailpn', 'delete_published_posts' => 'delete_published_mailpn', 'delete_others_posts' => 'delete_others_mailpn', 'upload_files' => 'upload_files', 'manage_terms' => 'manage_mailpn_category', 'edit_terms' => 'edit_mailpn_category', 'delete_terms' => 'delete_mailpn_category', 'assign_terms' => 'assign_mailpn_category', 'manage_options' => 'manage_mailpn_options', ]);
 
-		define('MAILPN_KSES', ['div' => ['id' => [], 'class' => [], 'data-mailpn-section-id' => [], ], 'span' => ['id' => [], 'class' => [], ], 'p' => ['id' => [], 'class' => [], ], 'ul' => ['id' => [], 'class' => [], ], 'ol' => ['id' => [], 'class' => [], ], 'li' => ['id' => [], 'class' => [], ], 'small' => ['id' => [], 'class' => [], ], 'a' => ['id' => [], 'class' => [], 'href' => [], 'title' => [], 'target' => [], ], 'form' => ['id' => [], 'class' => [], 'action' => [], 'method' => [], ], 'input' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'checked' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], 'data-mailpn-parent-option' => [], 'data-mailpn-type' => [], 'data-mailpn-subtype' => [], 'data-mailpn-user-id' => [], 'data-mailpn-post-id' => [],], 'select' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'checked' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], ], 'option' => ['name' => [], 'id' => [], 'class' => [], 'disabled' => [], 'selected' => [], 'value' => [], 'placeholder' => [], ], 'textarea' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], ], 'label' => ['id' => [], 'class' => [], 'for' => [], ], 'i' => ['id' => [], 'class' => [], 'title' => [], ], 'br' => [], 'em' => [], 'strong' => [], 'h1' => ['id' => [], 'class' => [], ], 'h2' => ['id' => [], 'class' => [], ], 'h3' => ['id' => [], 'class' => [], ], 'h4' => ['id' => [], 'class' => [], ], 'h5' => ['id' => [], 'class' => [], ], 'h6' => ['id' => [], 'class' => [], ], 'img' => ['id' => [], 'class' => [], 'src' => [], 'alt' => [], 'title' => [], ], ]);
+		define('MAILPN_KSES', ['div' => ['id' => [], 'class' => [], 'data-mailpn-section-id' => [], ], 'span' => ['id' => [], 'class' => [], ], 'p' => ['id' => [], 'class' => [], ], 'ul' => ['id' => [], 'class' => [], ], 'ol' => ['id' => [], 'class' => [], ], 'li' => ['id' => [], 'class' => [], ], 'small' => ['id' => [], 'class' => [], ], 'a' => ['id' => [], 'class' => [], 'href' => [], 'title' => [], 'target' => [], 'data-mailpn-post-id' => [],], 'form' => ['id' => [], 'class' => [], 'action' => [], 'method' => [], ], 'input' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'checked' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], 'data-mailpn-parent-option' => [], 'data-mailpn-type' => [], 'data-mailpn-subtype' => [], 'data-mailpn-user-id' => [], 'data-mailpn-post-id' => [],], 'select' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'checked' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], ], 'option' => ['name' => [], 'id' => [], 'class' => [], 'disabled' => [], 'selected' => [], 'value' => [], 'placeholder' => [], ], 'textarea' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], ], 'label' => ['id' => [], 'class' => [], 'for' => [], ], 'i' => ['id' => [], 'class' => [], 'title' => [], ], 'br' => [], 'em' => [], 'strong' => [], 'h1' => ['id' => [], 'class' => [], ], 'h2' => ['id' => [], 'class' => [], ], 'h3' => ['id' => [], 'class' => [], ], 'h4' => ['id' => [], 'class' => [], ], 'h5' => ['id' => [], 'class' => [], ], 'h6' => ['id' => [], 'class' => [], ], 'img' => ['id' => [], 'class' => [], 'src' => [], 'alt' => [], 'title' => [], ], ]);
 	}
 			
 	/**
@@ -110,6 +111,9 @@ class MAILPN {
 	 * - MAILPN_Functions_Ajax. Ajax functions.
 	 * - MAILPN_Functions_Ajax_Nopriv. Ajax No Private functions.
 	 * - MAILPN_Functions_Shortcodes. Define all shortcodes for the platform.
+	 * - MAILPN_Cron. Define all cron jobs for the platform.
+	 * - MAILPN_Mailing. Define all mailing functions for the platform.
+	 * - MAILPN_Notifications. Define all notifications for the platform.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks with WordPress.
 	 *
@@ -222,7 +226,12 @@ class MAILPN {
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-mailing.php';
 
-		$this->loader = new MAILPN_Loader();
+		/**
+		 * The class defining notifications.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-notifications.php';
+
+		$this->mailpn_loader = new MAILPN_Loader();
 	}
 
 	/**
@@ -235,10 +244,10 @@ class MAILPN {
 	 */
 	private function set_i18n() {
 		$plugin_i18n = new MAILPN_i18n();
-		$this->loader->add_action('init', $plugin_i18n, 'load_plugin_textdomain');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_i18n, 'load_plugin_textdomain');
 
 		if (class_exists('Polylang')) {
-			$this->loader->add_filter('pll_get_post_types', $plugin_i18n, 'mailpn_pll_get_post_types', 10, 2);
+			$this->mailpn_loader->mailpn_add_filter('pll_get_post_types', $plugin_i18n, 'mailpn_pll_get_post_types', 10, 2);
     }
 	}
 
@@ -249,19 +258,19 @@ class MAILPN {
 	 * @access   private
 	 */
 	private function define_common_hooks() {
-		$plugin_common = new MAILPN_Common($this->get_plugin_name(), $this->get_version());
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_common, 'enqueue_styles');
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_common, 'enqueue_scripts');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_common, 'enqueue_styles');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_common, 'enqueue_scripts');
-		$this->loader->add_filter('body_class', $plugin_common, 'mailpn_body_classes');
-		$this->loader->add_filter('body_class', $plugin_common, 'mailpn_body_classes');
+		$plugin_common = new MAILPN_Common(self::mailpn_get_plugin_name(), self::mailpn_get_version());
+		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_common, 'mailpn_enqueue_styles');
+		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_common, 'mailpn_enqueue_scripts');
+		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_common, 'mailpn_enqueue_styles');
+		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_common, 'mailpn_enqueue_scripts');
+		$this->mailpn_loader->mailpn_add_filter('body_class', $plugin_common, 'mailpn_body_classes');
+		$this->mailpn_loader->mailpn_add_filter('body_class', $plugin_common, 'mailpn_body_classes');
 
 		$plugin_post_type_mail = new MAILPN_Post_Type_Mail();
-		$this->loader->add_action('mailpn_form_save', $plugin_post_type_mail, 'mailpn_form_save', 4, 999);
+		$this->mailpn_loader->mailpn_add_action('mailpn_form_save', $plugin_post_type_mail, 'mailpn_form_save', 4, 999);
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
-		$this->loader->add_action('mailpn_form_save', $plugin_post_type_rec, 'mailpn_form_save', 4, 999);
+		$this->mailpn_loader->mailpn_add_action('mailpn_form_save', $plugin_post_type_rec, 'mailpn_form_save', 4, 999);
 	}
 
 	/**
@@ -271,9 +280,9 @@ class MAILPN {
 	 * @access   private
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new MAILPN_Admin($this->get_plugin_name(), $this->get_version());
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+		$plugin_admin = new MAILPN_Admin(self::mailpn_get_plugin_name(), self::mailpn_get_version());
+		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_admin, 'mailpn_enqueue_styles');
+		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_admin, 'mailpn_enqueue_scripts');
 	}
 
 	/**
@@ -283,12 +292,12 @@ class MAILPN {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new MAILPN_Public($this->get_plugin_name(), $this->get_version());
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+		$plugin_public = new MAILPN_Public(self::mailpn_get_plugin_name(), self::mailpn_get_version());
+		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_public, 'mailpn_enqueue_styles');
+		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_public, 'mailpn_enqueue_scripts');
 
 		$plugin_user = new MAILPN_Functions_User();
-		$this->loader->add_action('wp_login', $plugin_user, 'mailpn_wp_login');
+		$this->mailpn_loader->mailpn_add_action('wp_login', $plugin_user, 'mailpn_wp_login');
 	}
 
 	/**
@@ -299,17 +308,17 @@ class MAILPN {
 	 */
 	private function define_post_types() {
 		$plugin_post_type_mail = new MAILPN_Post_Type_Mail();
-		$this->loader->add_action('init', $plugin_post_type_mail, 'register_post_type');
-		$this->loader->add_action('admin_init', $plugin_post_type_mail, 'add_meta_box');
-		$this->loader->add_action('save_post_mailpn_mail', $plugin_post_type_mail, 'save_post', 10, 3);
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_mail, 'mailpn_register_post_type');
+		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_mail, 'mailpn_add_meta_box');
+		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_mail', $plugin_post_type_mail, 'mailpn_save_post', 10, 3);
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
-		$this->loader->add_action('init', $plugin_post_type_rec, 'register_post_type');
-		$this->loader->add_action('admin_init', $plugin_post_type_rec, 'add_meta_box');
-		$this->loader->add_action('save_post_mailpn_rec', $plugin_post_type_rec, 'save_post', 10, 3);
-		$this->loader->add_filter('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10);
-		$this->loader->add_filter('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
-		$this->loader->add_filter('manage_edit-mailpn_rec_sortable_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10, 3);
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_rec, 'mailpn_register_post_type');
+		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_rec, 'mailpn_add_meta_box');
+		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_rec', $plugin_post_type_rec, 'mailpn_save_post', 10, 3);
+		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10);
+		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
+		$this->mailpn_loader->mailpn_add_filter('manage_edit-mailpn_rec_sortable_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10, 3);
 	}
 
 	/**
@@ -320,10 +329,10 @@ class MAILPN {
 	 */
 	private function define_taxonomies() {
 		$plugin_taxonomies_mail = new MAILPN_Taxonomies_Mail();
-		$this->loader->add_action('init', $plugin_taxonomies_mail, 'register_taxonomies');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_mail, 'mailpn_register_taxonomies');
 
 		$plugin_taxonomies_rec = new MAILPN_Taxonomies_Rec();
-		$this->loader->add_action('init', $plugin_taxonomies_rec, 'register_taxonomies');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_rec, 'mailpn_register_taxonomies');
 	}
 
 	/**
@@ -336,13 +345,13 @@ class MAILPN {
 		$plugin_data = new MAILPN_Data();
 
 		if (is_admin()) {
-			$this->loader->add_action('init', $plugin_data, 'load_plugin_data');
+			$this->mailpn_loader->mailpn_add_action('init', $plugin_data, 'mailpn_load_plugin_data');
 		}else{
-			$this->loader->add_action('wp_footer', $plugin_data, 'load_plugin_data');
+			$this->mailpn_loader->mailpn_add_action('wp_footer', $plugin_data, 'mailpn_load_plugin_data');
 		}
 
-		$this->loader->add_action('wp_footer', $plugin_data, 'flush_rewrite_rules');
-		$this->loader->add_action('admin_footer', $plugin_data, 'flush_rewrite_rules');
+		$this->mailpn_loader->mailpn_add_action('wp_footer', $plugin_data, 'mailpn_flush_rewrite_rules');
+		$this->mailpn_loader->mailpn_add_action('admin_footer', $plugin_data, 'mailpn_flush_rewrite_rules');
 	}
 
 	/**
@@ -354,8 +363,8 @@ class MAILPN {
 	private function load_templates() {
 		if (!defined('DOING_AJAX')) {
 			$plugin_templates = new MAILPN_Templates();
-			$this->loader->add_action('wp_footer', $plugin_templates, 'load_plugin_templates');
-			$this->loader->add_action('admin_footer', $plugin_templates, 'load_plugin_templates');
+			$this->mailpn_loader->mailpn_add_action('wp_footer', $plugin_templates, 'load_plugin_templates');
+			$this->mailpn_loader->mailpn_add_action('admin_footer', $plugin_templates, 'load_plugin_templates');
 		}
 	}
 
@@ -368,12 +377,23 @@ class MAILPN {
 	private function load_cron() {
 		$plugin_cron = new MAILPN_Cron();
 
-		$this->loader->add_action('wp', $plugin_cron, 'cron_schedule');
-		$this->loader->add_action('mailpn_cron_daily', $plugin_cron, 'cron_daily');
-		$this->loader->add_action('mailpn_cron_ten_minutes', $plugin_cron, 'cron_ten_minutes');
-		$this->loader->add_filter('cron_schedules', $plugin_cron, 'cron_ten_minutes_schedule');
-	}	
+		$this->mailpn_loader->mailpn_add_action('wp', $plugin_cron, 'cron_schedule');
+		$this->mailpn_loader->mailpn_add_action('mailpn_cron_daily', $plugin_cron, 'cron_daily');
+		$this->mailpn_loader->mailpn_add_action('mailpn_cron_ten_minutes', $plugin_cron, 'cron_ten_minutes');
+		$this->mailpn_loader->mailpn_add_filter('cron_schedules', $plugin_cron, 'cron_ten_minutes_schedule');
+	}
 
+	/**
+	 * Load notifications.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function load_notifications() {
+		$plugin_notifications = new MAILPN_Notifications();
+		$this->mailpn_loader->mailpn_add_action('wp_body_open', $plugin_notifications, 'mailpn_wp_body_open');
+	}
+	
 	/**
 	 * Register settings.
 	 *
@@ -382,13 +402,13 @@ class MAILPN {
 	 */
 	private function load_settings() {
 		$plugin_settings = new MAILPN_Settings();
-		$this->loader->add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
-		$this->loader->add_action('activated_plugin', $plugin_settings, 'activated_plugin');
-		$this->loader->add_action('user_register', $plugin_settings, 'mailpn_user_register', 11, 1);		
-		$this->loader->add_action('init', $plugin_settings, 'mailpn_init_hook');		
-		$this->loader->add_action('pre_get_posts', $plugin_settings, 'mailpn_pre_get_posts');
-		$this->loader->add_filter('wp_mail_from', $plugin_settings, 'mailpn_wp_mail_from', 999);
-		$this->loader->add_filter('wp_mail_from_name', $plugin_settings, 'mailpn_wp_mail_from_name', 999);
+		$this->mailpn_loader->mailpn_add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
+		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'activated_plugin');
+		$this->mailpn_loader->mailpn_add_action('user_register', $plugin_settings, 'mailpn_user_register', 11, 1);		
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_settings, 'mailpn_init_hook');		
+		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_settings, 'mailpn_pre_get_posts');
+		$this->mailpn_loader->mailpn_add_filter('wp_mail_from', $plugin_settings, 'mailpn_wp_mail_from', 999);
+		$this->mailpn_loader->mailpn_add_filter('wp_mail_from_name', $plugin_settings, 'mailpn_wp_mail_from_name', 999);
 	}
 
 	/**
@@ -399,7 +419,7 @@ class MAILPN {
 	 */
 	private function load_ajax() {
 		$plugin_ajax = new MAILPN_Ajax();
-		$this->loader->add_action('wp_ajax_mailpn_ajax', $plugin_ajax, 'mailpn_ajax_server');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax', $plugin_ajax, 'mailpn_ajax_server');
 	}
 
 	/**
@@ -410,8 +430,8 @@ class MAILPN {
 	 */
 	private function load_ajax_nopriv() {
 		$plugin_ajax_nopriv = new MAILPN_Ajax_Nopriv();
-		$this->loader->add_action('wp_ajax_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
-		$this->loader->add_action('wp_ajax_nopriv_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_nopriv_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
 	}
 
 	/**
@@ -422,26 +442,25 @@ class MAILPN {
 	 */
 	private function load_shortcodes() {
 		$plugin_shortcodes = new MAILPN_Shortcodes();
-		$this->loader->add_shortcode('mailpn-mail', $plugin_shortcodes, 'mailpn_mail');
-		$this->loader->add_shortcode('mailpn-test', $plugin_shortcodes, 'mailpn_test');
-		$this->loader->add_shortcode('mailpn-call-to-action', $plugin_shortcodes, 'mailpn_call_to_action');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-mail', $plugin_shortcodes, 'mailpn_mail');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-call-to-action', $plugin_shortcodes, 'mailpn_call_to_action');
 		
 		$plugin_mailing = new MAILPN_Mailing();
 		if (get_option('mailpn_password_new') == 'on') {
-			$this->loader->add_filter('wp_new_user_notification_email', $plugin_mailing, 'mailpn_wp_new_user_notification_email', 10, 3);
+			$this->mailpn_loader->mailpn_add_filter('wp_new_user_notification_email', $plugin_mailing, 'mailpn_wp_new_user_notification_email', 10, 3);
     }
     
     if (get_option('mailpn_password_retrieve') == 'on') {
-			$this->loader->add_filter('retrieve_password_message', $plugin_mailing, 'mailpn_retrieve_password_message', 10, 4);
+			$this->mailpn_loader->mailpn_add_filter('retrieve_password_message', $plugin_mailing, 'mailpn_retrieve_password_message', 10, 4);
     }
 
-		$this->loader->add_shortcode('mailpn-sender', $plugin_mailing, 'mailpn_sender');
-		$this->loader->add_shortcode('mailpn-text', $plugin_mailing, 'mailpn_text');
-		$this->loader->add_shortcode('mailpn-contents', $plugin_mailing, 'mailpn_contents');
-		$this->loader->add_shortcode('user-name', $plugin_mailing, 'mailpn_user_name');
-		$this->loader->add_shortcode('post-name', $plugin_mailing, 'mailpn_post_name');
-		$this->loader->add_shortcode('new-contents', $plugin_mailing, 'mailpn_new_contents');
-		$this->loader->add_shortcode('mailpn-tools', $plugin_mailing, 'mailpn_tools');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-sender', $plugin_mailing, 'mailpn_sender');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-text', $plugin_mailing, 'mailpn_text');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-contents', $plugin_mailing, 'mailpn_contents');
+		$this->mailpn_loader->mailpn_add_shortcode('user-name', $plugin_mailing, 'mailpn_user_name');
+		$this->mailpn_loader->mailpn_add_shortcode('post-name', $plugin_mailing, 'mailpn_post_name');
+		$this->mailpn_loader->mailpn_add_shortcode('new-contents', $plugin_mailing, 'mailpn_new_contents');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-tools', $plugin_mailing, 'mailpn_tools');
 	}
 
 	/**
@@ -449,8 +468,8 @@ class MAILPN {
 	 *
 	 * @since    1.0.0
 	 */
-	public function run() {
-		$this->loader->run();
+	public function mailpn_run() {
+		$this->mailpn_loader->mailpn_run();
 	}
 
 	/**
@@ -459,8 +478,8 @@ class MAILPN {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
+	public function mailpn_get_plugin_name() {
+		return $this->mailpn_plugin_name;
 	}
 
 	/**
@@ -469,8 +488,8 @@ class MAILPN {
 	 * @since     1.0.0
 	 * @return    MAILPN_Loader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader() {
-		return $this->loader;
+	public function mailpn_get_loader() {
+		return $this->mailpn_loader;
 	}
 
 	/**
@@ -479,7 +498,7 @@ class MAILPN {
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version() {
-		return $this->version;
+	public function mailpn_get_version() {
+		return $this->mailpn_version;
 	}
 }
