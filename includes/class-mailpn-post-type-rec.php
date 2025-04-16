@@ -28,7 +28,7 @@ class MAILPN_Post_Type_Rec {
       'class' => 'mailpn-select mailpn-width-100-percent',
       'disabled' => 'true',
       'input' => 'select',
-      'options' => MAILPN_Data::mail_types(),
+      'options' => MAILPN_Data::mailpn_mail_types(),
       'label' => __('Email type', 'mailpn'),
       'placeholder' => __('Email type', 'mailpn'),
     ];
@@ -134,84 +134,46 @@ class MAILPN_Post_Type_Rec {
    * @since    1.0.0
    */
   public function mailpn_meta_box_function($post) {
-    foreach ($this->mailpnget_fields_meta() as $mailpn_field) {
-      MAILPN_Forms::input_wrapper_builder($mailpn_field, 'post', $post->ID);
+    foreach ($this->mailpn_get_fields_meta() as $mailpn_field) {
+      MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_field, 'post', $post->ID);
     }
   }
 
-  public function mailpn_save_post($post_id, $cpt, $update) {
-    if (array_key_exists('mailpn_nonce', $_POST) && !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_nonce'])), 'mailpn-nonce')) {
-      echo wp_json_encode(['error_key' => 'mailpn_nonce_error', ]);exit();
+  /**
+   * Save post metadata when a post is saved.
+   *
+   * @param int $post_id The post ID.
+   * @return int|void
+   */
+  public function mailpn_save_post($post_id) {
+    // If this is an autosave, our form has not been submitted
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return $post_id;
     }
 
-    if (!array_key_exists('mailpn_duplicate', $_POST)) {
-      foreach ($this->mailpnget_fields_meta() as $wph_field) {
-        $wph_input = array_key_exists('input', $wph_field) ? $wph_field['input'] : '';
+    // Verify nonce
+    if (!isset($_POST['mailpn_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_nonce'])), 'mailpn-nonce')) {
+        return $post_id;
+    }
 
-        if (array_key_exists($wph_field['id'], $_POST) || $wph_input == 'html_multi') {
-          $wph_value = array_key_exists($wph_field['id'], $_POST) ? MAILPN_Forms::sanitizer($_POST[$wph_field['id']], $wph_field['input'], !empty($wph_field['type']) ? $wph_field['type'] : '') : '';
+    // Check the user's permissions
+    if (!current_user_can('edit_post', $post_id)) {
+        return $post_id;
+    }
 
-          if (!empty($wph_input)) {
-            switch ($wph_input) {
-              case 'input':
-                if (array_key_exists('type', $wph_field) && $wph_field['type'] == 'checkbox') {
-                  if (isset($_POST[$wph_field['id']])) {
-                    update_post_meta($post_id, $wph_field['id'], $wph_value);
-                  }else{
-                    update_post_meta($post_id, $wph_field['id'], '');
-                  }
-                }else{
-                  update_post_meta($post_id, $wph_field['id'], $wph_value);
-                }
-
-                break;
-              case 'select':
-                if (array_key_exists('multiple', $wph_field) && $wph_field['multiple']) {
-                  $multi_array = [];
-                  $empty = true;
-
-                  foreach ($_POST[$wph_field['id']] as $multi_value) {
-                    $multi_array[] = MAILPN_Forms::sanitizer($multi_value, $wph_field['input'], !empty($wph_field['type']) ? $wph_field['type'] : '');
-                  }
-
-                  update_post_meta($post_id, $wph_field['id'], $multi_array);
-                }else{
-                  update_post_meta($post_id, $wph_field['id'], $wph_value);
-                }
-                
-                break;
-              case 'html_multi':
-                foreach ($wph_field['html_multi_fields'] as $wph_multi_field) {
-                  if (array_key_exists($wph_multi_field['id'], $_POST)) {
-                    $multi_array = [];
-                    $empty = true;
-
-                    foreach ($_POST[$wph_multi_field['id']] as $multi_value) {
-                      if (!empty($multi_value)) {
-                        $empty = false;
-                      }
-
-                      $multi_array[] = MAILPN_Forms::sanitizer($multi_value, $wph_multi_field['input'], !empty($wph_multi_field['type']) ? $wph_multi_field['type'] : '');
-                    }
-
-                    if (!$empty) {
-                      update_post_meta($post_id, $wph_multi_field['id'], $multi_array);
-                    }else{
-                      update_post_meta($post_id, $wph_multi_field['id'], '');
-                    }
-                  }
-                }
-
-                break;
-              default:
-                update_post_meta($post_id, $wph_field['id'], $wph_value);
-                break;
+    // Now safe to save data
+    $fields_meta = $this->mailpn_get_fields_meta();
+    if (!empty($fields_meta)) {
+        foreach ($fields_meta as $field) {
+            if (array_key_exists($field['id'], $_POST)) {
+                $value = MAILPN_Forms::sanitizer(
+                    $_POST[$field['id']], 
+                    $field['input'], 
+                    !empty($field['type']) ? $field['type'] : ''
+                );
+                update_post_meta($post_id, $field['id'], $value);
             }
-          }
-        }else{
-          update_post_meta($post_id, $wph_field['id'], '');
         }
-      }
     }
   }
 
@@ -295,10 +257,14 @@ class MAILPN_Post_Type_Rec {
     switch ($column_slug) {
       case 'mailpn_rec_mail_template':
         $mail_id = get_post_meta($post_id, 'mailpn_rec_mail_id', true);
-        $mail_type = get_post_meta($mail_id, 'mailpn_type', true);
+        $mail_type = get_post_meta($post_id, 'mailpn_rec_type', true);
 
         ?>
-          <p><a href="<?php echo esc_url(admin_url('post.php?post=' . $mail_id . '&action=edit')); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i> #<?php echo esc_html($mail_id) ?> <?php echo esc_html(MAILPN_Data::mail_types()[$mail_type]); ?></a></p>
+          <?php if ($mail_type): ?>
+            <p><a href="<?php echo esc_url(admin_url('post.php?post=' . $post_id . '&action=edit')); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i> #<?php echo esc_html($post_id) ?> <?php echo isset(MAILPN_Data::mailpn_mail_types()[$mail_type]) ? esc_html(MAILPN_Data::mailpn_mail_types()[$mail_type]) : esc_html($mail_type); ?></a></p>
+          <?php else: ?>
+            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">mark_email_read</i> <?php esc_html_e('Unset email type.', 'mailpn'); ?></p>
+          <?php endif ?>
         <?php
         break;
       case 'mailpn_rec_to':
@@ -311,7 +277,7 @@ class MAILPN_Post_Type_Rec {
           <?php
         }else{
           ?>
-            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">person_off</i> <?php esc_html_e('User removed.', 'mailpn'); ?></p>
+            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">person_off</i> <?php esc_html_e('User removed or email sent by email address.', 'mailpn'); ?></p>
           <?php
         }
         break;
@@ -331,6 +297,74 @@ class MAILPN_Post_Type_Rec {
           <?php endif ?>
         <?php
         break;
+    }
+  }
+
+  public function mailpn_rec_filter_dropdown() {
+    global $typenow;
+    if ($typenow == 'mailpn_rec') {
+      // Mail Type Filter
+      $selected_type = isset($_GET['mailpn_type_filter']) ? sanitize_text_field($_GET['mailpn_type_filter']) : '';
+      
+      ?><select name="mailpn_type_filter">
+        <option value=""><?php echo esc_html__('All mail types', 'mailpn'); ?></option>
+        <?php foreach (MAILPN_Data::mailpn_mail_types() as $type_key => $type_label): ?>
+          <option value="<?php echo esc_attr($type_key); ?>" <?php echo selected($selected_type, $type_key, false); ?>>
+            <?php echo esc_html($type_label); ?>
+          </option>
+        <?php endforeach; ?>
+      </select><?php
+
+      // Recipient Filter
+      $selected_recipient = isset($_GET['mailpn_recipient_filter']) ? sanitize_text_field($_GET['mailpn_recipient_filter']) : '';
+      
+      $recipients = get_users([
+        'fields' => ['ID', 'user_email'],
+        'orderby' => 'ID',
+        'order' => 'ASC'
+      ]);
+
+      ?><select name="mailpn_recipient_filter">
+        <option value=""><?php echo esc_html__('All users', 'mailpn'); ?></option>
+        <?php foreach ($recipients as $recipient): 
+          $first_name = get_user_meta($recipient->ID, 'first_name', true);
+          $last_name = get_user_meta($recipient->ID, 'last_name', true);
+        ?>
+          <option value="<?php echo esc_attr($recipient->ID); ?>" <?php echo selected($selected_recipient, $recipient->ID, false); ?>>
+            #<?php echo esc_html($recipient->ID); ?> <?php echo esc_html($first_name); ?> <?php echo esc_html($last_name); ?> (<?php echo esc_html($recipient->user_email); ?>)
+          </option>
+        <?php endforeach; ?>
+      </select><?php
+    }
+  }
+
+  public function mailpn_rec_filter_query($query) {
+    global $pagenow, $typenow;
+    
+    if (is_admin() && $pagenow == 'edit.php' && $typenow == 'mailpn_rec') {
+      $meta_query = [];
+
+      // Filter by recipient if set
+      if (isset($_GET['mailpn_recipient_filter']) && !empty($_GET['mailpn_recipient_filter'])) {
+        $meta_query[] = [
+          'key' => 'mailpn_rec_to',
+          'value' => sanitize_text_field($_GET['mailpn_recipient_filter'])
+        ];
+      }
+
+      // Filter by mail type if set
+      if (isset($_GET['mailpn_type_filter']) && !empty($_GET['mailpn_type_filter'])) {
+        $meta_query[] = [
+          'key' => 'mailpn_rec_type',
+          'value' => sanitize_text_field($_GET['mailpn_type_filter'])
+        ];
+      }
+
+      // Apply meta query if we have any filters
+      if (!empty($meta_query)) {
+        $meta_query['relation'] = 'AND';
+        $query->set('meta_query', $meta_query);
+      }
     }
   }
 }

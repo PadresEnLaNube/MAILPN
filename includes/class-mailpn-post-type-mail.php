@@ -45,7 +45,7 @@ class MAILPN_Post_Type_Mail {
       'id' => 'mailpn_type',
       'class' => 'mailpn-select mailpn-width-100-percent',
       'input' => 'select',
-      'options' => MAILPN_Data::mail_types(),
+      'options' => MAILPN_Data::mailpn_mail_types(),
       'required' => 'true',
       'parent' => 'this',
       'label' => __('Email type', 'mailpn'),
@@ -270,7 +270,7 @@ class MAILPN_Post_Type_Mail {
    */
   public function mailpn_meta_box_function($post) {
     foreach ($this->mailpn_get_fields_meta() as $mailpn_field) {
-      MAILPN_Forms::input_wrapper_builder($mailpn_field, 'post', $post->ID);
+      MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_field, 'post', $post->ID);
     }
   }
 
@@ -284,7 +284,7 @@ class MAILPN_Post_Type_Mail {
         $wph_input = array_key_exists('input', $wph_field) ? $wph_field['input'] : '';
 
         if (array_key_exists($wph_field['id'], $_POST) || $wph_input == 'html_multi') {
-          $wph_value = array_key_exists($wph_field['id'], $_POST) ? MAILPN_Forms::sanitizer($_POST[$wph_field['id']], $wph_field['input'], (!empty($wph_field['type']) ? $wph_field['type'] : '')) : '';
+          $wph_value = array_key_exists($wph_field['id'], $_POST) ? MAILPN_Forms::mailpn_sanitizer($_POST[$wph_field['id']], $wph_field['input'], (!empty($wph_field['type']) ? $wph_field['type'] : '')) : '';
 
           if (!empty($wph_input)) {
             switch ($wph_input) {
@@ -306,7 +306,7 @@ class MAILPN_Post_Type_Mail {
                   $empty = true;
 
                   foreach ($_POST[$wph_field['id']] as $multi_value) {
-                    $multi_array[] = MAILPN_Forms::sanitizer($multi_value, $wph_field['input'], (!empty($wph_field['type']) ? $wph_field['type'] : ''));
+                    $multi_array[] = MAILPN_Forms::mailpn_sanitizer($multi_value, $wph_field['input'], (!empty($wph_field['type']) ? $wph_field['type'] : ''));
                   }
 
                   update_post_meta($post_id, $wph_field['id'], $multi_array);
@@ -326,7 +326,7 @@ class MAILPN_Post_Type_Mail {
                         $empty = false;
                       }
 
-                      $multi_array[] = MAILPN_Forms::sanitizer($multi_value, $wph_multi_field['input'], (!empty($wph_multi_field['type']) ? $wph_multi_field['type'] : ''));
+                      $multi_array[] = MAILPN_Forms::mailpn_sanitizer($multi_value, $wph_multi_field['input'], (!empty($wph_multi_field['type']) ? $wph_multi_field['type'] : ''));
                     }
 
                     if (!$empty) {
@@ -427,6 +427,71 @@ class MAILPN_Post_Type_Mail {
               break;
           }
       }
+    }
+  }
+
+  public function save_post($post_id) {
+    // If this is an autosave, our form has not been submitted
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return $post_id;
+    }
+
+    // Verify nonce
+    if (!isset($_POST['mailpn_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_nonce'])), 'mailpn-nonce')) {
+        return $post_id;
+    }
+
+    // Check the user's permissions
+    $post_type = get_post_type($post_id);
+    if (!current_user_can('edit_post', $post_id)) {
+        return $post_id;
+    }
+
+    // Now safe to save data
+    if (!empty($this->wph_fields)) {
+        foreach ($this->wph_fields as $wph_field) {
+            $wph_value = array_key_exists($wph_field['id'], $_POST) ? 
+                MAILPN_Forms::sanitizer($_POST[$wph_field['id']], $wph_field['input'], !empty($wph_field['type']) ? $wph_field['type'] : '') : '';
+            update_post_meta($post_id, $wph_field['id'], $wph_value);
+        }
+    }
+  }
+
+  public function mailpn_mail_posts_columns($columns) {
+    $new_columns = [];
+    
+    // Add title column first
+    if (isset($columns['title'])) {
+      $new_columns['title'] = $columns['title'];
+    }
+    
+    // Add our custom column after title
+    $new_columns['mailpn_mail_type'] = __('Mail Type', 'mailpn');
+    
+    // Add remaining columns
+    foreach ($columns as $key => $value) {
+      if ($key !== 'title') {
+        $new_columns[$key] = $value;
+      }
+    }
+    
+    return $new_columns;
+  }
+
+  public function mailpn_mail_posts_custom_column($column_slug, $post_id) {
+    switch ($column_slug) {
+      case 'mailpn_mail_type':
+        $mail_type = get_post_meta($post_id, 'mailpn_type', true);
+        if ($mail_type) {
+          ?>
+            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i> <?php echo isset(MAILPN_Data::mailpn_mail_types()[$mail_type]) ? esc_html(MAILPN_Data::mailpn_mail_types()[$mail_type]) : esc_html($mail_type); ?></p>
+          <?php
+        } else {
+          ?>
+            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">mark_email_read</i> <?php esc_html_e('Unset email type.', 'mailpn'); ?></p>
+          <?php
+        }
+        break;
     }
   }
 }

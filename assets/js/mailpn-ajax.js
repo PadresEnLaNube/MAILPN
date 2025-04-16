@@ -182,5 +182,40 @@
         $.fancybox.close();
       });
     });
+
+    $(document).on('click', '.mailpn-test-email-btn', function(e) {
+      e.preventDefault();
+
+      var btn = $(this);
+      var loader = btn.siblings('.mailpn-waiting');
+      var result = btn.siblings('.mailpn-test-email-result');
+
+      btn.addClass('mailpn-link-disabled');
+      loader.removeClass('mailpn-display-none-soft');
+      result.html('');
+
+      var ajax_url = mailpn_ajax.ajax_url;
+      var data = {
+        action: 'mailpn_ajax',
+        mailpn_ajax_type: 'mailpn_test_email_send',
+        ajax_nonce: mailpn_ajax.ajax_nonce,
+      };
+
+      $.post(ajax_url, data, function(response) {
+        console.log('response');console.log(response);
+        response = JSON.parse(response);
+
+        if (response.error_key == '') {
+          mailpn_get_main_message(response.error_content);
+          result.html('<span class="mailpn-alert mailpn-alert-success">' + response.error_content + '</span>');
+        } else {
+          mailpn_get_main_message(response.error_content);
+          result.html('<span class="mailpn-alert mailpn-alert-error">' + response.error_content + '</span>');
+        }
+
+        btn.removeClass('mailpn-link-disabled');
+        loader.addClass('mailpn-display-none-soft');
+      });
+    });
   });
 })(jQuery);

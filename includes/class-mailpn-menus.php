@@ -62,7 +62,7 @@ class MAILPN_Menus {
         <div class="mailpn-options-fields mailpn-mb-30">
           <form action="" method="post" id="mailpn_form" class="mailpn-form">
             <?php foreach ($this->get_options() as $mailpn_option): ?>
-              <?php MAILPN_Forms::input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half'); ?>
+              <?php MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half'); ?>
             <?php endforeach ?>
           </form> 
         </div>

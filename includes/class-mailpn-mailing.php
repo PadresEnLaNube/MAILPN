@@ -231,7 +231,7 @@ class MAILPN_Mailing {
               <?php if (!empty(get_option('mailpn_image_header'))): ?>
                 <tr style="text-align:center;">
                   <td class="text-align-center mailpn-mb-30" align="center">
-                    <a target="_blank" href="<?php echo esc_url(home_url()); ?>" class="mailpn-header-image" style="color:#3d731a;text-decoration:none;"><img src="<?php echo esc_url(wp_get_attachment_image_src(get_option('mailpn_image_header'), 'full')[0]); ?>" border="0" alt="<?php echo esc_attr($mailpn_legal_name); ?>" style="height:200px;width:auto;margin-right:5px;margin-left:5px;margin-bottom:30px;"></a>
+                    <a target="_blank" href="<?php echo esc_url(home_url()); ?>" class="mailpn-header-image" style="color:#3d731a;text-decoration:none;"><img src="<?php echo esc_url(wp_get_attachment_image_src(get_option('mailpn_image_header'), 'full')[0]); ?>" border="0" alt="<?php echo esc_attr($mailpn_legal_name); ?>" style="max-height:150px;width:auto;margin-right:5px;margin-left:5px;margin-bottom:30px;"></a>
                   </td>
                 </tr>
               <?php endif ?>
@@ -431,7 +431,7 @@ class MAILPN_Mailing {
               ?>
 
               <div class="mailpn-alert-warning mailpn-font-size-20">
-                <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <?php echo esc_html(MAILPN_Data::loader(true)); ?>
+                <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <?php echo esc_html(MAILPN_Data::mailpn_loader(true)); ?>
                   
                 <div class="mailpn-progress-bar">
                   <p class="mailpn-font-weight-bold"><?php echo number_format(((intval($emails_sent) * 100) / intval($emails_total)), 1); ?>% <?php esc_html_e('of total job', 'mailpn'); ?> (<?php echo esc_html($emails_sent); ?> <?php esc_html_e('emails sent', 'mailpn'); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?>)</p>
@@ -730,7 +730,7 @@ class MAILPN_Mailing {
     $mail_content = ob_get_contents(); 
     ob_end_clean(); 
 
-    do_shortcode('[mailpn-sender mailpn_type="password_reset" mailpn_user_to="' . $user_data->ID . '" mailpn_subject="' . esc_html(__('Password reset', 'mailpn')) . '"]' . $mail_content . '[/mailpn-sender]');
+    do_shortcode('[mailpn-sender mailpn_type="email_password_reset" mailpn_user_to="' . $user_data->ID . '" mailpn_subject="' . esc_html(__('Password reset', 'mailpn')) . '"]' . $mail_content . '[/mailpn-sender]');
 
     return '';
   }
@@ -779,5 +779,26 @@ class MAILPN_Mailing {
     $wp_new_user_notification_email['message'] = $this->mailpn_template($blogname . ' ' . esc_html(__('New user', 'mailpn')), $mail_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to);
 
     return $wp_new_user_notification_email;
+  }
+
+  public function mailpn_test_email_btn($atts) {
+    if (!current_user_can('manage_options')) {
+      return '';
+    }
+
+    ob_start();
+    ?>
+      <div class="mailpn-test-email-wrapper">
+        <a class="mailpn-test-email-btn mailpn-btn mailpn-btn-mini">
+          <?php esc_html_e('Send test email', 'mailpn'); ?>
+        </a>
+        <?php echo MAILPN_Data::mailpn_loader(); ?>
+
+        <span class="mailpn-test-email-result"></span>
+      </div>
+    <?php
+    $mailpn_return_string = ob_get_contents(); 
+    ob_end_clean(); 
+    return $mailpn_return_string;
   }
 }

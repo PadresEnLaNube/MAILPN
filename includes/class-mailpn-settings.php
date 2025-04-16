@@ -227,11 +227,20 @@ class MAILPN_Settings {
 	  ?>
 	    <div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
         <img src="<?php echo esc_url(MAILPN_URL . 'assets/media/banner-1544x500.png'); ?>" alt="<?php esc_html_e('Plugin main Banner', 'mailpn'); ?>" title="<?php esc_html_e('Plugin main Banner', 'mailpn'); ?>" class="mailpn-width-100-percent mailpn-border-radius-20 mailpn-mb-30">
-        <h1 class="mailpn-mb-30"><?php esc_html_e('Mailing Manager - MAILPN Settings', 'mailpn'); ?></h1>
+
+        <div class="mailpn-display-table mailpn-width-100-percent">
+          <div class="mailpn-display-inline-table mailpn-width-80-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+            <h1 class="mailpn-mb-30"><?php esc_html_e('Mailing Manager - MAILPN Settings', 'mailpn'); ?></h1>
+          </div>
+          <div class="mailpn-display-inline-table mailpn-width-20-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+            <?php echo do_shortcode('[mailpn-test-email-button]'); ?>
+          </div>
+        </div>
+
         <div class="mailpn-options-fields mailpn-mb-30">
           <form action="" method="post" id="mailpn_form" class="mailpn-form mailpn-p-30">
             <?php foreach (self::get_options() as $mailpn_option): ?>
-              <?php MAILPN_Forms::input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half'); ?>
+              <?php MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half'); ?>
             <?php endforeach ?>
           </form> 
         </div>
@@ -261,19 +270,35 @@ class MAILPN_Settings {
     }
   }
 
-  public function mailpn_init_hook(){
-    if (isset($_GET['mailpn_action'])) {
-      switch ($_GET['mailpn_action']) {
-        case 'subscription-unsubscribe':
-          if (!isset($_GET['subscription-unsubscribe-nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['subscription-unsubscribe-nonce'])) , 'subscription-unsubscribe')) {
-            update_user_meta($_GET['user'], 'userspn_notifications', '');
-            wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-success'));exit();
-          }else{
-            wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-error'));exit();
-          }
+  public function mailpn_init_hook() {
+    if (!isset($_GET['mailpn_action'])) {
+        return;
+    }
 
-          break;
-      }
+    // Add nonce check for all actions
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'mailpn_action')) {
+        wp_die(__('Security check failed', 'mailpn'));
+    }
+
+    switch (sanitize_text_field($_GET['mailpn_action'])) {
+        case 'subscription-unsubscribe':
+            if (!isset($_GET['subscription-unsubscribe-nonce']) || 
+                !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['subscription-unsubscribe-nonce'])), 'subscription-unsubscribe')) {
+                wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-error'));
+                exit();
+            }
+            
+            // Add user check
+            $user_id = isset($_GET['user']) ? absint($_GET['user']) : 0;
+            if (!$user_id || !current_user_can('edit_user', $user_id)) {
+                wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-error'));
+                exit();
+            }
+            
+            update_user_meta($user_id, 'userspn_notifications', '');
+            wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-success'));
+            exit();
+            break;
     }
   }
 

@@ -311,6 +311,9 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_mail, 'mailpn_register_post_type');
 		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_mail, 'mailpn_add_meta_box');
 		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_mail', $plugin_post_type_mail, 'mailpn_save_post', 10, 3);
+		// Add new column hooks
+		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_mail_posts_columns', $plugin_post_type_mail, 'mailpn_mail_posts_columns');
+		$this->mailpn_loader->mailpn_add_action('manage_mailpn_mail_posts_custom_column', $plugin_post_type_mail, 'mailpn_mail_posts_custom_column', 10, 2);
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_rec, 'mailpn_register_post_type');
@@ -319,6 +322,10 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10);
 		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
 		$this->mailpn_loader->mailpn_add_filter('manage_edit-mailpn_rec_sortable_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10, 3);
+		
+		// Add new hooks for recipient filter
+		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_rec_filter_dropdown');
+		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_post_type_rec, 'mailpn_rec_filter_query');
 	}
 
 	/**
@@ -461,6 +468,7 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_shortcode('post-name', $plugin_mailing, 'mailpn_post_name');
 		$this->mailpn_loader->mailpn_add_shortcode('new-contents', $plugin_mailing, 'mailpn_new_contents');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-tools', $plugin_mailing, 'mailpn_tools');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-test-email-button', $plugin_mailing, 'mailpn_test_email_btn');
 	}
 
 	/**

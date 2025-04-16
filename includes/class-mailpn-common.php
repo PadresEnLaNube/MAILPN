@@ -123,8 +123,8 @@ class MAILPN_Common {
 			'media' => MAILPN_URL . 'assets/media/',
 		]);
 
-		$mailpn_action = !empty($_GET['mailpn_action']) ? MAILPN_Forms::sanitizer(wp_unslash($_GET['mailpn_action'])) : '';
-		$mailpn_btn_id = !empty($_GET['mailpn_btn_id']) ? MAILPN_Forms::sanitizer(wp_unslash($_GET['mailpn_btn_id'])) : '';
+		$mailpn_action = !empty($_GET['mailpn_action']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_action'])) : '';
+		$mailpn_btn_id = !empty($_GET['mailpn_btn_id']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_btn_id'])) : '';
 		
 		// https://padresenlanube.com/guests/?mailpn_action=btn&mailpn_btn_id=mailpn-popup-guest-add-btn
 		wp_localize_script($this->plugin_name, 'mailpn_action', [

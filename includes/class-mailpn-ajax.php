@@ -22,9 +22,9 @@ class MAILPN_Ajax {
         echo wp_json_encode(['error_key' => 'mailpn_nonce_error', ]);exit();
       }
 
-      $mailpn_ajax_type = MAILPN_Forms::sanitizer(wp_unslash($_POST['mailpn_ajax_type']));
+      $mailpn_ajax_type = MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mailpn_ajax_type']));
       $ajax_keys = !empty($_POST['ajax_keys']) ? wp_unslash($_POST['ajax_keys']) : [];
-      $mail_id = !empty($_POST['mail_id']) ? MAILPN_Forms::sanitizer(wp_unslash($_POST['mail_id'])) : 0;
+      $mail_id = !empty($_POST['mail_id']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mail_id'])) : 0;
       $key_value = [];
 
       if (!empty($ajax_keys)) {
@@ -35,7 +35,7 @@ class MAILPN_Ajax {
 
             if (!empty($_POST[$clear_key])) {
               foreach (wp_unslash($_POST[$clear_key]) as $multi_key => $multi_value) {
-                $final_value = !empty($_POST[$clear_key][$multi_key]) ? MAILPN_Forms::sanitizer(wp_unslash($_POST[$clear_key][$multi_key]), $key['node'], $key['type']) : '';
+                $final_value = !empty($_POST[$clear_key][$multi_key]) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$clear_key][$multi_key]), $key['node'], $key['type']) : '';
                 ${$clear_key}[$multi_key] = $key_value[$clear_key][$multi_key] = $final_value;
               }
             }else{
@@ -43,7 +43,7 @@ class MAILPN_Ajax {
               $key_value[$clear_key][$multi_key] = '';
             }
           }else{
-            $key_id = !empty($_POST[$key['id']]) ? MAILPN_Forms::sanitizer(wp_unslash($_POST[$key['id']]), $key['node'], $key['type']) : '';
+            $key_id = !empty($_POST[$key['id']]) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$key['id']]), $key['node'], $key['type']) : '';
             ${$key['id']} = $key_value[$key['id']] = $key_id;
           }
         }
@@ -123,6 +123,25 @@ class MAILPN_Ajax {
           }
 
           echo wp_json_encode(['error_key' => '', ]);exit();
+          break;
+        case 'mailpn_test_email_send':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
+            exit();
+          }
+      
+          $admin_email = get_current_user_id();
+          $subject = esc_html__('Test email from MAILPN', 'mailpn');
+          $content = '<p>' . esc_html__('This is a test email sent from the MAILPN plugin.', 'mailpn') . '</p>';
+          
+          $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $admin_email . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
+
+          if ($result) {
+            echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully', 'mailpn')]);exit();
+          } else {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Failed to send test email', 'mailpn')]);exit();
+          }
+
           break;
       }
 

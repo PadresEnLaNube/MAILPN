@@ -17,8 +17,8 @@ class MAILPN_Forms {
 	 * @since    1.0.0
 	 */
 
-  public static function input_builder($mailpn_input, $mailpn_type, $mailpn_id = 0, $disabled = 0, $mailpn_meta_array = 0, $mailpn_array_index = 0) {
-    // MAILPN_Forms::input_builder($mailpn_input, $mailpn_type, $mailpn_id = 0, $disabled = 0, $mailpn_meta_array = 0, $mailpn_array_index = 0)
+  public static function mailpn_input_builder($mailpn_input, $mailpn_type, $mailpn_id = 0, $disabled = 0, $mailpn_meta_array = 0, $mailpn_array_index = 0) {
+    // MAILPN_Forms::mailpn_input_builder($mailpn_input, $mailpn_type, $mailpn_id = 0, $disabled = 0, $mailpn_meta_array = 0, $mailpn_array_index = 0)
     if ($mailpn_meta_array) {
       switch ($mailpn_type) {
         case 'user':
@@ -174,7 +174,7 @@ class MAILPN_Forms {
           case 'submit':
             ?>
               <div class="mailpn-text-align-right">
-                <input type="submit" value="<?php echo esc_attr($mailpn_input['value']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" id="<?php echo esc_attr($mailpn_input['id']); ?>" class="mailpn-btn" data-mailpn-type="<?php echo esc_attr($mailpn_type); ?>" data-mailpn-subtype="<?php echo ((array_key_exists('subtype', $mailpn_input)) ? esc_attr($mailpn_input['subtype']) : ''); ?>" data-mailpn-user-id="<?php echo esc_attr($mailpn_id); ?>" data-mailpn-post-id="<?php echo esc_attr(get_the_ID()); ?>"/><?php echo esc_html(MAILPN_Data::loader()); ?>
+                <input type="submit" value="<?php echo esc_attr($mailpn_input['value']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" id="<?php echo esc_attr($mailpn_input['id']); ?>" class="mailpn-btn" data-mailpn-type="<?php echo esc_attr($mailpn_type); ?>" data-mailpn-subtype="<?php echo ((array_key_exists('subtype', $mailpn_input)) ? esc_attr($mailpn_input['subtype']) : ''); ?>" data-mailpn-user-id="<?php echo esc_attr($mailpn_id); ?>" data-mailpn-post-id="<?php echo esc_attr(get_the_ID()); ?>"/><?php echo esc_html(MAILPN_Data::mailpn_loader()); ?>
               </div>
             <?php
             break;
@@ -388,7 +388,7 @@ class MAILPN_Forms {
                 <div class="mailpn-html-multi-group mailpn-display-table mailpn-width-100-percent mailpn-mb-30">
                   <div class="mailpn-display-inline-table mailpn-width-90-percent">
                     <?php foreach ($mailpn_input['html_multi_fields'] as $index => $html_multi_field): ?>
-                      <?php self::input_builder($html_multi_field, $mailpn_type, $mailpn_id, false, true, $length_index); ?>
+                      <?php self::mailpn_input_builder($html_multi_field, $mailpn_type, $mailpn_id, false, true, $length_index); ?>
                     <?php endforeach ?>
                   </div>
                   <div class="mailpn-display-inline-table mailpn-width-10-percent mailpn-text-align-center">
@@ -404,7 +404,7 @@ class MAILPN_Forms {
               <div class="mailpn-html-multi-group mailpn-mb-50">
                 <div class="mailpn-display-inline-table mailpn-width-90-percent">
                   <?php foreach ($mailpn_input['html_multi_fields'] as $html_multi_field): ?>
-                    <?php self::input_builder($html_multi_field, $mailpn_type); ?>
+                    <?php self::mailpn_input_builder($html_multi_field, $mailpn_type); ?>
                   <?php endforeach ?>
                 </div>
                 <div class="mailpn-display-inline-table mailpn-width-10-percent mailpn-text-align-center">
@@ -426,8 +426,8 @@ class MAILPN_Forms {
     }
   }
 
-  public static function input_wrapper_builder($input_array, $type, $mailpn_id = 0, $disabled = 0, $mailpn_format = 'half'){
-    // MAILPN_Forms::input_wrapper_builder($input_array, $type, $mailpn_id = 0, $disabled = 0, $mailpn_format = 'half')
+  public static function mailpn_input_wrapper_builder($input_array, $type, $mailpn_id = 0, $disabled = 0, $mailpn_format = 'half'){
+    // MAILPN_Forms::mailpn_input_wrapper_builder($input_array, $type, $mailpn_id = 0, $disabled = 0, $mailpn_format = 'half')
     ?>
       <?php if (array_key_exists('section', $input_array) && !empty($input_array['section'])): ?>      
         <?php if ($input_array['section'] == 'start'): ?>
@@ -470,7 +470,7 @@ class MAILPN_Forms {
 
           <div class="mailpn-display-inline-table <?php echo ((array_key_exists('label', $input_array) && empty($input_array['label'])) ? 'mailpn-width-100-percent' : (($mailpn_format == 'half' && !(array_key_exists('type', $input_array) && $input_array['type'] == 'submit')) ? 'mailpn-width-60-percent' : 'mailpn-width-100-percent')); ?> mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-vertical-align-top">
             <div class="mailpn-p-10 <?php echo (array_key_exists('parent', $input_array) && !empty($input_array['parent']) && $input_array['parent'] != 'this') ? 'mailpn-pl-30' : ''; ?>">
-              <div class="mailpn-input-field"><?php self::input_builder($input_array, $type, $mailpn_id, $disabled); ?></div>
+              <div class="mailpn-input-field"><?php self::mailpn_input_builder($input_array, $type, $mailpn_id, $disabled); ?></div>
             </div>
           </div>
         </div>
@@ -478,8 +478,8 @@ class MAILPN_Forms {
     <?php
   }
 
-  public static function sanitizer($value, $node = '', $type = '') {
-    // MAILPN_Forms::sanitizer($value, $node = '', $type = '')
+  public static function mailpn_sanitizer($value, $node = '', $type = '') {
+    // MAILPN_Forms::mailpn_sanitizer($value, $node = '', $type = '')
     switch (strtolower($node)) {
       case 'input':
         switch (strtolower($type)) {

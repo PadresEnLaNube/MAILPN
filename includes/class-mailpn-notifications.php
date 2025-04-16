@@ -12,8 +12,8 @@
  */
 class MAILPN_Notifications {
   public function mailpn_wp_body_open() {
-    $mailpn_action = !empty($_GET['mailpn_action']) ? MAILPN_Forms::sanitizer(wp_unslash($_GET['mailpn_action'])) : '';
-    $mailpn_notice = !empty($_GET['mailpn_notice']) ? MAILPN_Forms::sanitizer(wp_unslash($_GET['mailpn_notice'])) : '';
+    $mailpn_action = !empty($_GET['mailpn_action']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_action'])) : '';
+    $mailpn_notice = !empty($_GET['mailpn_notice']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_notice'])) : '';
 
     ?>
       <?php if (!empty($mailpn_notice)): ?>
