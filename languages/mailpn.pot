@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Filkers WooCommerce Marketing\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-17 12:26+0000\n"
+"POT-Creation-Date: 2025-04-16 08:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,175 +16,338 @@ msgstr ""
 "X-Loco-Version: 2.5.2; wp-5.7.1\n"
 "X-Domain: filkers"
 
-#: includes/class-mailpn-activator.php:39
-msgid "1 cup of respect"
+#: includes/class-mailpn-data.php:67
+msgid "Account verification code"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "1 dash of adventure"
+#: includes/class-mailpn-forms.php:330
+msgid "Add audio"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "1 dash of humor"
+#: includes/class-mailpn-forms.php:330
+msgid "Add audios"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "1 dash of joy"
+#: includes/class-mailpn-forms.php:421
+msgid "Add element"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "1 dash of tenderness"
+#: includes/class-mailpn-forms.php:351
+msgid "Add file"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "1/2 cup of understanding"
+#: includes/class-mailpn-forms.php:351
+msgid "Add files"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "1/4 cup of patience"
+#: includes/class-mailpn-forms.php:288
+msgid "Add image"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "2 cups of trust"
+#: includes/class-mailpn-forms.php:288
+msgid "Add images"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:39
-msgid "2 hearts brimming with love"
+#: includes/class-mailpn-taxonomies-mail.php:30
+msgid "Add New Mail category"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:45
+#: includes/class-mailpn-post-type-rec.php:88
+#: includes/class-mailpn-post-type-rec.php:89
+msgid "Add new Mail record"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:30
+msgid "Add New Mail Record category"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:223
+#: includes/class-mailpn-post-type-mail.php:224
+msgid "Add new Mail template"
+msgstr ""
+
+#: includes/class-mailpn-forms.php:309
+msgid "Add video"
+msgstr ""
+
+#: includes/class-mailpn-forms.php:309
+msgid "Add videos"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:50
+#: includes/class-mailpn-post-type-rec.php:51
+msgid "Addressee email adress"
+msgstr ""
+
+#: includes/class-mailpn-common.php:200
+msgid "All done! You have been unsubscribed."
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-mail.php:25
+msgid "All Mail categories"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:25
+msgid "All Mail Record categories"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:86
+msgid "All Mail records"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:221
+msgid "All Mail templates"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:271
+msgid "All rights reserved"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:450
 msgid ""
-"<!-- wp:heading {\"level\":3,\"className\":\"wp-block-heading\"} --><h3 "
-"class=\"wp-block-heading\">A Feast for the Heart: A Culinary Journey of "
-"Love</h3><!-- /wp:heading --><!-- wp:paragraph --><p>To create an original "
-"love dish, start with a solid foundation of trust, respect, understanding "
-"and patience. Season with humor, joy, adventure and tenderness to bring life "
-"to life. Place two hearts overflowing with love in the center. Simmer "
-"throughout the process, stirring occasionally to cope with the ups and downs."
-" Garnish with kind words, loving gestures and small details. Share with your "
-"loved one and enjoy the delicious taste of true love.</p><!-- /wp:paragraph -"
-"-><!-- wp:paragraph --><p>Remember that there is no fixed recipe for Love, "
-"everyone creates it in their own way. Experiment, use fresh, high-quality "
-"ingredients, and serve with a smile and an open heart. Let love be the spice "
-"that adds flavor to your life!</p><!-- /wp:paragraph -->"
+"Also there are new contents to be published in the future and sent by email."
 msgstr ""
 
-#: includes/class-mailpn-activator.php:44
-msgid ""
-"<p>To serve, garnish with <strong>kind words, loving gestures, and small "
-"details</strong>. Share with your loved one and savor the delicious "
-"experience of true love.&nbsp;</p><p><ul><li><strong>Don't be afraid to "
-"experiment</strong>. Add your own special ingredients to create a unique "
-"dish that represents your love.&nbsp;</li><li><strong>Use fresh, high-"
-"quality ingredients</strong>. True love is a priceless treasure, treat it "
-"with care.&nbsp;</li><li><strong>Serve with a smile and an open "
-"heart</strong>. Love is best enjoyed when shared.</li></ul></p><p>Enjoy your "
-"creation!</p>"
-msgstr ""
-
-#: includes/class-mailpn-activator.php:41
-msgid ""
-"Add a dash of humor, joy, adventure, and tenderness. Life is tastier with a "
-"touch of fun and spontaneity."
-msgstr ""
-
-#: includes/class-mailpn-post-type-recipe.php:137
-msgid "Add New"
-msgstr ""
-
-#: includes/class-mailpn-post-type-recipe.php:136
-msgid "Add new Recipe"
-msgstr ""
-
-#: includes/class-mailpn-taxonomies-recipe.php:30
-msgid "Add New Recipe category"
-msgstr ""
-
-#: templates/public/archive-mailpn_recipe.php:64
-msgid "Add recipe"
-msgstr ""
-
-#: includes/class-mailpn-taxonomies-recipe.php:25
-msgid "All Recipe categories"
-msgstr ""
-
-#: includes/class-mailpn-post-type-recipe.php:134
-msgid "All Base CPT"
-msgstr ""
-
-#: includes/class-mailpn-common.php:116
+#: includes/class-mailpn-common.php:140
 msgid "An error has occurred. Please try again in a few minutes."
 msgstr ""
 
-#: includes/class-mailpn-activator.php:41
-msgid ""
-"Bake for a lifetime, stirring occasionally. Love is a lifelong journey, full "
-"of ups and downs, but it is always worth it."
+#: includes/class-mailpn-ajax.php:92
+msgid "An error occurred while checking the baseCPT."
 msgstr ""
 
-#: includes/class-mailpn-activator.php:40
-msgid "Baking"
+#: includes/class-mailpn-ajax.php:103
+msgid "An error occurred while duplicating the baseCPT."
 msgstr ""
 
-#: includes/class-mailpn-activator.php:40
-msgid "Dashing"
+#: includes/class-mailpn-ajax.php:112
+msgid "An error occurred while removing the baseCPT."
 msgstr ""
 
-#: includes/class-mailpn-common.php:126
+#: includes/class-mailpn-ajax.php:72 includes/class-mailpn-ajax.php:80
+msgid "An error occurred while showing the baseCPT."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:447
+msgid "Any content you publish in the post type selected will be sent."
+msgstr ""
+
+#: includes/class-mailpn-forms.php:223
+msgid "Atleast 8 Character"
+msgstr ""
+
+#: includes/class-mailpn-menus.php:61
+msgid "Base - PN Options"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:191
+msgid "Color of the email links"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:718
+msgid "Create new password"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:149
+#: includes/class-mailpn-settings.php:150
+msgid "Custom Password reset email"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:73 includes/class-mailpn-settings.php:74
+msgid "Custom reasons to receive email block"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:286
+msgid "Date sent"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:58
+#: includes/class-mailpn-post-type-mail.php:88
+msgid "Each day"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:58
+#: includes/class-mailpn-post-type-mail.php:88
+msgid "Each hour"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:58
+#: includes/class-mailpn-post-type-mail.php:88
+msgid "Each month"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:78
+msgid "Each new content"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:58
+#: includes/class-mailpn-post-type-mail.php:88
+msgid "Each week"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:58
+#: includes/class-mailpn-post-type-mail.php:88
+msgid "Each year"
+msgstr ""
+
+#: includes/class-mailpn-common.php:151 includes/class-mailpn-forms.php:326
 msgid "Edit audio"
 msgstr ""
 
-#: includes/class-mailpn-common.php:127
+#: includes/class-mailpn-common.php:152 includes/class-mailpn-forms.php:326
 msgid "Edit audios"
 msgstr ""
 
-#: includes/class-mailpn-common.php:130
+#: includes/class-mailpn-common.php:155 includes/class-mailpn-forms.php:347
 msgid "Edit file"
 msgstr ""
 
-#: includes/class-mailpn-common.php:131
+#: includes/class-mailpn-common.php:156 includes/class-mailpn-forms.php:347
 msgid "Edit files"
 msgstr ""
 
-#: includes/class-mailpn-common.php:118
+#: includes/class-mailpn-common.php:143 includes/class-mailpn-forms.php:284
 msgid "Edit image"
 msgstr ""
 
-#: includes/class-mailpn-common.php:119
+#: includes/class-mailpn-common.php:144 includes/class-mailpn-forms.php:284
 msgid "Edit images"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:138
-msgid "Edit Recipe"
+#: includes/class-mailpn-taxonomies-mail.php:28
+msgid "Edit Mail category"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:53
-#: templates/public/archive-mailpn_recipe.php:50
-msgid "Edit recipe"
+#: includes/class-mailpn-post-type-rec.php:90
+msgid "Edit Mail record"
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:28
-msgid "Edit Recipe category"
+#: includes/class-mailpn-taxonomies-rec.php:28
+msgid "Edit Mail Record category"
 msgstr ""
 
-#: includes/class-mailpn-common.php:122
+#: includes/class-mailpn-post-type-mail.php:225
+msgid "Edit Mail template"
+msgstr ""
+
+#: includes/class-mailpn-common.php:147 includes/class-mailpn-forms.php:305
 msgid "Edit video"
 msgstr ""
 
-#: includes/class-mailpn-common.php:123
+#: includes/class-mailpn-common.php:148 includes/class-mailpn-forms.php:305
 msgid "Edit videos"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:129
-msgid "Elaboration steps"
+#. Description of the plugin
+msgid ""
+"Effortlessly manage your email campaigns with our WordPress Email Management "
+"Plugin. Schedule, send, and track emails directly from your dashboard to "
+"engage your audience like never before."
 msgstr ""
 
-#: includes/class-mailpn-activator.php:40
-msgid "Hearting"
+#: includes/class-mailpn-mailing.php:714
+msgid "Email"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:138
-msgid "hours"
+#: includes/class-mailpn-settings.php:17
+msgid "Email contents"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:140
+msgid "Email contents after password creation link"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:168
+msgid "Email contents after reset password link"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:131
+msgid "Email contents before password creation link"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:159
+msgid "Email contents before reset password link"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:176
+msgid "Email design"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:120
+#: includes/class-mailpn-post-type-mail.php:121
+msgid "Email distribution"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:65 includes/class-mailpn-settings.php:66
+msgid "Email legal address"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:183
+#: includes/class-mailpn-settings.php:184
+msgid "Email max width in pixels"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:81
+msgid "Email mechanics"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:330
+msgid "Email not sent. Errors have been found."
+msgstr ""
+
+#: includes/class-mailpn-data.php:67
+msgid "Email sent from code"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:32
+#: includes/class-mailpn-post-type-rec.php:33
+#: includes/class-mailpn-post-type-mail.php:51
+#: includes/class-mailpn-post-type-mail.php:52
+msgid "Email type"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:414
+msgid "emails every ten minutes"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:410
+msgid "emails sent"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:97
+msgid "Emails sent every day"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:89
+msgid "Emails sent every ten minutes"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:57 includes/class-mailpn-settings.php:58
+msgid "Enterprise legal name"
+msgstr ""
+
+#: includes/class-mailpn-cron.php:32
+msgid "Every 10 minutes"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:118
+msgid "Everybody will receive"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:709
+msgid "First of all, access the url below and use any of these credentials:"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:240
+msgid "Follow us to keep in touch."
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:78
+msgid "From time to time"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:671 includes/class-mailpn-mailing.php:706
+msgid "Hello"
 msgstr ""
 
 #. Author URI of the plugin
@@ -195,295 +358,681 @@ msgstr ""
 msgid "https://padresenlanube.com/plugins/mailpn/"
 msgstr ""
 
-#: includes/class-mailpn-menus.php:33
+#: includes/class-mailpn-menus.php:31
 msgid ""
 "If you activate this option the plugin will remove all options on "
 "deactivation. Please, be careful. This process cannot be undone."
 msgstr ""
 
-#: includes/class-mailpn-activator.php:41
+#: includes/class-mailpn-settings.php:141
 msgid ""
-"In a large bowl, mix together the trust, respect, understanding, and "
-"patience. These are the foundations of a strong and lasting relationship."
+"If you complete this field the contents after the password creation link of "
+"the email will be customized with your information."
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:29
-#: includes/class-mailpn-post-type-recipe.php:30
-msgid "Ingredient"
+#: includes/class-mailpn-settings.php:169
+msgid ""
+"If you complete this field the contents after the reset password link of the "
+"email will be customized with your information."
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:22
-#: templates/public/single-mailpn_recipe.php:104
-msgid "Ingredients"
+#: includes/class-mailpn-settings.php:132
+msgid ""
+"If you complete this field the contents before the password creation link of "
+"the email will be customized with your information."
 msgstr ""
 
-#: includes/class-mailpn-menus.php:99
+#: includes/class-mailpn-settings.php:160
+msgid ""
+"If you complete this field the contents before the reset password link of "
+"the email will be customized with your information."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:683
+msgid "If you didn't make this request, ignore this email or"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:154
+msgid ""
+"If you select this option, the email will be active only in the temporal "
+"frame selected, after the date and time start, and before the date and time "
+"end."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:106
+msgid ""
+"If you turn on this options the system will activate users notifications "
+"automatically on new accounts creation. It implieas that contacts will "
+"receive platform communications from the their user creation. Please, take "
+"into account to add this feature in your policies pages."
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:78
+msgid "In a specific date"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:98
+msgid "In a specific day each month"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:98
+msgid "In a specific day each week"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:98
+msgid "In a specific hour each day"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:98
+msgid "In a specific minute each hour"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:98
+msgid "In a specific month each year"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:98
+msgid "In a specific week each year"
+msgstr ""
+
+#: includes/class-mailpn-common.php:214
+msgid ""
+"It looks like the link followed has expired. Please, set your notification "
+"preferences."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:407
 msgid "Loading..."
 msgstr ""
 
-#: includes/class-mailpn-activator.php:47
-#: includes/class-mailpn-activator.php:65
-msgid "Love recipe"
+#: includes/class-mailpn-common.php:223
+msgid "Login"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:138
-msgid "minutes"
+#: includes/class-mailpn-forms.php:211
+msgid "Lowercase & Uppercase"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:40
-msgid "Mixing"
+#: includes/class-mailpn-post-type-rec.php:41
+#: includes/class-mailpn-post-type-rec.php:42
+msgid "Mail addressee"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:49
-msgid "More recipes"
+#: includes/class-mailpn-post-type-rec.php:60
+#: includes/class-mailpn-post-type-rec.php:61
+#: includes/class-mailpn-post-type-mail.php:202
+#: includes/class-mailpn-post-type-mail.php:203
+msgid "Mail attachments"
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:31
-msgid "New Recipe category"
+#: includes/class-mailpn-taxonomies-mail.php:32
+msgid "Mail categories"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:195
-msgid "Next"
+#: includes/class-mailpn-post-type-rec.php:128
+msgid "Mail details"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:141
-msgid "Not Base CPT found"
+#: includes/class-mailpn-post-type-rec.php:68
+#: includes/class-mailpn-post-type-rec.php:69
+msgid "Mail HTML content"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:142
-msgid "Not Base CPT found in Trash"
+#: includes/class-mailpn-post-type-rec.php:100
+msgid "Mail record"
 msgstr ""
 
-#: includes/class-mailpn-forms.php:324 includes/class-mailpn-forms.php:340
-msgid "Order element"
+#: includes/class-mailpn-taxonomies-rec.php:32
+msgid "Mail Record categories"
 msgstr ""
 
-#: includes/class-mailpn-common.php:134
-msgid "Ordered element"
+#: includes/class-mailpn-post-type-rec.php:101
+msgid "Mail record description"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:133
-msgid "Parent Recipe"
+#: includes/class-mailpn-settings.php:214
+msgid "Mail Records"
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:26
-msgid "Parent Recipe category"
+#: includes/class-mailpn-post-type-rec.php:84
+msgid "Mail records"
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:27
-msgid "Parent Recipe category:"
+#: includes/class-mailpn-post-type-mail.php:183
+#: includes/class-mailpn-post-type-mail.php:184
+msgid "Mail sending end date"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:41
-msgid ""
-"Place the two hearts in the center of the mixture. Love is the main "
-"ingredient in this dish."
+#: includes/class-mailpn-post-type-mail.php:193
+#: includes/class-mailpn-post-type-mail.php:194
+msgid "Mail sending end time"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:132
-msgid "Play recipe"
+#: includes/class-mailpn-post-type-mail.php:163
+#: includes/class-mailpn-post-type-mail.php:164
+msgid "Mail sending start date"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:130
-msgctxt "Post Type general name"
-msgid "Base CPT"
+#: includes/class-mailpn-post-type-mail.php:173
+#: includes/class-mailpn-post-type-mail.php:174
+msgid "Mail sending start time"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:131
-msgctxt "Post Type singular name"
-msgid "Recipe"
+#: includes/class-mailpn-settings.php:212
+msgid "Mail Settings"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:41
-msgid ""
-"Preheat the oven to low heat. Love cooks best over a slow flame, with "
-"patience and care."
+#: includes/class-mailpn-menus.php:21 includes/class-mailpn-menus.php:22
+msgid "Mail slug"
 msgstr ""
 
-#: includes/class-mailpn-activator.php:40
-msgid "Preparing step"
+#: includes/class-mailpn-mailing.php:102
+msgid "Mail subject"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:192
-msgid "Previous"
+#: includes/class-mailpn-post-type-rec.php:287
+msgid "Mail Template"
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:32
-msgid "Recipe categories"
+#: includes/class-mailpn-post-type-mail.php:235
+msgid "Mail template"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:178
-msgid "Recipe details"
+#: includes/class-mailpn-post-type-mail.php:236
+msgid "Mail template description"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:81
-#: includes/class-mailpn-post-type-recipe.php:82
-msgid "Recipe gallery"
+#: includes/class-mailpn-post-type-mail.php:263
+msgid "Mail template details"
 msgstr ""
 
-#: includes/class-mailpn-menus.php:23 includes/class-mailpn-menus.php:24
-msgid "Recipe slug"
+#: includes/class-mailpn-settings.php:213
+msgid "Mail Templates"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:74
-msgid "Recipe suggestions"
+#: includes/class-mailpn-post-type-mail.php:219
+msgid "Mail templates"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:67
-#: includes/class-mailpn-post-type-recipe.php:68
-msgid "Recipe total time (hours:minutes)"
+#: includes/class-mailpn-settings.php:220
+msgid "Mailing Manager"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:89
-#: includes/class-mailpn-post-type-recipe.php:90
-msgid "Recipe video url"
-msgstr ""
-
-#: includes/class-mailpn-post-type-recipe.php:132
-#: includes/class-mailpn-post-type-recipe.php:148
-#: templates/public/archive-mailpn_recipe.php:31
-msgid "Base CPT"
-msgstr ""
-
-#: includes/class-mailpn-menus.php:15
-#: includes/class-mailpn-post-type-recipe.php:100
-msgid "recipes"
-msgstr ""
-
-#: includes/class-mailpn-post-type-recipe.php:149
-msgid "Base CPT description"
+#: includes/class-mailpn-settings.php:230
+msgid "Mailing Manager - MAILPN Settings"
 msgstr ""
 
 #. Name of the plugin
 #: includes/class-mailpn-activator.php:25
-msgid "Base CPT manager - PN"
+msgid "Mailing Manager - PN"
 msgstr ""
 
-#: includes/class-mailpn-menus.php:59
-msgid "Base CPT manager WPH"
+#: includes/class-mailpn-mailing.php:278
+msgid "Manage subscription"
 msgstr ""
 
-#: includes/class-mailpn-menus.php:32
-msgid "Remove plugin options on deactivation"
+#: includes/class-mailpn-taxonomies-mail.php:31
+msgid "New Mail category"
 msgstr ""
 
-#: includes/class-mailpn-menus.php:99
-msgid "Save options"
+#: includes/class-mailpn-taxonomies-rec.php:31
+msgid "New Mail Record category"
 msgstr ""
 
-#: includes/class-mailpn-common.php:117
-msgid "Saved successfully"
+#: includes/class-mailpn-mailing.php:735 includes/class-mailpn-mailing.php:737
+msgid "New user"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:140
-msgid "Search Recipe"
+#: includes/class-mailpn-settings.php:122
+msgid "New user creation welcome email"
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:24
-msgid "Search Recipe categories"
+#: includes/class-mailpn-settings.php:105
+msgid "New users active notifications"
 msgstr ""
 
-#: includes/class-mailpn-common.php:128
-msgid "Select audio"
+#: includes/class-mailpn-data.php:67
+msgid "Newsletter welcome email"
 msgstr ""
 
-#: includes/class-mailpn-common.php:129
-msgid "Select audios"
+#: includes/class-mailpn-forms.php:116
+msgid "No file found"
 msgstr ""
 
-#: includes/class-mailpn-common.php:132
-msgid "Select file"
+#: includes/class-mailpn-post-type-rec.php:93
+msgid "Not Mail record found"
 msgstr ""
 
-#: includes/class-mailpn-common.php:133
-msgid "Select files"
+#: includes/class-mailpn-post-type-rec.php:94
+msgid "Not Mail record found in Trash"
 msgstr ""
 
-#: includes/class-mailpn-common.php:120
-msgid "Select image"
+#: includes/class-mailpn-post-type-mail.php:228
+msgid "Not Mail template found"
 msgstr ""
 
-#: includes/class-mailpn-common.php:121
-msgid "Select images"
+#: includes/class-mailpn-post-type-mail.php:229
+msgid "Not Mail template found in Trash"
 msgstr ""
 
-#: includes/class-mailpn-common.php:124
-msgid "Select video"
+#: includes/class-mailpn-common.php:217
+msgid "Notifications"
 msgstr ""
 
-#: includes/class-mailpn-common.php:125
-msgid "Select videos"
+#: includes/class-mailpn-forms.php:215
+msgid "Number (0-9)"
 msgstr ""
 
-#. Description of the plugin
-msgid "Simple and usefull Base CPT manager and portfolio plugin for WordPress."
+#: includes/class-mailpn-mailing.php:410
+msgid "of"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:50
-#: includes/class-mailpn-post-type-recipe.php:51
-msgid "Step description"
+#: includes/class-mailpn-mailing.php:410
+msgid "of total job"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:58
-#: includes/class-mailpn-post-type-recipe.php:59
-msgid "Step time (hours:minutes)"
+#: includes/class-mailpn-data.php:67
+msgid "One time email"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:43
-#: includes/class-mailpn-post-type-recipe.php:44
-msgid "Step title"
+#: includes/class-mailpn-post-type-mail.php:111
+msgid "Only send once"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:36
-msgid "Steps"
+#: includes/class-mailpn-post-type-mail.php:118
+msgid "Only specific users will receive"
 msgstr ""
 
-#: templates/public/single-mailpn_recipe.php:204
-msgid "Suggestions"
+#: includes/class-mailpn-post-type-mail.php:118
+msgid "Only users with specific role will receive"
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:22
-msgctxt "Taxonomy general name"
-msgid "Recipe categories"
+#: includes/class-mailpn-common.php:211
+msgid "Oppps! We are not able to unsubscribe your account."
 msgstr ""
 
-#: includes/class-mailpn-taxonomies-recipe.php:23
-msgctxt "Taxonomy singular name"
-msgid "Recipe category"
+#: includes/class-mailpn-forms.php:395 includes/class-mailpn-forms.php:411
+msgid "Order element"
 msgstr ""
 
-#: includes/class-mailpn-menus.php:25
-msgid ""
-"This option sets the slug of the main recipes archive page, and the recipe "
-"pages. By default they will be:"
-msgstr ""
-
-#: templates/public/single-mailpn_recipe.php:138
-msgid "Total time"
-msgstr ""
-
-#: includes/class-mailpn-post-type-recipe.php:139
-msgid "Update Recipe"
-msgstr ""
-
-#: includes/class-mailpn-taxonomies-recipe.php:29
-msgid "Update Recipe category"
-msgstr ""
-
-#: includes/class-mailpn-post-type-recipe.php:135
-msgid "View Recipe"
+#: includes/class-mailpn-common.php:159
+msgid "Ordered element"
 msgstr ""
 
 #. Author of the plugin
 msgid "Padres en la Nube"
 msgstr ""
 
-#: includes/class-mailpn-menus.php:53
-msgid "WPH Options"
+#: includes/class-mailpn-taxonomies-mail.php:26
+msgid "Parent Mail category"
 msgstr ""
 
-#: includes/class-mailpn-post-type-recipe.php:91
+#: includes/class-mailpn-taxonomies-mail.php:27
+msgid "Parent Mail category:"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:85
+msgid "Parent Mail record"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:26
+msgid "Parent Mail Record category"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:27
+msgid "Parent Mail Record category:"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:220
+msgid "Parent Mail template"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:691
+msgid "Password reset"
+msgstr ""
+
+#: includes/class-mailpn-forms.php:207
+msgid "Password strength checker"
+msgstr ""
+
+#: includes/class-mailpn-data.php:67
+msgid "Periodic time email"
+msgstr ""
+
+#: includes/class-mailpn-common.php:141
+msgid "Please create a new user or login to save the information."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:683
+msgid "please report it"
+msgstr ""
+
+#: includes/class-mailpn-common.php:220
+msgid "Please, login to edit your preferences."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:229
+msgid "Plugin main Banner"
+msgstr ""
+
+#: includes/class-mailpn-functions-post.php:139
+msgid "Post creation failed, could not find original post:"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:82
+msgctxt "Post Type general name"
+msgid "Mail records"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:217
+msgctxt "Post Type general name"
+msgid "Mail templates"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:83
+msgctxt "Post Type singular name"
+msgid "Mail record"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:218
+msgctxt "Post Type singular name"
+msgid "Mail template"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:418
+msgid "Publish or update to begin sending."
+msgstr ""
+
+#: includes/class-mailpn-data.php:67
+msgid "Published content email"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:288
+msgid "Recipient"
+msgstr ""
+
+#: includes/class-mailpn-forms.php:399 includes/class-mailpn-forms.php:415
+msgid "Remove element"
+msgstr ""
+
+#: includes/class-mailpn-menus.php:30
+msgid "Remove plugin options on deactivation"
+msgstr ""
+
+#: includes/class-mailpn-forms.php:460
+msgid "Required field"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:677
+msgid "Reset your password"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:289
+msgid "Result"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:131
+#: includes/class-mailpn-post-type-mail.php:132
+msgid "Roles receiving the email"
+msgstr ""
+
+#: includes/class-mailpn-menus.php:42 includes/class-mailpn-settings.php:200
+msgid "Save options"
+msgstr ""
+
+#: includes/class-mailpn-common.php:142
+msgid "Saved successfully"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-mail.php:24
+msgid "Search Mail categories"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:24
+msgid "Search Mail Record categories"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:92
+msgid "Search Mail records"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:227
+msgid "Search Mail templates"
+msgstr ""
+
+#: includes/class-mailpn-forms.php:260
+msgid "Select an option"
+msgstr ""
+
+#: includes/class-mailpn-common.php:153
+msgid "Select audio"
+msgstr ""
+
+#: includes/class-mailpn-common.php:154
+msgid "Select audios"
+msgstr ""
+
+#: includes/class-mailpn-common.php:157
+msgid "Select file"
+msgstr ""
+
+#: includes/class-mailpn-common.php:158
+msgid "Select files"
+msgstr ""
+
+#: includes/class-mailpn-common.php:145
+msgid "Select image"
+msgstr ""
+
+#: includes/class-mailpn-common.php:146
+msgid "Select images"
+msgstr ""
+
+#: includes/class-mailpn-common.php:149
+msgid "Select video"
+msgstr ""
+
+#: includes/class-mailpn-common.php:150
+msgid "Select videos"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:151
+msgid "Send a custom Password reset email instead of the WP template."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:123
+msgid "Send a New user creation welcome email instead of the WP template."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:114
 msgid ""
-"You can set a video repository url here (like YouTube or Vimeo) to show the "
-"content in the recipe's page."
+"Send an email to the administrator account whenever an error is produced on "
+"sending."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:113
+msgid "Send errors to admin account"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:414
+msgid "Sending"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:61
+#: includes/class-mailpn-post-type-mail.php:62
+#: includes/class-mailpn-post-type-mail.php:91
+#: includes/class-mailpn-post-type-mail.php:92
+#: includes/class-mailpn-post-type-mail.php:101
+#: includes/class-mailpn-post-type-mail.php:102
+msgid "Sending period"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:90
+msgid ""
+"Set the number of emails that the system will send every 10 mimutes. Default "
+"emails sent will be 5."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:82
+msgid "Set the way in which the emails will be sent."
+msgstr ""
+
+#: includes/class-mailpn-menus.php:55
+msgid "Settings"
+msgstr ""
+
+#: includes/class-mailpn-forms.php:219
+msgid "Special Character (!@#$%^&*)"
+msgstr ""
+
+#: includes/class-mailpn-common.php:203
+msgid "Subscribe again"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:328
+msgid "Successfully sent."
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-mail.php:22
+msgctxt "Taxonomy general name"
+msgid "Mail categories"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:22
+msgctxt "Taxonomy general name"
+msgid "Mail Record categories"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-mail.php:23
+msgctxt "Taxonomy singular name"
+msgid "Mail category"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:23
+msgctxt "Taxonomy singular name"
+msgid "Mail Record category"
+msgstr ""
+
+#: includes/class-mailpn-activator.php:39
+msgid "Test email"
+msgstr ""
+
+#: includes/class-mailpn-activator.php:40
+msgid "Test email content"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:685 includes/class-mailpn-mailing.php:724
+msgid "Thank you!"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:397
+msgid "This mail has already been sent."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:407
+msgid "This mail is being sent."
+msgstr ""
+
+#: includes/class-mailpn-menus.php:23
+msgid ""
+"This option sets the slug of the main Mail archive page, and the Mail pages. "
+"By default they will be:"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:18
+msgid "This options section sets information that the email will be showing."
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:152
+#: includes/class-mailpn-post-type-mail.php:153
+msgid "Time email"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:481
+msgid "Unsubscribe"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-mail.php:29
+msgid "Update Mail category"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:91
+msgid "Update Mail record"
+msgstr ""
+
+#: includes/class-mailpn-taxonomies-rec.php:29
+msgid "Update Mail Record category"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:226
+msgid "Update Mail template"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:314
+msgid "User removed."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:713
+msgid "Username"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:143
+#: includes/class-mailpn-post-type-mail.php:144
+msgid "Users receiving the email"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:424
+msgid "View latest submissions"
+msgstr ""
+
+#: includes/class-mailpn-post-type-rec.php:87
+msgid "View Mail record"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:222
+msgid "View Mail template"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:673
+msgid ""
+"We have received a request to reset the password for your account. If you "
+"made this request, click the link below to change your password:"
+msgstr ""
+
+#: includes/class-mailpn-data.php:67
+msgid "Welcome email"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:81
+#: includes/class-mailpn-post-type-mail.php:82
+msgid "When will it be sent?"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:71
+#: includes/class-mailpn-post-type-mail.php:72
+msgid "Which content will be sent?"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:204
+msgid ""
+"You can include several files to be sent with this email as attachments. To "
+"see the files here, please upload them in the library and then refresh this "
+"page."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:98
+msgid ""
+"You can limit the number of emails sent everyday. Check your mail server "
+"settings and the system will automatically be adjusted to this number. "
+"Default emails sent will be 500."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:708
+msgid ""
+"You have a new user created on our platform. Please create a strong password "
+"to login."
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:272
+msgid "You receive this email for your relationship with the project."
 msgstr ""

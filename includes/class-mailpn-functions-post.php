@@ -117,8 +117,10 @@ class MAILPN_Functions_Post {
    
       $post_meta_infos = $wpdb->get_results($wpdb->prepare("SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $post_id));
       if (count($post_meta_infos) != 0) {
-        $sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) ";
-
+        $sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES ";
+        $placeholders = [];
+        $values = [];
+        
         foreach ($post_meta_infos as $meta_info) {
           $meta_key = $meta_info->meta_key;
 
@@ -126,12 +128,12 @@ class MAILPN_Functions_Post {
             continue;
           }
 
-          $meta_value = addslashes($meta_info->meta_value);
-          $sql_query_sel[] = "SELECT $new_post_id, '$meta_key', '$meta_value'";
+          $placeholders[] = "(%d, %s, %s)";
+          array_push($values, $new_post_id, $meta_key, $meta_info->meta_value);
         }
 
-        $sql_query .= implode(" UNION ALL ", $sql_query_sel);
-        $wpdb->query($wpdb->prepare($sql_query));
+        $sql_query .= implode(", ", $placeholders);
+        $wpdb->query($wpdb->prepare($sql_query, $values));
       }
 
       return $new_post_id;

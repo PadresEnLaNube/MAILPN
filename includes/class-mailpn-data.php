@@ -55,12 +55,18 @@ class MAILPN_Data {
 	 * @since    1.0.0
 	 */
 	public static function mailpn_loader($display = false) {
+		$class = $display ? 'mailpn-display-block' : 'mailpn-display-none';
+		
+		ob_start();
 		?>
-			<div class="mailpn-waiting <?php echo ($display) ? 'mailpn-display-block' : 'mailpn-display-none'; ?>">
-				<div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div>
+		<div class="mailpn-waiting <?php echo esc_attr($class); ?>">
+			<div class="mailpn-loader-circle-waiting">
+				<div></div><div></div><div></div><div></div>
 			</div>
+		</div>
 		<?php
-  }
+		return ob_get_clean();
+	}
 
   public static function mailpn_mail_types() {
 		// MAILPN_Data::mail_types();

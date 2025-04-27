@@ -277,7 +277,12 @@ class MAILPN_Mailing {
                   <div style="padding:20px;" class="mailpn-td-footer text-align-center">
                     <small class="text-align-center">
                       <p>© <?php echo esc_html($mailpn_legal_name); ?> <?php echo esc_html(gmdate('Y')); ?>.<br><?php esc_html_e('All rights reserved', 'mailpn'); ?>.</p>
-                      <p><?php echo (!empty(get_option('mailpn_footer_reason')) ? esc_html(get_option('mailpn_footer_reason')) : esc_html(__('You receive this email for your relationship with the project.', 'mailpn'))); ?></p>
+                      <p><?php 
+                        $footer_reason = get_option('mailpn_footer_reason');
+                        echo !empty($footer_reason) 
+                          ? esc_html($footer_reason) 
+                          : esc_html__('You receive this email for your relationship with the project.', 'mailpn');
+                      ?></p>
 
                       <?php if (class_exists('USERSPN') && !empty($user_id)): ?>
                         <table align="center">
@@ -577,7 +582,7 @@ class MAILPN_Mailing {
           }
         }
       }else{
-        if (strtotime(datetime: date('+1 day', $mailpn_queue_paused)) < strtotime('now')) {
+        if (strtotime(datetime: gmdate('+1 day', $mailpn_queue_paused)) < strtotime('now')) {
           delete_option('mailpn_queue_paused');
           delete_option('mailpn_mails_sent_today');
         }
@@ -792,7 +797,7 @@ class MAILPN_Mailing {
         <a class="mailpn-test-email-btn mailpn-btn mailpn-btn-mini">
           <?php esc_html_e('Send test email', 'mailpn'); ?>
         </a>
-        <?php echo MAILPN_Data::mailpn_loader(); ?>
+        <?php echo wp_kses_post(MAILPN_Data::mailpn_loader()); ?>
 
         <span class="mailpn-test-email-result"></span>
       </div>
