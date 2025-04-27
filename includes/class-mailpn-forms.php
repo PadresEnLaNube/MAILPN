@@ -180,12 +180,12 @@ class MAILPN_Forms {
             break;
           case 'hidden':
             ?>
-              <input type="hidden" id="<?php echo esc_attr($mailpn_input['id']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" value="<?php echo esc_attr($mailpn_value); ?>">
+              <input type="hidden" id="<?php echo esc_attr($mailpn_input['id']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" value="<?php echo esc_attr($mailpn_value); ?>" <?php echo (array_key_exists('multiple', $mailpn_input) && $mailpn_input['multiple'] == 'true' ? 'multiple' : ''); ?>>
             <?php
             break;
           case 'nonce':
             ?>
-              <input type="hidden" id="<?php echo esc_attr($mailpn_input['id']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" value="<?php echo esc_attr(wp_create_nonce('mailpn-nonce')); ?>">
+              <input type="hidden" id="<?php echo esc_attr($mailpn_input['id']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" value="<?php echo esc_attr(wp_create_nonce('mailpn-nonce')); ?>" <?php echo (array_key_exists('multiple', $mailpn_input) && $mailpn_input['multiple'] == 'true' ? 'multiple' : ''); ?>>
             <?php
             break;
           case 'password':

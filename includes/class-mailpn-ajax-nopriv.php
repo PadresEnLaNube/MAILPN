@@ -18,8 +18,23 @@ class MAILPN_Ajax_Nopriv {
 	 */
 	public function mailpn_ajax_nopriv_server() {
     if (array_key_exists('mailpn_ajax_nopriv_type', $_POST)) {
-      if (array_key_exists('ajax_nonce', $_POST) && !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ajax_nonce'])), 'mailpn-nonce')) {
-        echo wp_json_encode(['error_key' => 'mailpn_nonce_error', ]);exit();
+      // Always require nonce verification
+      if (!array_key_exists('ajax_nonce', $_POST)) {
+        echo wp_json_encode([
+          'error_key' => 'mailpn_nonce_error',
+          'error_content' => esc_html(__('Security check failed: Nonce is required.', 'mailpn')),
+        ]);
+
+        exit();
+      }
+
+      if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ajax_nonce'])), 'mailpn-nonce')) {
+        echo wp_json_encode([
+          'error_key' => 'mailpn_nonce_error',
+          'error_content' => esc_html(__('Security check failed: Invalid nonce.', 'mailpn')),
+        ]);
+
+        exit();
       }
 
   		$mailpn_ajax_nopriv_type = MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mailpn_ajax_nopriv_type']));

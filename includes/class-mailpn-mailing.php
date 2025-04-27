@@ -421,7 +421,7 @@ class MAILPN_Mailing {
               <?php endforeach ?>
             </ul>
 
-            <a href="#" data-mailpn-post-id="<?php echo esc_html($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend emails', 'mailpn'); ?></a><?php echo esc_html(MAILPN_Data::loader()); ?>
+            <a href="#" data-mailpn-post-id="<?php echo esc_html($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend emails', 'mailpn'); ?></a><?php esc_html(MAILPN_Data::loader()); ?>
           </div>
         <?php else: ?>
           <div class="mailpn-progress">
@@ -436,7 +436,7 @@ class MAILPN_Mailing {
               ?>
 
               <div class="mailpn-alert-warning mailpn-font-size-20">
-                <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <?php echo esc_html(MAILPN_Data::mailpn_loader(true)); ?>
+                <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <?php esc_html(MAILPN_Data::mailpn_loader(true)); ?>
                   
                 <div class="mailpn-progress-bar">
                   <p class="mailpn-font-weight-bold"><?php echo number_format(((intval($emails_sent) * 100) / intval($emails_total)), 1); ?>% <?php esc_html_e('of total job', 'mailpn'); ?> (<?php echo esc_html($emails_sent); ?> <?php esc_html_e('emails sent', 'mailpn'); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?>)</p>
@@ -797,7 +797,7 @@ class MAILPN_Mailing {
         <a class="mailpn-test-email-btn mailpn-btn mailpn-btn-mini">
           <?php esc_html_e('Send test email', 'mailpn'); ?>
         </a>
-        <?php echo wp_kses_post(MAILPN_Data::mailpn_loader()); ?>
+        <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
 
         <span class="mailpn-test-email-result"></span>
       </div>
