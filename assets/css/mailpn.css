@@ -270,7 +270,7 @@
 .mailpn-display-inline-block{
   display:inline-block
 }
-.mailpn-display-none,.pn_wph_nonce{
+.mailpn-display-none{
   display:none!important
 }
 .mailpn-display-none-soft{
@@ -1193,7 +1193,7 @@ textarea{
 .mailpn-body .fancybox-container~.select2-container{
   z-index:999999;
 }
-/* WPH TABS */
+/* mailpn TABS */
 .mailpn-tabs{
   display:flex;
   flex-wrap:nowrap;
@@ -1222,7 +1222,7 @@ textarea{
   border:1px solid #cccccc;
   border-top:none
 }
-/*  END WPH TABS */
+/*  END mailpn TABS */
 
 .mailpn-input-wrapper.mailpn_nonce{
   height:0;
@@ -1497,7 +1497,7 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   }
 /* END OWL CAROUSEL */
 
-/* WPH FORMS */
+/* mailpn FORMS */
   .mailpn-section-helper{
     position:absolute;
     left:-25px;
@@ -1771,9 +1771,9 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   .mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered{
     display:grid!important;
   }
-/* END WPH FORMS */
+/* END mailpn FORMS */
 
-/* WPH SWITCH */
+/* mailpn SWITCH */
   .mailpn-switch input.mailpn-input[type="checkbox"]{
     min-height:24px!important;
     margin-bottom:0!important;
@@ -1831,4 +1831,4 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   .mailpn-checkbox[disabled] ~ .mailpn-slider{
     cursor:default;
   }
-/* END WPH SWITCH */
+/* END mailpn SWITCH */

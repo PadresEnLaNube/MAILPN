@@ -231,6 +231,11 @@ class MAILPN {
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-notifications.php';
 
+		/**
+		 * The class responsible for popups functionality.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-popups.php';
+
 		$this->mailpn_loader = new MAILPN_Loader();
 	}
 

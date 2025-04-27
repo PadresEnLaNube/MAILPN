@@ -280,71 +280,71 @@ class MAILPN_Post_Type_Mail {
     }
 
     if (!array_key_exists('mailpn_duplicate', $_POST)) {
-      foreach ($this->mailpn_get_fields_meta() as $wph_field) {
-        $wph_input = array_key_exists('input', $wph_field) ? $wph_field['input'] : '';
+      foreach ($this->mailpn_get_fields_meta() as $mailpn_field) {
+        $mailpn_input = array_key_exists('input', $mailpn_field) ? $mailpn_field['input'] : '';
 
-        if (array_key_exists($wph_field['id'], $_POST) || $wph_input == 'html_multi') {
-          $wph_value = array_key_exists($wph_field['id'], $_POST) ? MAILPN_Forms::mailpn_sanitizer($_POST[$wph_field['id']], $wph_field['input'], (!empty($wph_field['type']) ? $wph_field['type'] : '')) : '';
+        if (array_key_exists($mailpn_field['id'], $_POST) || $mailpn_input == 'html_multi') {
+          $mailpn_value = array_key_exists($mailpn_field['id'], $_POST) ? MAILPN_Forms::mailpn_sanitizer($_POST[$mailpn_field['id']], $mailpn_field['input'], (!empty($mailpn_field['type']) ? $mailpn_field['type'] : '')) : '';
 
-          if (!empty($wph_input)) {
-            switch ($wph_input) {
+          if (!empty($mailpn_input)) {
+            switch ($mailpn_input) {
               case 'input':
-                if (array_key_exists('type', $wph_field) && $wph_field['type'] == 'checkbox') {
-                  if (isset($_POST[$wph_field['id']])) {
-                    update_post_meta($post_id, $wph_field['id'], $wph_value);
+                if (array_key_exists('type', $mailpn_field) && $mailpn_field['type'] == 'checkbox') {
+                  if (isset($_POST[$mailpn_field['id']])) {
+                    update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
                   }else{
-                    update_post_meta($post_id, $wph_field['id'], '');
+                    update_post_meta($post_id, $mailpn_field['id'], '');
                   }
                 }else{
-                  update_post_meta($post_id, $wph_field['id'], $wph_value);
+                  update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
                 }
 
                 break;
               case 'select':
-                if (array_key_exists('multiple', $wph_field) && $wph_field['multiple']) {
+                if (array_key_exists('multiple', $mailpn_field) && $mailpn_field['multiple']) {
                   $multi_array = [];
                   $empty = true;
 
-                  foreach ($_POST[$wph_field['id']] as $multi_value) {
-                    $multi_array[] = MAILPN_Forms::mailpn_sanitizer($multi_value, $wph_field['input'], (!empty($wph_field['type']) ? $wph_field['type'] : ''));
+                  foreach ($_POST[$mailpn_field['id']] as $multi_value) {
+                    $multi_array[] = MAILPN_Forms::mailpn_sanitizer($multi_value, $mailpn_field['input'], (!empty($mailpn_field['type']) ? $mailpn_field['type'] : ''));
                   }
 
-                  update_post_meta($post_id, $wph_field['id'], $multi_array);
+                  update_post_meta($post_id, $mailpn_field['id'], $multi_array);
                 }else{
-                  update_post_meta($post_id, $wph_field['id'], $wph_value);
+                  update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
                 }
                 
                 break;
               case 'html_multi':
-                foreach ($wph_field['html_multi_fields'] as $wph_multi_field) {
-                  if (array_key_exists($wph_multi_field['id'], $_POST)) {
+                foreach ($mailpn_field['html_multi_fields'] as $mailpn_multi_field) {
+                  if (array_key_exists($mailpn_multi_field['id'], $_POST)) {
                     $multi_array = [];
                     $empty = true;
 
-                    foreach ($_POST[$wph_multi_field['id']] as $multi_value) {
+                    foreach ($_POST[$mailpn_multi_field['id']] as $multi_value) {
                       if (!empty($multi_value)) {
                         $empty = false;
                       }
 
-                      $multi_array[] = MAILPN_Forms::mailpn_sanitizer($multi_value, $wph_multi_field['input'], (!empty($wph_multi_field['type']) ? $wph_multi_field['type'] : ''));
+                      $multi_array[] = MAILPN_Forms::mailpn_sanitizer($multi_value, $mailpn_multi_field['input'], (!empty($mailpn_multi_field['type']) ? $mailpn_multi_field['type'] : ''));
                     }
 
                     if (!$empty) {
-                      update_post_meta($post_id, $wph_multi_field['id'], $multi_array);
+                      update_post_meta($post_id, $mailpn_multi_field['id'], $multi_array);
                     }else{
-                      update_post_meta($post_id, $wph_multi_field['id'], '');
+                      update_post_meta($post_id, $mailpn_multi_field['id'], '');
                     }
                   }
                 }
 
                 break;
               default:
-                update_post_meta($post_id, $wph_field['id'], $wph_value);
+                update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
                 break;
             }
           }
         }else{
-          update_post_meta($post_id, $wph_field['id'], '');
+          update_post_meta($post_id, $mailpn_field['id'], '');
         }
       }
     }
@@ -448,11 +448,11 @@ class MAILPN_Post_Type_Mail {
     }
 
     // Now safe to save data
-    if (!empty($this->wph_fields)) {
-        foreach ($this->wph_fields as $wph_field) {
-            $wph_value = array_key_exists($wph_field['id'], $_POST) ? 
-                MAILPN_Forms::sanitizer($_POST[$wph_field['id']], $wph_field['input'], !empty($wph_field['type']) ? $wph_field['type'] : '') : '';
-            update_post_meta($post_id, $wph_field['id'], $wph_value);
+    if (!empty($this->mailpn_fields)) {
+        foreach ($this->mailpn_fields as $mailpn_field) {
+            $mailpn_value = array_key_exists($mailpn_field['id'], $_POST) ? 
+                MAILPN_Forms::mailpn_sanitizer($_POST[$mailpn_field['id']], $mailpn_field['input'], !empty($mailpn_field['type']) ? $mailpn_field['type'] : '') : '';
+            update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
         }
     }
   }

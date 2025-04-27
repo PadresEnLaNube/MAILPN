@@ -261,7 +261,7 @@ class MAILPN_Post_Type_Rec {
 
         ?>
           <?php if ($mail_type): ?>
-            <p><a href="<?php echo esc_url(admin_url('post.php?post=' . $post_id . '&action=edit')); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i> #<?php echo esc_html($post_id) ?> <?php echo isset(MAILPN_Data::mailpn_mail_types()[$mail_type]) ? esc_html(MAILPN_Data::mailpn_mail_types()[$mail_type]) : esc_html($mail_type); ?></a></p>
+            <p><a href="<?php echo esc_url(admin_url('post.php?post=' . $mail_id . '&action=edit')); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i> #<?php echo esc_html($mail_id) ?> <?php echo isset(MAILPN_Data::mailpn_mail_types()[$mail_type]) ? esc_html(MAILPN_Data::mailpn_mail_types()[$mail_type]) : esc_html($mail_type); ?></a></p>
           <?php else: ?>
             <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">mark_email_read</i> <?php esc_html_e('Unset email type.', 'mailpn'); ?></p>
           <?php endif ?>
@@ -305,36 +305,73 @@ class MAILPN_Post_Type_Rec {
     if ($typenow == 'mailpn_rec') {
       // Mail Type Filter
       $selected_type = isset($_GET['mailpn_type_filter']) ? sanitize_text_field($_GET['mailpn_type_filter']) : '';
-      
-      ?><select name="mailpn_type_filter">
-        <option value=""><?php echo esc_html__('All mail types', 'mailpn'); ?></option>
-        <?php foreach (MAILPN_Data::mailpn_mail_types() as $type_key => $type_label): ?>
-          <option value="<?php echo esc_attr($type_key); ?>" <?php echo selected($selected_type, $type_key, false); ?>>
-            <?php echo esc_html($type_label); ?>
-          </option>
-        <?php endforeach; ?>
-      </select><?php
+      ?>
+        <select name="mailpn_type_filter">
+          <option value=""><?php echo esc_html__('All mail types', 'mailpn'); ?></option>
+          <?php foreach (MAILPN_Data::mailpn_mail_types() as $type_key => $type_label): ?>
+            <option value="<?php echo esc_attr($type_key); ?>" <?php echo selected((string)$selected_type, (string)$type_key, false); ?>>
+              <?php echo esc_html($type_label); ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+        
+      <?php
+        // Mail Template Filter
+        $selected_template = isset($_GET['mailpn_template_filter']) ? sanitize_text_field($_GET['mailpn_template_filter']) : '';
+        
+        $args = [
+          'fields' => 'ids',
+          'post_type' => 'mailpn_mail',
+          'posts_per_page' => -1,
+          'orderby' => 'ID',
+          'order' => 'ASC',
+          'post_status' => 'publish',
+        ];
 
-      // Recipient Filter
-      $selected_recipient = isset($_GET['mailpn_recipient_filter']) ? sanitize_text_field($_GET['mailpn_recipient_filter']) : '';
-      
-      $recipients = get_users([
-        'fields' => ['ID', 'user_email'],
-        'orderby' => 'ID',
-        'order' => 'ASC'
-      ]);
+        if (class_exists('Polylang')) {
+          $args['lang'] = pll_current_language('slug');
+        }
+        
+        $templates = get_posts($args);
+      ?>
+        <select name="mailpn_template_filter">
+          <option value=""><?php echo esc_html__('All mail templates', 'mailpn'); ?></option>
+          
+          <?php if (!empty($templates)) { ?>
+            <?php foreach ($templates as $template): ?>
+              <?php $template = get_post($template); ?>
+              <option value="<?php echo esc_attr($template->ID); ?>" <?php selected((string)$selected_template, (string)$template->ID, false); ?>>
+                #<?php echo esc_html($template->ID); ?> <?php echo esc_html($template->post_title); ?>
+              </option>
+            <?php endforeach; ?>
+          <?php } else { ?> 
+            <?php error_log('No mail templates found'); ?>
+          <?php } ?>
+        </select>
+        
+      <?php
+        // Recipient Filter
+        $selected_recipient = isset($_GET['mailpn_recipient_filter']) ? sanitize_text_field($_GET['mailpn_recipient_filter']) : '';
+        
+        $recipients = get_users([
+          'fields' => ['ID', 'user_email'],
+          'orderby' => 'ID',
+          'order' => 'ASC'
+        ]);
+      ?>
+        <select name="mailpn_recipient_filter">
+          <option value=""><?php echo esc_html__('All users', 'mailpn'); ?></option>
 
-      ?><select name="mailpn_recipient_filter">
-        <option value=""><?php echo esc_html__('All users', 'mailpn'); ?></option>
-        <?php foreach ($recipients as $recipient): 
-          $first_name = get_user_meta($recipient->ID, 'first_name', true);
-          $last_name = get_user_meta($recipient->ID, 'last_name', true);
-        ?>
-          <option value="<?php echo esc_attr($recipient->ID); ?>" <?php echo selected($selected_recipient, $recipient->ID, false); ?>>
-            #<?php echo esc_html($recipient->ID); ?> <?php echo esc_html($first_name); ?> <?php echo esc_html($last_name); ?> (<?php echo esc_html($recipient->user_email); ?>)
-          </option>
-        <?php endforeach; ?>
-      </select><?php
+          <?php foreach ($recipients as $recipient): 
+            $first_name = get_user_meta($recipient->ID, 'first_name', true);
+            $last_name = get_user_meta($recipient->ID, 'last_name', true);
+          ?>
+            <option value="<?php echo esc_attr($recipient->ID); ?>" <?php echo selected((string)$selected_recipient, (string)$recipient->ID, false); ?>>
+              #<?php echo esc_html($recipient->ID); ?> <?php echo esc_html($first_name); ?> <?php echo esc_html($last_name); ?> (<?php echo esc_html($recipient->user_email); ?>)
+            </option>
+          <?php endforeach; ?>
+        </select>
+      <?php
     }
   }
 
@@ -344,19 +381,28 @@ class MAILPN_Post_Type_Rec {
     if (is_admin() && $pagenow == 'edit.php' && $typenow == 'mailpn_rec') {
       $meta_query = [];
 
-      // Filter by recipient if set
-      if (isset($_GET['mailpn_recipient_filter']) && !empty($_GET['mailpn_recipient_filter'])) {
+      // Filter by recipient if set and not empty
+      if (isset($_GET['mailpn_recipient_filter']) && $_GET['mailpn_recipient_filter'] !== '') {
         $meta_query[] = [
           'key' => 'mailpn_rec_to',
           'value' => sanitize_text_field($_GET['mailpn_recipient_filter'])
         ];
       }
 
-      // Filter by mail type if set
-      if (isset($_GET['mailpn_type_filter']) && !empty($_GET['mailpn_type_filter'])) {
+      // Filter by mail type if set and not empty
+      if (isset($_GET['mailpn_type_filter']) && $_GET['mailpn_type_filter'] !== '') {
         $meta_query[] = [
           'key' => 'mailpn_rec_type',
           'value' => sanitize_text_field($_GET['mailpn_type_filter'])
+        ];
+      }
+
+      // Filter by mail template if set and not empty
+      if (isset($_GET['mailpn_template_filter']) && $_GET['mailpn_template_filter'] !== '') {
+        $meta_query[] = [
+          'key' => 'mailpn_rec_mail_id',
+          'value' => sanitize_text_field($_GET['mailpn_template_filter']),
+          'compare' => '='
         ];
       }
 
@@ -365,6 +411,9 @@ class MAILPN_Post_Type_Rec {
         $meta_query['relation'] = 'AND';
         $query->set('meta_query', $meta_query);
       }
+
+      // Debug output
+      error_log('Meta Query: ' . print_r($meta_query, true));
     }
   }
 }

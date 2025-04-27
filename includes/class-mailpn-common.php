@@ -60,9 +60,10 @@ class MAILPN_Common {
 			wp_enqueue_style($this->plugin_name . '-trumbowyg', MAILPN_URL . 'assets/css/trumbowyg.min.css', [], $this->version, 'all');
     }
 
-    if (!wp_style_is($this->plugin_name . '-fancybox', 'enqueued')) {
-			wp_enqueue_style($this->plugin_name . '-fancybox', MAILPN_URL . 'assets/css/fancybox.min.css', [], $this->version, 'all');
+    if (!wp_style_is($this->plugin_name . '-popups', 'enqueued')) {
+		wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');
     }
+
 
     if (!wp_style_is($this->plugin_name . '-tooltipster', 'enqueued')) {
 			wp_enqueue_style($this->plugin_name . '-tooltipster', MAILPN_URL . 'assets/css/tooltipster.min.css', [], $this->version, 'all');
@@ -93,9 +94,9 @@ class MAILPN_Common {
 			wp_enqueue_script($this->plugin_name . '-trumbowyg', MAILPN_URL . 'assets/js/trumbowyg.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
     }
 
-    if(!wp_script_is($this->plugin_name . '-fancybox', 'enqueued')) {
-			wp_enqueue_script($this->plugin_name . '-fancybox', MAILPN_URL . 'assets/js/fancybox.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
-    }
+	if(!wp_script_is($this->plugin_name . '-popups', 'enqueued')) {
+		wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+	}
 
     if(!wp_script_is($this->plugin_name . '-tooltipster', 'enqueued')) {
 			wp_enqueue_script($this->plugin_name . '-tooltipster', MAILPN_URL . 'assets/js/tooltipster.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);

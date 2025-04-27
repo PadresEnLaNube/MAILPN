@@ -1,22 +1,22 @@
 (function($) {
 	'use strict';
 
-	$(document).on('click', '.wph-tab-links', function(e){
+	$(document).on('click', '.mailpn-tab-links', function(e){
     e.preventDefault();
     var tab_link = $(this);
-    var tab_wrapper = $(this).closest('.wph-tabs-wrapper');
+    var tab_wrapper = $(this).closest('.mailpn-tabs-wrapper');
     
-    tab_wrapper.find('.wph-tab-links').each(function(index, element) {
+    tab_wrapper.find('.mailpn-tab-links').each(function(index, element) {
       $(this).removeClass('active');
-      $($(this).attr('data-wph-id')).addClass('wph-display-none');
+      $($(this).attr('data-mailpn-id')).addClass('mailpn-display-none');
     });
 
-    tab_wrapper.find('.wph-tab-content').each(function(index, element) {
-      $(this).addClass('wph-display-none');
+    tab_wrapper.find('.mailpn-tab-content').each(function(index, element) {
+      $(this).addClass('mailpn-display-none');
     });
     
     tab_link.addClass('active');
-    tab_wrapper.find('#' + tab_link.attr('data-wph-id')).removeClass('wph-display-none');
+    tab_wrapper.find('#' + tab_link.attr('data-mailpn-id')).removeClass('mailpn-display-none');
   });
 
   $(document).on('click', '.mailpn-options-save-btn', function(e){

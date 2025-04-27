@@ -174,7 +174,7 @@ class MAILPN_Forms {
           case 'submit':
             ?>
               <div class="mailpn-text-align-right">
-                <input type="submit" value="<?php echo esc_attr($mailpn_input['value']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" id="<?php echo esc_attr($mailpn_input['id']); ?>" class="mailpn-btn" data-mailpn-type="<?php echo esc_attr($mailpn_type); ?>" data-mailpn-subtype="<?php echo ((array_key_exists('subtype', $mailpn_input)) ? esc_attr($mailpn_input['subtype']) : ''); ?>" data-mailpn-user-id="<?php echo esc_attr($mailpn_id); ?>" data-mailpn-post-id="<?php echo esc_attr(get_the_ID()); ?>"/><?php echo esc_html(MAILPN_Data::mailpn_loader()); ?>
+                <input type="submit" value="<?php echo esc_attr($mailpn_input['value']); ?>" name="<?php echo esc_attr($mailpn_input['id']); ?>" id="<?php echo esc_attr($mailpn_input['id']); ?>" class="mailpn-btn" data-mailpn-type="<?php echo esc_attr($mailpn_type); ?>" data-mailpn-subtype="<?php echo ((array_key_exists('subtype', $mailpn_input)) ? esc_attr($mailpn_input['subtype']) : ''); ?>" data-mailpn-user-id="<?php echo esc_attr($mailpn_id); ?>" data-mailpn-post-id="<?php echo !empty(get_the_ID()) ? esc_attr(get_the_ID()) : ''; ?>"/><?php esc_html(MAILPN_Data::mailpn_loader()); ?>
               </div>
             <?php
             break;

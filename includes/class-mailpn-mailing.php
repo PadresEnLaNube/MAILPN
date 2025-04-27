@@ -452,7 +452,7 @@ class MAILPN_Mailing {
           </div>
 
           <div class="mailpn-sent-to">
-            <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec')); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View latest submissions', 'mailpn'); ?></a>
+            <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View latest submissions', 'mailpn'); ?></a>
           </div>
         <?php endif ?>
 

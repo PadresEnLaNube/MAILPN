@@ -27,64 +27,69 @@
 
       $(mailpn_form.find('input:not([type="submit"]), select, textarea')).each(function(index, element) {
         if ($(this).parents('.mailpn-html-multi-group').length) {
-          if (!(typeof window['mailpn_window_vars']['form_field_' + element.id] !== 'undefined')) {
-            window['mailpn_window_vars']['form_field_' + element.id] = [];
+          if (!(typeof window['mailpn_window_vars']['form_field_' + element.name] !== 'undefined')) {
+            window['mailpn_window_vars']['form_field_' + element.name] = [];
           }
 
-          window['mailpn_window_vars']['form_field_' + element.id].push($(element).val());
+          window['mailpn_window_vars']['form_field_' + element.name].push($(element).val());
 
-          data[element.id] = window['mailpn_window_vars']['form_field_' + element.id];
+          data[element.name] = window['mailpn_window_vars']['form_field_' + element.name];
         }else{
-          if ($(this).is(':checkbox') || $(this).is(':radio')) {
+          if ($(this).is(':checkbox')) {
             if ($(this).is(':checked')) {
-              data[element.id] = $(element).val();
+              data[element.name] = $(element).val();
             }else{
-              data[element.id] = '';
+              data[element.name] = '';
+            }
+          }else if ($(this).is(':radio')) {
+            if ($(this).is(':checked')) {
+              data[element.name] = $(element).val();
             }
           }else{
-            data[element.id] = $(element).val();
+            data[element.name] = $(element).val();
           }
         }
 
         data.ajax_keys.push({
-          id: element.id,
+          id: element.name,
           node: element.nodeName,
           type: element.type,
         });
       });
 
       $.post(ajax_url, data, function(response) {
-        console.log(data);console.log(response);
-        if ($.parseJSON(response)['error_key'] == 'mailpn_form_save_error_unlogged') {
+        var response_json = $.parseJSON(response);
+
+        if (response_json['error_key'] == 'mailpn_form_save_error_unlogged') {
           mailpn_get_main_message(mailpn_i18n.user_unlogged);
 
           if (!$('.userspn-profile-wrapper .user-unlogged').length) {
             $('.userspn-profile-wrapper').prepend('<div class="userspn-alert userspn-alert-warning user-unlogged">' + mailpn_i18n.user_unlogged + '</div>');
           }
 
-          $.fancybox.open($('#userspn-profile-popup'), {touch: false});
+          MILLA_Popups.open($('#userspn-profile-popup'));
           $('#userspn-login input#user_login').focus();
-        }else if ($.parseJSON(response)['error_key'] == 'mailpn_form_save_error') {
+        }else if (response_json['error_key'] != '') {
           mailpn_get_main_message(mailpn_i18n.an_error_has_occurred);
         }else {
           mailpn_get_main_message(mailpn_i18n.saved_successfully);
         }
 
-        if ($.parseJSON(response)['update'] != '') {
-          $('.mailpn-' + data.mailpn_form_post_type + '-list').html($.parseJSON(response)['update_html']);
+        if (response_json['update_list']) {
+          $('.mailpn-' + data.mailpn_form_post_type + '-list').html(response_json['update_html']);
         }
 
-        if ($.parseJSON(response)['popup'] == 'close') {
-          $.fancybox.close(true);
+        if (response_json['popup_close']) {
+          MILLA_Popups.close();
           $('.mailpn-menu-more-overlay').fadeOut('fast');
         }
 
-        if ($.parseJSON(response)['check'] == 'post_check') {
-          $.fancybox.close(true);
+        if (response_json['check'] == 'post_check') {
+          MILLA_Popups.close();
           $('.mailpn-menu-more-overlay').fadeOut('fast');
-          $('.mailpn-' + data.mailpn_form_post_type + '[data-mailpn-' + data.mailpn_form_post_type + '-id="' + data.mailpn_form_post_id + '"] .mailpn-check-wrapper i').text('mail_alt');
-        }else if ($.parseJSON(response)['check'] == 'post_uncheck') {
-          $.fancybox.close(true);
+          $('.mailpn-' + data.mailpn_form_post_type + '[data-mailpn-' + data.mailpn_form_post_type + '-id="' + data.mailpn_form_post_id + '"] .mailpn-check-wrapper i').text('basecpt_alt');
+        }else if (response_json['check'] == 'post_uncheck') {
+          MILLA_Popups.close();
           $('.mailpn-menu-more-overlay').fadeOut('fast');
           $('.mailpn-' + data.mailpn_form_post_type + '[data-mailpn-' + data.mailpn_form_post_type + '-id="' + data.mailpn_form_post_id + '"] .mailpn-check-wrapper i').text('radio_button_unchecked');
         }
@@ -101,85 +106,77 @@
 
       var mailpn_btn = $(this);
       var mailpn_ajax_type = mailpn_btn.attr('data-mailpn-ajax-type');
-      var mail_id = mailpn_btn.closest('.mailpn-mail').attr('data-mailpn-mail-id');
+      var mailpn_basecpt_id = mailpn_btn.closest('.mailpn-basecpt').attr('data-mailpn-basecpt-id');
       var popup_element = $('#' + mailpn_btn.attr('data-mailpn-popup-id'));
 
-      $.fancybox.open(popup_element, {
-        touch: false,
-        beforeShow: function(instance, current, e) {
+      MAILPN_Popups.open(popup_element, {
+        beforeShow: function(instance, popup) {
           var ajax_url = mailpn_ajax.ajax_url;
           var data = {
             action: 'mailpn_ajax',
             mailpn_ajax_type: mailpn_ajax_type,
-            mail_id: mail_id,
+            mailpn_basecpt_id: mailpn_basecpt_id ? mailpn_basecpt_id : '',
+            ajax_nonce: mailpn_ajax.ajax_nonce
           };
 
-          $.post(ajax_url, data, function(response) {
-            console.log('data');console.log(data);
-            if ($.parseJSON(response)['error_key'] != '') {
-              mailpn_get_main_message($.parseJSON(response)['error']);
-            }else{
-              popup_element.find('.mailpn-popup-content').html($.parseJSON(response)['html']);
+          // Log the data being sent
+          console.log('MAILPN AJAX - Sending request with data:', data);
+
+          $.ajax({
+            url: ajax_url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+              try {
+                // First try to parse the response as JSON
+                var jsonResponse = typeof response === 'string' ? JSON.parse(response) : response;
+                
+                // Check for error key in response
+                if (jsonResponse.error_key) {
+                  mailpn_get_main_message('MAILPN AJAX - Server returned error:', jsonResponse.error_key);
+                  // Display the error message if available, otherwise show generic error
+                  var errorMessage = jsonResponse.error_ || mailpn_i18n.an_error_has_occurred;
+                  mailpn_get_main_message(errorMessage);
+                  return;
+                }
+
+                // Check for HTML content
+                if (jsonResponse.html) {
+                  console.log('MAILPN AJAX - HTML content received');
+                  popup_element.find('.mailpn-popup-content').html(jsonResponse.html);
+                  
+                  // Initialize media uploaders if function exists
+                  if (typeof initMediaUpload === 'function') {
+                    $('.mailpn-image-upload-wrapper').each(function() {
+                      initMediaUpload($(this), 'image');
+                    });
+                    $('.mailpn-audio-upload-wrapper').each(function() {
+                      initMediaUpload($(this), 'audio');
+                    });
+                    $('.mailpn-video-upload-wrapper').each(function() {
+                      initMediaUpload($(this), 'video');
+                    });
+                  }
+                } else {
+                  console.log('MAILPN AJAX - Response missing HTML content');
+                  console.log(mailpn_i18n.an_error_has_occurred);
+                }
+              } catch (e) {
+                console.log('MAILPN AJAX - Failed to parse response:', e);
+                console.log('Raw response:', response);
+                console.log(mailpn_i18n.an_error_has_occurred);
+              }
+            },
+            error: function(xhr, status, error) {
+              console.log('MAILPN AJAX - Request failed:', status, error);
+              console.log('Response:', xhr.responseText);
+              console.log(mailpn_i18n.an_error_has_occurred);
             }
           });
         },
-        afterClose: function(instance, current, e) {
-         popup_element.find('.mailpn-popup-content').html('<div class="mailpn-loader-circle-wrapper"><div class="mailpn-text-align-center"><div class="mailpn-loader-circle"><div></div><div></div><div></div><div></div></div></div></div>');
+        afterClose: function() {
+          popup_element.find('.mailpn-popup-content').html('<div class="mailpn-loader-circle-wrapper"><div class="mailpn-text-align-center"><div class="mailpn-loader-circle"><div></div><div></div><div></div><div></div></div></div></div>');
         },
-      },);
-    });
-
-    $(document).on('click', '.mailpn-duplicate-post', function(e) {
-      e.preventDefault();
-
-      $('.mailpn-mails').fadeOut('fast');
-      var mailpn_btn = $(this);
-      var mail_id = mailpn_btn.closest('.mailpn-mail').attr('data-mailpn-mail-id');
-
-      var ajax_url = mailpn_ajax.ajax_url;
-      var data = {
-        action: 'mailpn_ajax',
-        mailpn_ajax_type: 'mailpn_mail_duplicate',
-        mail_id: mail_id,
-      };
-
-      $.post(ajax_url, data, function(response) {
-        console.log('data');console.log(data);console.log('response');console.log(response);
-        if ($.parseJSON(response)['error_key'] != '') {
-          mailpn_get_main_message($.parseJSON(response)['error']);
-        }else{
-          $('.mailpn-mails').html($.parseJSON(response)['html']);
-        }
-        
-        $('.mailpn-mails').fadeIn('slow');
-        $('.mailpn-menu-more-overlay').fadeOut('fast');
-      });
-    });
-
-    $(document).on('click', '.mailpn-remove-post', function(e) {
-      e.preventDefault();
-
-      $('.mailpn-mails').fadeOut('fast');
-      var mail_id = $('.mailpn-menu-more.mailpn-active').closest('.mailpn-mail').attr('data-mailpn-mail-id');
-
-      var ajax_url = mailpn_ajax.ajax_url;
-      var data = {
-        action: 'mailpn_ajax',
-        mailpn_ajax_type: 'mailpn_mail_remove',
-        mail_id: mail_id,
-      };
-
-      $.post(ajax_url, data, function(response) {
-        console.log('data');console.log(data);console.log('response');console.log(response);
-        if ($.parseJSON(response)['error_key'] != '') {
-          mailpn_get_main_message($.parseJSON(response)['error']);
-        }else{
-          $('.mailpn-mails').html($.parseJSON(response)['html']);
-        }
-        
-        $('.mailpn-mails').fadeIn('slow');
-        $('.mailpn-menu-more-overlay').fadeOut('fast');
-        $.fancybox.close();
       });
     });
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Filkers WooCommerce Marketing\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-31 14:21+0000\n"
-"PO-Revision-Date: 2025-04-16 08:28+0000\n"
+"PO-Revision-Date: 2025-04-16 08:32+0000\n"
 "Last-Translator: \n"
 "Language-Team: Portuguese (Portugal)\n"
 "Language: pt_PT\n"
@@ -50,7 +50,7 @@ msgstr "Adicionar imagens"
 #: includes/class-mailpn-taxonomies-mail.php:30
 #| msgid "Add New Recipe category"
 msgid "Add New Mail category"
-msgstr ""
+msgstr "Adicionar nova categoria de e-mail"
 
 #: includes/class-mailpn-post-type-rec.php:88
 #: includes/class-mailpn-post-type-rec.php:89
@@ -86,7 +86,7 @@ msgstr "Pronto! Sua inscrição foi cancelada."
 #: includes/class-mailpn-taxonomies-mail.php:25
 #| msgid "All Recipe categories"
 msgid "All Mail categories"
-msgstr ""
+msgstr "Todas as categorias de e-mail"
 
 #: includes/class-mailpn-taxonomies-rec.php:25
 msgid "All Mail Record categories"
@@ -221,7 +221,7 @@ msgstr "Editar imagens"
 #: includes/class-mailpn-taxonomies-mail.php:28
 #| msgid "Edit Recipe category"
 msgid "Edit Mail category"
-msgstr ""
+msgstr "Editar categoria de e-mail"
 
 #: includes/class-mailpn-post-type-rec.php:90
 msgid "Edit Mail record"
@@ -693,12 +693,12 @@ msgstr "Heróis do Wordpress"
 #: includes/class-mailpn-taxonomies-mail.php:26
 #| msgid "Parent Recipe category"
 msgid "Parent Mail category"
-msgstr ""
+msgstr "Categoria de correio dos pais"
 
 #: includes/class-mailpn-taxonomies-mail.php:27
 #| msgid "Parent Recipe category:"
 msgid "Parent Mail category:"
-msgstr ""
+msgstr "Categoria de correio dos pais:"
 
 #: includes/class-mailpn-post-type-rec.php:85
 msgid "Parent Mail record"
@@ -817,7 +817,7 @@ msgstr "Salvo com sucesso"
 #: includes/class-mailpn-taxonomies-mail.php:24
 #| msgid "Search Recipe categories"
 msgid "Search Mail categories"
-msgstr ""
+msgstr "Pesquisar categorias de e-mail"
 
 #: includes/class-mailpn-taxonomies-rec.php:24
 msgid "Search Mail Record categories"
@@ -935,7 +935,7 @@ msgstr "Enviado com sucesso."
 #| msgid "Recipe categories"
 msgctxt "Taxonomy general name"
 msgid "Mail categories"
-msgstr ""
+msgstr "Categorias de correio"
 
 #: includes/class-mailpn-taxonomies-rec.php:22
 msgctxt "Taxonomy general name"
@@ -946,7 +946,7 @@ msgstr "Categorias de registros de correspondência"
 #| msgid "Recipe category"
 msgctxt "Taxonomy singular name"
 msgid "Mail category"
-msgstr ""
+msgstr "Categoria de correio"
 
 #: includes/class-mailpn-taxonomies-rec.php:23
 msgctxt "Taxonomy singular name"
@@ -981,6 +981,8 @@ msgid ""
 "This option sets the slug of the main Mail archive page, and the Mail pages. "
 "By default they will be:"
 msgstr ""
+"Esta opção define o slug da página principal do arquivo de e-mails e das "
+"páginas de e-mails. Por padrão, elas serão:"
 
 #: includes/class-mailpn-settings.php:18
 msgid "This options section sets information that the email will be showing."
@@ -998,7 +1000,7 @@ msgstr "Cancelar inscrição"
 #: includes/class-mailpn-taxonomies-mail.php:29
 #| msgid "Update Recipe category"
 msgid "Update Mail category"
-msgstr ""
+msgstr "Atualizar categoria de e-mail"
 
 #: includes/class-mailpn-post-type-rec.php:91
 msgid "Update Mail record"
