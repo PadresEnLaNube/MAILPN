@@ -52,12 +52,11 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.0';
+			$this->mailpn_version = '1.0.1';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
 
-		self::mailpn_define_constants();
 		self::mailpn_load_dependencies();
 		self::mailpn_load_i18n();
 		self::mailpn_define_common_hooks();
@@ -73,21 +72,6 @@ class MAILPN {
 		self::mailpn_load_shortcodes();
 		self::mailpn_load_cron();
 		self::mailpn_load_notifications();
-	}
-
-	/**
-	 * Define the plugin main constants.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function mailpn_define_constants() {
-		define('MAILPN_DIR', plugin_dir_path(dirname(__FILE__)));
-		define('MAILPN_URL', plugin_dir_url(dirname(__FILE__)));
-		
-		define('MAILPN_ROLE_CAPABILITIES', ['edit_post' => 'edit_mailpn_mail', 'edit_posts' => 'edit_mailpn', 'edit_private_posts' => 'edit_private_mailpn', 'edit_published_posts' => 'edit_published_mailpn', 'edit_others_posts' => 'edit_other_mailpn', 'publish_posts' => 'publish_mailpn', 'read_post' => 'read_mailpn_mail', 'read_private_posts' => 'read_private_mailpn', 'delete_post' => 'delete_mailpn_mail', 'delete_posts' => 'delete_mailpn', 'delete_private_posts' => 'delete_private_mailpn', 'delete_published_posts' => 'delete_published_mailpn', 'delete_others_posts' => 'delete_others_mailpn', 'upload_files' => 'upload_files', 'manage_terms' => 'manage_mailpn_category', 'edit_terms' => 'edit_mailpn_category', 'delete_terms' => 'delete_mailpn_category', 'assign_terms' => 'assign_mailpn_category', 'manage_options' => 'manage_mailpn_options', ]);
-
-		define('MAILPN_KSES', ['div' => ['id' => [], 'class' => [], 'data-mailpn-section-id' => [], ], 'span' => ['id' => [], 'class' => [], ], 'p' => ['id' => [], 'class' => [], ], 'ul' => ['id' => [], 'class' => [], ], 'ol' => ['id' => [], 'class' => [], ], 'li' => ['id' => [], 'class' => [], ], 'small' => ['id' => [], 'class' => [], ], 'a' => ['id' => [], 'class' => [], 'href' => [], 'title' => [], 'target' => [], 'data-mailpn-post-id' => [],], 'form' => ['id' => [], 'class' => [], 'action' => [], 'method' => [], ], 'input' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'checked' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], 'data-mailpn-parent-option' => [], 'data-mailpn-type' => [], 'data-mailpn-subtype' => [], 'data-mailpn-user-id' => [], 'data-mailpn-post-id' => [],], 'select' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'checked' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], ], 'option' => ['name' => [], 'id' => [], 'class' => [], 'disabled' => [], 'selected' => [], 'value' => [], 'placeholder' => [], ], 'textarea' => ['name' => [], 'id' => [], 'class' => [], 'type' => [], 'multiple' => [], 'disabled' => [], 'value' => [], 'placeholder' => [], 'data-mailpn-parent' => [], 'data-mailpn-parent-option' => [], ], 'label' => ['id' => [], 'class' => [], 'for' => [], ], 'i' => ['id' => [], 'class' => [], 'title' => [], ], 'br' => [], 'em' => [], 'strong' => [], 'h1' => ['id' => [], 'class' => [], ], 'h2' => ['id' => [], 'class' => [], ], 'h3' => ['id' => [], 'class' => [], ], 'h4' => ['id' => [], 'class' => [], ], 'h5' => ['id' => [], 'class' => [], ], 'h6' => ['id' => [], 'class' => [], ], 'img' => ['id' => [], 'class' => [], 'src' => [], 'alt' => [], 'title' => [], ], ]);
 	}
 			
 	/**
@@ -249,7 +233,7 @@ class MAILPN {
 	 */
 	private function mailpn_load_i18n() {
 		$plugin_i18n = new MAILPN_i18n();
-		$this->mailpn_loader->mailpn_add_action('after_setup_theme', $plugin_i18n, 'mailpn_load_plugin_textdomain');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_i18n, 'mailpn_load_plugin_textdomain', 20);
 
 		if (class_exists('Polylang')) {
 			$this->mailpn_loader->mailpn_add_filter('pll_get_post_types', $plugin_i18n, 'mailpn_pll_get_post_types', 10, 2);

@@ -11,7 +11,7 @@
  * @author     Padres en la Nube <info@padresenlanube.com>
  */
 class MAILPN_Settings {
-  public function get_options() {
+  public function mailpn_get_options() {
     $mailpn_options['mailpn_section_contents_start'] = [
       'section' => 'start',
       'label' => __('Email contents', 'mailpn'),
@@ -217,6 +217,7 @@ class MAILPN_Settings {
       [$this, 'mailpn_options'], 
       esc_url(MAILPN_URL . 'assets/media/mailpn-menu-icon.svg')
     );
+
     add_submenu_page(
       'mailpn_options', 
       esc_html__('Mail Templates', 'mailpn'), 
@@ -224,6 +225,7 @@ class MAILPN_Settings {
       'administrator', 
       'edit.php?post_type=mailpn_mail'
     );
+    
     add_submenu_page(
       'mailpn_options', 
       esc_html__('Mail Records', 'mailpn'), 
@@ -259,7 +261,7 @@ class MAILPN_Settings {
         <div class="mailpn-options-fields mailpn-mb-30">
           <form action="" method="post" id="mailpn_form" class="mailpn-form mailpn-p-30">
             <?php 
-              $options = self::get_options();
+              $options = $this->mailpn_get_options();
               
               foreach ($options as $mailpn_option): 
                 MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half');
@@ -271,9 +273,9 @@ class MAILPN_Settings {
 	  <?php
 	}
 
-  public function activated_plugin($plugin) {
+  public function mailpn_activated_plugin($plugin) {
     if($plugin == 'mailpn/mailpn.php') {
-      wp_redirect(esc_url(admin_url('admin.php?page=mailpn_options')));exit();
+      wp_safe_redirect(esc_url(admin_url('admin.php?page=mailpn_options')));exit;
     }
   }
 
@@ -306,7 +308,7 @@ class MAILPN_Settings {
             
             if (!isset($_GET['mailpn_popup'])) {
                 wp_safe_redirect(home_url());
-                exit();
+                exit;
             }
             // The popup will be handled by JavaScript
             break;
@@ -315,19 +317,19 @@ class MAILPN_Settings {
             if (!isset($_GET['subscription-unsubscribe-nonce']) || 
                 !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['subscription-unsubscribe-nonce'])), 'subscription-unsubscribe')) {
                 wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-error'));
-                exit();
+                exit;
             }
             
             // Add user check
             $user_id = isset($_GET['user']) ? absint($_GET['user']) : 0;
             if (!$user_id || !current_user_can('edit_user', $user_id)) {
                 wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-error'));
-                exit();
+                exit;
             }
             
             update_user_meta($user_id, 'userspn_notifications', '');
             wp_safe_redirect(home_url('?mailpn_notice=subscription-unsubscribe-success'));
-            exit();
+            exit;
             break;
     }
   }

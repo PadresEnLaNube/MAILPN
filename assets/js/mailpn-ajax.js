@@ -120,7 +120,6 @@
       };
 
       $.post(ajax_url, data, function(response) {
-        console.log('response');console.log(response);
         response = JSON.parse(response);
 
         if (response.error_key == '') {

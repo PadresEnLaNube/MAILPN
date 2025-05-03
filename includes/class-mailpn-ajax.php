@@ -65,43 +65,6 @@ class MAILPN_Ajax {
       }
 
       switch ($mailpn_ajax_type) {
-        case 'mailpn_options_save':
-          if (!empty($mailpn_key_value)) {
-            // Get allowed options from MAILPN_Settings
-            $plugin_settings = new MAILPN_Settings();
-            $allowed_options = array_keys($plugin_settings->get_options());
-
-            foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
-              // Skip action and ajax type keys
-              if (in_array($mailpn_key, ['action', 'mailpn_ajax_type'])) {
-                continue;
-              }
-
-              // Ensure option name is prefixed with mailpn_
-              if (strpos($mailpn_key, 'mailpn_') !== 0) {
-                $mailpn_key = 'mailpn_' . $mailpn_key;
-              }
-
-              // Only update if option is in allowed options list
-              if (in_array($mailpn_key, $allowed_options)) {
-                update_option($mailpn_key, $mailpn_value);
-              }
-            }
-
-            update_option('mailpn_options_changed', true);
-            echo wp_json_encode([
-              'error_key' => '', 
-            ]);
-
-            exit();
-          }else{
-            echo wp_json_encode([
-              'error_key' => 'mailpn_options_save_error', 
-            ]);
-
-            exit();
-          }
-          break;
         case 'mailpn_mail_check':
           if (!empty($mailpn_mail_id)) {
             $plugin_post_type_mail = new MAILPN_Post_Type_Mail();
@@ -120,45 +83,45 @@ class MAILPN_Ajax {
             exit();
           }
           break;
-          case 'mailpn_resend_errors':
-            if (!empty($mail_id)) {
-              $plugin_mailing = new MAILPN_Mailing();
-              $plugin_mailing->mailpn_resend_errors($mail_id);
-  
-              update_post_meta($mail_id, 'mailpn_status', 'queue');
-            }else{
-              echo wp_json_encode(['error_key' => 'mailpn_resend_errors_error', 'error_content' => esc_html(__('An error occurred while resending the errors.', 'mailpn')), ]);exit();
-            }
-  
-            echo wp_json_encode(['error_key' => '', ]);exit();
-            break;
-          case 'mailpn_test_email_send':
-            if (!current_user_can('manage_options')) {
-              echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
-              exit();
-            }
-        
-            $admin_email = get_current_user_id();
-            $subject = esc_html__('Test email from MAILPN', 'mailpn');
+        case 'mailpn_resend_errors':
+          if (!empty($mail_id)) {
+            $plugin_mailing = new MAILPN_Mailing();
+            $plugin_mailing->mailpn_resend_errors($mail_id);
 
-            ob_start();
-            ?>
-              <h2><?php esc_html_e('MAILPN Test email', 'mailpn'); ?></h2>           
-              <p><?php esc_html_e('Hello', 'mailpn'); ?> [user-name].</p>
-              <p><?php esc_html_e('This is a test email sent from the MAILPN plugin.', 'mailpn'); ?></p>
-            <?php
-            $content = ob_get_contents(); 
-            ob_end_clean(); 
-            
-            $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $admin_email . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
-  
-            if ($result) {
-              echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully', 'mailpn')]);exit();
-            } else {
-              echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Failed to send test email', 'mailpn')]);exit();
-            }
-            
-            break;
+            update_post_meta($mail_id, 'mailpn_status', 'queue');
+          }else{
+            echo wp_json_encode(['error_key' => 'mailpn_resend_errors_error', 'error_content' => esc_html(__('An error occurred while resending the errors.', 'mailpn')), ]);exit();
+          }
+
+          echo wp_json_encode(['error_key' => '', ]);exit();
+          break;
+        case 'mailpn_test_email_send':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
+            exit();
+          }
+      
+          $admin_email = get_current_user_id();
+          $subject = esc_html__('Test email from MAILPN', 'mailpn');
+
+          ob_start();
+          ?>
+            <h2><?php esc_html_e('MAILPN Test email', 'mailpn'); ?></h2>           
+            <p><?php esc_html_e('Hello', 'mailpn'); ?> [user-name].</p>
+            <p><?php esc_html_e('This is a test email sent from the MAILPN plugin.', 'mailpn'); ?></p>
+          <?php
+          $content = ob_get_contents(); 
+          ob_end_clean(); 
+          
+          $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $admin_email . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
+
+          if ($result) {
+            echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully', 'mailpn')]);exit();
+          } else {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Failed to send test email', 'mailpn')]);exit();
+          }
+          
+          break;
       }
 
       echo wp_json_encode([

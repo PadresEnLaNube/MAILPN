@@ -17,7 +17,6 @@
     };
 
     $.post(ajax_url, data, function(response) {
-      console.log(data);console.log(response);
       if ($.parseJSON(response)['error_key'] == 'mailpn_resend_errors_error') {
         mailpn_get_main_message($.parseJSON(response)['error_content']);
       }else {

@@ -2,6 +2,6 @@
 	'use strict';
 
     $(document).ready(function() {
-        MAILPN_Popups.open($('#mailpn-popup-notice'));
+        MAILPN_Popup.open($('#mailpn-popup-notice'));
     });
 })(jQuery);

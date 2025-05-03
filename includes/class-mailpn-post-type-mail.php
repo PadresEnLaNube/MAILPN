@@ -288,7 +288,7 @@ class MAILPN_Post_Type_Mail {
           'error_content' => esc_html(__('Security check failed: Nonce is required.', 'mailpn')),
         ]);
 
-        exit();
+        exit;
       }
 
       if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_ajax_nonce'])), 'mailpn-nonce')) {
@@ -297,7 +297,7 @@ class MAILPN_Post_Type_Mail {
           'error_content' => esc_html(__('Security check failed: Invalid nonce.', 'mailpn')),
         ]);
 
-        exit();
+        exit;
       }
       
       if (!array_key_exists('mailpn_duplicate', $_POST)) {
