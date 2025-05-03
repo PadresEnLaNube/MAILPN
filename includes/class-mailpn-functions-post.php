@@ -29,7 +29,7 @@ class MAILPN_Functions_Post {
 	 * 
 	 * @since    1.0.0
 	 */
-	public function insert_post($title, $content, $excerpt, $name, $type, $status, $author = 1, $parent = 0, $cats = [], $tags = [], $postmeta = [], $overwrite_id = true) {
+	public function mailpn_insert_post($title, $content, $excerpt, $name, $type, $status, $author = 1, $parent = 0, $cats = [], $tags = [], $postmeta = [], $overwrite_id = true) {
     $post_values = [
       'post_title' => trim($title),
       'post_content' => $content,
@@ -85,7 +85,7 @@ class MAILPN_Functions_Post {
     return $post_id;
   }
 
-  public function duplicate_post($post_id, $post_status = 'draft') {
+  public function mailpn_duplicate_post($post_id, $post_status = 'draft') {
     global $wpdb;
     $post = get_post($post_id);
     $new_post_author = 1;
@@ -117,10 +117,6 @@ class MAILPN_Functions_Post {
    
       $post_meta_infos = $wpdb->get_results($wpdb->prepare("SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id = %d", $post_id));
       if (count($post_meta_infos) != 0) {
-        $sql_query = "INSERT INTO $wpdb->postmeta (post_id, meta_key, meta_value) VALUES ";
-        $placeholders = [];
-        $values = [];
-        
         foreach ($post_meta_infos as $meta_info) {
           $meta_key = $meta_info->meta_key;
 
@@ -128,12 +124,16 @@ class MAILPN_Functions_Post {
             continue;
           }
 
-          $placeholders[] = "(%d, %s, %s)";
-          array_push($values, $new_post_id, $meta_key, $meta_info->meta_value);
+          $wpdb->insert(
+            $wpdb->postmeta,
+            array(
+              'post_id' => $new_post_id,
+              'meta_key' => $meta_key,
+              'meta_value' => $meta_info->meta_value
+            ),
+            array('%d', '%s', '%s')
+          );
         }
-
-        $sql_query .= implode(", ", $placeholders);
-        $wpdb->query($wpdb->prepare($sql_query, $values));
       }
 
       return $new_post_id;

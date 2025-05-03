@@ -209,15 +209,34 @@ class MAILPN_Settings {
 	 * @since    1.0.0
 	 */
 	public function mailpn_admin_menu() {
-    add_menu_page(__('Mail Settings', 'mailpn'), __('Mail Settings', 'mailpn'), 'administrator', 'mailpn_options', [$this, 'mailpn_options'], esc_url(MAILPN_URL . 'assets/media/mailpn-menu-icon.svg'));
-    add_submenu_page('mailpn_options', esc_html(__('Mail Templates', 'mailpn')), esc_html(__('Mail Templates', 'mailpn')), 'administrator', 'edit.php?post_type=mailpn_mail');
-    add_submenu_page('mailpn_options', esc_html(__('Mail Records', 'mailpn')), esc_html(__('Mail Records', 'mailpn')), 'administrator', 'edit.php?post_type=mailpn_rec');
+    add_menu_page(
+      esc_html__('Mail Settings', 'mailpn'), 
+      esc_html__('Mail Settings', 'mailpn'), 
+      'administrator', 
+      'mailpn_options', 
+      [$this, 'mailpn_options'], 
+      esc_url(MAILPN_URL . 'assets/media/mailpn-menu-icon.svg')
+    );
+    add_submenu_page(
+      'mailpn_options', 
+      esc_html__('Mail Templates', 'mailpn'), 
+      esc_html__('Mail Templates', 'mailpn'), 
+      'administrator', 
+      'edit.php?post_type=mailpn_mail'
+    );
+    add_submenu_page(
+      'mailpn_options', 
+      esc_html__('Mail Records', 'mailpn'), 
+      esc_html__('Mail Records', 'mailpn'), 
+      'administrator', 
+      'edit.php?post_type=mailpn_rec'
+    );
 
     global $menu;
     if (!empty($menu)) {
       foreach ($menu as $menu_index => $menu_item) {
         if ($menu_item[2] == 'mailpn_options') {
-          $menu[$menu_index][0] = esc_html(__('Mailing Manager', 'mailpn'));
+          $menu[$menu_index][0] = esc_html__('Mailing Manager', 'mailpn');
         }
       }
     }
@@ -239,9 +258,13 @@ class MAILPN_Settings {
 
         <div class="mailpn-options-fields mailpn-mb-30">
           <form action="" method="post" id="mailpn_form" class="mailpn-form mailpn-p-30">
-            <?php foreach (self::get_options() as $mailpn_option): ?>
-              <?php MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half'); ?>
-            <?php endforeach ?>
+            <?php 
+              $options = self::get_options();
+              
+              foreach ($options as $mailpn_option): 
+                MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half');
+              endforeach; 
+            ?>
           </form> 
         </div>
       </div>

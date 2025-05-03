@@ -273,7 +273,7 @@ class MAILPN_Post_Type_Rec {
               }
 
               $post_functions = new MAILPN_Functions_Post();
-              $mail_id = $post_functions->insert_post(esc_html($rec_), $mailpn_description, '', sanitize_title(esc_html($rec_)), 'mailpn_rec', 'publish', get_current_user_id());
+              $mail_id = $post_functions->mailpn_insert_post(esc_html($rec_), $mailpn_description, '', sanitize_title(esc_html($rec_)), 'mailpn_rec', 'publish', get_current_user_id());
 
               if (!empty($key_value)) {
                 foreach ($key_value as $key => $value) {

@@ -172,7 +172,7 @@ class MAILPN_Mailing {
     $post_functions = new MAILPN_Functions_Post();
 
     if ($mailpn_result) {
-      $post_functions->insert_post($mailpn_subject, $mailpn_message, '', esc_url($mailpn_subject), 'mailpn_rec', 'publish', 1, 0, [], [], [
+      $post_functions->mailpn_insert_post($mailpn_subject, $mailpn_message, '', esc_url($mailpn_subject), 'mailpn_rec', 'publish', 1, 0, [], [], [
         'mailpn_rec_content' => $mailpn_message,
         'mailpn_rec_type' => $mailpn_type,
         'mailpn_rec_to' => $mailpn_user_to,
@@ -184,7 +184,7 @@ class MAILPN_Mailing {
 
       return true;
     }else{
-      $post_functions->insert_post($mailpn_subject, $mailpn_message, '', esc_url($mailpn_subject), 'mailpn_rec', 'publish', 1, 0, [], [], [
+      $post_functions->mailpn_insert_post($mailpn_subject, $mailpn_message, '', esc_url($mailpn_subject), 'mailpn_rec', 'publish', 1, 0, [], [], [
         'mailpn_rec_content' => $mailpn_message,
         'mailpn_rec_type' => $mailpn_type,
         'mailpn_rec_to' => $mailpn_user_to,

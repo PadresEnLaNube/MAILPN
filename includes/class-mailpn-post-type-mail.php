@@ -406,7 +406,7 @@ class MAILPN_Post_Type_Mail {
               }
 
               $post_functions = new MAILPN_Functions_Post();
-              $mail_id = $post_functions->insert_post(esc_html($mailpn_title), $mailpn_description, '', sanitize_title(esc_html($mailpn_title)), 'mailpn_mail', 'publish', get_current_user_id());
+              $mail_id = $post_functions->mailpn_insert_post(esc_html($mailpn_title), $mailpn_description, '', sanitize_title(esc_html($mailpn_title)), 'mailpn_mail', 'publish', get_current_user_id());
 
               if (!empty($key_value)) {
                 foreach ($key_value as $key => $value) {

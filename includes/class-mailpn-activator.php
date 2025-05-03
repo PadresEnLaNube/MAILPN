@@ -38,7 +38,7 @@ class MAILPN_Activator {
     if (empty(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_mail', 'post_status' => 'any', ]))) {
       $mailpn_title = __('Test email', 'mailpn');
       $mailpn_post_content = __('Test email content', 'mailpn');
-      $mailpn_id = $post_functions->insert_post(esc_html($mailpn_title), $mailpn_post_content, '', sanitize_title(esc_html($mailpn_title)), 'mailpn_mail', 'publish', 1);
+      $mailpn_id = $post_functions->mailpn_insert_post(esc_html($mailpn_title), $mailpn_post_content, '', sanitize_title(esc_html($mailpn_title)), 'mailpn_mail', 'publish', 1);
 
       update_post_meta($mailpn_id, 'mailpn_type', 'email_one_time');
       update_post_meta($mailpn_id, 'mailpn_distribution', 'private_user');

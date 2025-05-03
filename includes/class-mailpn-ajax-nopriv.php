@@ -118,7 +118,7 @@ class MAILPN_Ajax_Nopriv {
                         $title = !empty($_POST[$post_type . '_title']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$post_type . '_title'])) : '';
                         $description = !empty($_POST[$post_type . '_description']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$post_type . '_description'])) : '';
                         
-                        $post_id = $post_functions->mailpn_insert_post($title, $description, '', sanitize_title($title), $post_type, 'publish', get_current_user_id());
+                        $post_id = $post_functions->mailpn_mailpn_insert_post($title, $description, '', sanitize_title($title), $post_type, 'publish', get_current_user_id());
                       }
                     }
 
