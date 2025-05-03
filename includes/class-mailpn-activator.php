@@ -19,6 +19,9 @@ class MAILPN_Activator {
 	 * @since    1.0.0
 	 */
 	public static function mailpn_activate() {
+    require_once MAILPN_DIR . 'includes/class-mailpn-functions-post.php';
+    require_once MAILPN_DIR . 'includes/class-mailpn-functions-attachment.php';
+
     $post_functions = new MAILPN_Functions_Post();
     $attachment_functions = new MAILPN_Functions_Attachment();
 

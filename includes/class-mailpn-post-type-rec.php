@@ -329,6 +329,7 @@ class MAILPN_Post_Type_Rec {
     $columns['mailpn_rec_mail_template'] = __('Mail Template', 'mailpn');
     $columns['mailpn_rec_to'] = __('Recipient', 'mailpn');
     $columns['mailpn_rec_mail_result'] = __('Result', 'mailpn');
+    $columns['mailpn_rec_opened'] = __('Opened', 'mailpn');
 
     return $columns;
   }
@@ -375,6 +376,26 @@ class MAILPN_Post_Type_Rec {
           <?php else: ?>
             <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">block</i> <?php esc_html_e('Email not sent. Errors have been found.', 'mailpn'); ?></p>
           <?php endif ?>
+        <?php
+        break;
+      case 'mailpn_rec_opened':
+        $opened = get_post_meta($post_id, 'mailpn_rec_opened', true);
+        $opened_at = get_post_meta($post_id, 'mailpn_rec_opened_at', true);
+        ?>
+          <?php if ($opened): ?>
+            <p>
+              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-green mailpn-mr-10">visibility</i>
+              <?php esc_html_e('Opened', 'mailpn'); ?>
+              <?php if ($opened_at): ?>
+                <br>
+                <small>
+                  <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($opened_at))); ?>
+                </small>
+              <?php endif; ?>
+            </p>
+          <?php else: ?>
+            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">visibility_off</i> <?php esc_html_e('Not opened', 'mailpn'); ?></p>
+          <?php endif; ?>
         <?php
         break;
     }

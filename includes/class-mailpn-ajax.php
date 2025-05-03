@@ -67,8 +67,23 @@ class MAILPN_Ajax {
       switch ($mailpn_ajax_type) {
         case 'mailpn_options_save':
           if (!empty($mailpn_key_value)) {
+            // Get allowed options from MAILPN_Settings
+            $plugin_settings = new MAILPN_Settings();
+            $allowed_options = array_keys($plugin_settings->get_options());
+
             foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
-              if (!in_array($mailpn_key, ['action', 'mailpn_ajax_type'])) {
+              // Skip action and ajax type keys
+              if (in_array($mailpn_key, ['action', 'mailpn_ajax_type'])) {
+                continue;
+              }
+
+              // Ensure option name is prefixed with mailpn_
+              if (strpos($mailpn_key, 'mailpn_') !== 0) {
+                $mailpn_key = 'mailpn_' . $mailpn_key;
+              }
+
+              // Only update if option is in allowed options list
+              if (in_array($mailpn_key, $allowed_options)) {
                 update_option($mailpn_key, $mailpn_value);
               }
             }

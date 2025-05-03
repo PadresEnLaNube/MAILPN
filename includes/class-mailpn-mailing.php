@@ -138,7 +138,7 @@ class MAILPN_Mailing {
     $headers[] = 'Content-Type:text/html;charset=UTF-8';
     $headers[] = get_bloginfo('url');
 
-    $mailpn_message = self::mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to);
+    $mailpn_message = self::mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id);
 
     if (filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL)) {
       $mailpn_result = wp_mail($mailpn_user_to, $mailpn_subject, $mailpn_message, $headers, $mailpn_attachments);
@@ -202,10 +202,8 @@ class MAILPN_Mailing {
     }
   }
 
-  public function mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $user_id) {
-    $mailpn_max_width = !empty(get_option('mailpn_max_width')) ? get_option('mailpn_max_width') : 700;
-
-    $mailpn_template_css = '.mailpn-content,.mailpn-content p,.mailpn-content li,.mailpn-content div,.mailpn-content span,.mailpn-content h1,.mailpn-content h2,.mailpn-content h3,.mailpn-content h4,.mailpn-content h5,.mailpn-content h6{background-color:transparent;color:#707070;color:#707070!important;max-width:' . esc_html($mailpn_max_width) . '}.mailpn-content h2,.mailpn-content h3{text-transform:uppercase;letter-spacing:8px;color:#3a3a3a;border:0;font-weight:normal;font-style:normal;mso-line-height-rule:exactly;-mso-line-height-rule:exactly;line-height:125%;margin-top:30px;margin-right:0;margin-bottom:0;margin-left:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;}.mailpn-content p,.mailpn-content li,.mailpn-content small{letter-spacing:1px;color:#656565;border:0;letter-spacing:normal;mso-line-height-rule:exactly;-mso-line-height-rule:exactly;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;vertical-align:top;word-wrap:break-word;}.mailpn-content p{line-height:150%;margin-top:1em;margin-right:0;margin-bottom:1em;margin-left:0;}.mailpn-content li{line-height:130%;margin-top:0.5em;margin-right:0;margin-bottom:0.5em;margin-left:0;}.mailpn-content small{line-height:120%;margin-top:1em;margin-right:0;margin-bottom:0.5em;margin-left:0;}.mailpn-content a,.mailpn-content p a,.mailpn-content li a,a{color:' . (!empty(get_option('mailpn_links_color')) ? esc_html(get_option('mailpn_links_color')) : '#86b3ac') . ';text-decoration:none;border:0;word-wrap:break-word;}.mailpn-content a[href].mailpn-btn{display:inline-block;padding:10px 40px;color:#ffffff;background:#0074a3;} .mailpn-content table.mailpn-table-main{border:0;border-collapse:collapse;clear:both;border:0;min-width:100%;margin:auto;margin-bottom:50px;} .mailpn-content table.mailpn-width:750px;-social{border:0;border-collapse:collapse;clear:both;border:0;width:200px;margin-bottom:50px;} .mailpn-content td.mailpn-td-social{border:0;border-collapse:collapse;border:0;padding-top:10px;padding-right:17px;padding-bottom:10px;padding-left:17px;vertical-align:top;} .mailpn-content td.mailpn-td-footer{padding:20px;}.mailpn-social-img,.mailpn-td-social{width:30px;height:30px;}.mailpn-text-align-center{text-align:center;}.mailpn-mt-30{margin-top:30px!important;}.mailpn-mb-50{margin-bottom:50px!important;}.mailpn-mb-30{margin-bottom:30px!important;}.mailpn-text-transform-lowercase{text-transform:lowercase;}table.mailpn-table-main p,table.mailpn-table-main ul,table.mailpn-table-main div{max-width:750px;margin:auto;}@media all and (max-width:768px){.mailpn-social-img,.mailpn-td-social{width:60px;height:60px;}}@media all and (max-width:450px){.mailpn-social-img,.mailpn-td-social{width:80px;height:80px;}}';
+  public function mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id = 0) {
+    $mailpn_template_css = file_get_contents(MAILPN_DIR . 'assets/css/mail-template.css');
 
     wp_register_style('mail-template-css', false);
     wp_enqueue_style('mail-template-css');
@@ -284,7 +282,7 @@ class MAILPN_Mailing {
                           : esc_html__('You receive this email for your relationship with the project.', 'mailpn');
                       ?></p>
 
-                      <?php if (class_exists('USERSPN') && !empty($user_id)): ?>
+                      <?php if (class_exists('USERSPN') && !empty($mailpn_user_to)): ?>
                         <table align="center">
                           <tr>
                             <td align="center">
@@ -294,8 +292,8 @@ class MAILPN_Mailing {
                             <td></td>
 
                             <td align="center">
-                              <?php if (!filter_var($user_id, FILTER_VALIDATE_EMAIL)): ?>
-                                <?php echo self::mailpn_subscription_unsubscribe_btn($user_id); ?>
+                              <?php if (!filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL)): ?>
+                                <?php echo self::mailpn_subscription_unsubscribe_btn($mailpn_user_to); ?>
                               <?php endif ?>
                             </td>
                           </tr>
@@ -303,8 +301,20 @@ class MAILPN_Mailing {
                       <?php endif ?>
 
                       <p><?php echo esc_html($mailpn_legal_address); ?></p>
+
+                      <!-- Fallback confirmation button -->
+                      <div style="margin-top: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; display: none;" id="mailpn-confirm-read">
+                        <p style="margin-bottom: 10px;"><?php esc_html_e('Please confirm that you have read this email:', 'mailpn'); ?></p>
+                        <a href="<?php echo esc_url(home_url('wp-json/mailpn/v1/track/' . $mailpn_user_to . '/' . $mailpn_id . '?confirm=1')); ?>" style="display: inline-block; padding: 8px 16px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
+                          <?php esc_html_e('Confirm Reading', 'mailpn'); ?>
+                        </a>
+                      </div>
                     </small>
                   </div>
+                </td>
+                
+                <td>
+                  <img src="<?php echo esc_url(home_url('wp-json/mailpn/v1/track/' . $mailpn_user_to . '/' . $mailpn_id)); ?>" width="1" height="1" alt="" style="display:none" onload="document.getElementById('mailpn-confirm-read').style.display='none';" onerror="document.getElementById('mailpn-confirm-read').style.display='block';" />
                 </td>
               </tr>
             </tbody>
@@ -315,6 +325,69 @@ class MAILPN_Mailing {
     $mailpn_return_string = ob_get_contents(); 
     ob_end_clean(); 
     return $mailpn_return_string;
+  }
+
+  /**
+   * Register the tracking pixel endpoint
+   */
+  public function register_tracking_endpoint() {
+    register_rest_route('mailpn/v1', '/track/(?P<user_id>\d+)/(?P<mail_id>\d+)', [
+      'methods' => 'GET',
+      'callback' => [$this, 'handle_tracking_pixel'],
+      'permission_callback' => '__return_true'
+    ]);
+  }
+
+  /**
+   * Handle the tracking pixel request
+   */
+  public function handle_tracking_pixel($request) {
+    $user_id = $request->get_param('user_id');
+    $mail_id = $request->get_param('mail_id');
+    
+    // Build meta query based on whether we have a specific mail_id
+    $meta_query = [
+      [
+        'key' => 'mailpn_rec_to',
+        'value' => $user_id
+      ]
+    ];
+
+    // If we have a specific mail_id, add it to the query
+    if (!empty($mail_id)) {
+      $meta_query[] = [
+        'key' => 'mailpn_rec_mail_id',
+        'value' => $mail_id
+      ];
+    }
+    
+    // Get the email record
+    $args = [
+      'post_type' => 'mailpn_rec',
+      'posts_per_page' => 1,
+      'meta_query' => $meta_query,
+      'orderby' => 'date',
+      'order' => 'DESC'
+    ];
+    
+    $query = new WP_Query($args);
+    
+    if ($query->have_posts()) {
+      $post = $query->posts[0];
+      
+      // Update the email open status
+      update_post_meta($post->ID, 'mailpn_rec_opened', true);
+      update_post_meta($post->ID, 'mailpn_rec_opened_at', current_time('mysql'));
+    }
+    
+    // Return a 1x1 transparent pixel
+    header('Content-Type: image/gif');
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    
+    echo base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+    exit;
   }
 
   public function mailpn_user_name($atts) {
@@ -784,7 +857,7 @@ class MAILPN_Mailing {
 
     $wp_new_user_notification_email['subject'] = $blogname . ' ' . esc_html(__('New user', 'mailpn'));
     $wp_new_user_notification_email['headers'] = ['Content-Type: text/html; charset=UTF-8'];
-    $wp_new_user_notification_email['message'] = $this->mailpn_template($blogname . ' ' . esc_html(__('New user', 'mailpn')), $mail_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to);
+    $wp_new_user_notification_email['message'] = $this->mailpn_template($blogname . ' ' . esc_html(__('New user', 'mailpn')), $mail_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, 0);
 
     return $wp_new_user_notification_email;
   }

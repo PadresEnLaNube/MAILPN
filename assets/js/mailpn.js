@@ -303,14 +303,14 @@
     if($('.mailpn-popup-close').length){
       $(document).on('click', '.mailpn-popup-close', function(e){
         e.preventDefault();
-        MAILPN_Popup.close();
+        MAILPN_Popups.close();
       });
     }
 
     if($('.mailpn-popup-open').length){
       $(document).on('click', '.mailpn-popup-open', function(e){
         e.preventDefault();
-        MAILPN_Popup.open($('#' + $(this).attr('data-mailpn-popup-id')));
+        MAILPN_Popups.open($('#' + $(this).attr('data-mailpn-popup-id')));
       });
     }
 
@@ -361,7 +361,7 @@
 
       if (mailpn_action.popup != '') {
         $(window).on('load', function(e) {
-          MAILPN_Popup.open($('#' + mailpn_action.popup));
+          MAILPN_Popups.open($('#' + mailpn_action.popup));
 
           if (typeof mailpn_action.tab != '') {
             $('.userspn-tab-links[data-userspn-id="userspn-tab-' + mailpn_action.tab + '"]').click();

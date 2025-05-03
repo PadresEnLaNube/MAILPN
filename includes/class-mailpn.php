@@ -249,7 +249,7 @@ class MAILPN {
 	 */
 	private function mailpn_load_i18n() {
 		$plugin_i18n = new MAILPN_i18n();
-		$this->mailpn_loader->mailpn_add_action('init', $plugin_i18n, 'mailpn_load_plugin_textdomain', 20);
+		$this->mailpn_loader->mailpn_add_action('after_setup_theme', $plugin_i18n, 'mailpn_load_plugin_textdomain');
 
 		if (class_exists('Polylang')) {
 			$this->mailpn_loader->mailpn_add_filter('pll_get_post_types', $plugin_i18n, 'mailpn_pll_get_post_types', 10, 2);
@@ -460,11 +460,11 @@ class MAILPN {
 		$plugin_mailing = new MAILPN_Mailing();
 		if (get_option('mailpn_password_new') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('wp_new_user_notification_email', $plugin_mailing, 'mailpn_wp_new_user_notification_email', 10, 3);
-    }
-    
-    if (get_option('mailpn_password_retrieve') == 'on') {
+		}
+		
+		if (get_option('mailpn_password_retrieve') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('retrieve_password_message', $plugin_mailing, 'mailpn_retrieve_password_message', 10, 4);
-    }
+		}
 
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-sender', $plugin_mailing, 'mailpn_sender');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-text', $plugin_mailing, 'mailpn_text');
@@ -474,6 +474,9 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_shortcode('new-contents', $plugin_mailing, 'mailpn_new_contents');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-tools', $plugin_mailing, 'mailpn_tools');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-test-email-button', $plugin_mailing, 'mailpn_test_email_btn');
+
+		// Register the tracking endpoint
+		$this->mailpn_loader->mailpn_add_action('rest_api_init', $plugin_mailing, 'register_tracking_endpoint');
 	}
 
 	/**
