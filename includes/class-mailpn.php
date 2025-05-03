@@ -57,22 +57,22 @@ class MAILPN {
 
 		$this->mailpn_plugin_name = 'mailpn';
 
-		self::define_constants();
-		self::load_dependencies();
-		self::set_i18n();
-		self::define_common_hooks();
-		self::define_admin_hooks();
-		self::define_public_hooks();
-		self::define_post_types();
-		self::define_taxonomies();
-		self::load_ajax();
-		self::load_ajax_nopriv();
-		self::load_data();
-		self::load_templates();
-		self::load_settings();
-		self::load_shortcodes();
-		self::load_cron();
-		self::load_notifications();
+		self::mailpn_define_constants();
+		self::mailpn_load_dependencies();
+		self::mailpn_load_i18n();
+		self::mailpn_define_common_hooks();
+		self::mailpn_define_admin_hooks();
+		self::mailpn_define_public_hooks();
+		self::mailpn_define_post_types();
+		self::mailpn_define_taxonomies();
+		self::mailpn_load_ajax();
+		self::mailpn_load_ajax_nopriv();
+		self::mailpn_load_data();
+		self::mailpn_load_templates();
+		self::mailpn_load_settings();
+		self::mailpn_load_shortcodes();
+		self::mailpn_load_cron();
+		self::mailpn_load_notifications();
 	}
 
 	/**
@@ -81,7 +81,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_constants() {
+	private function mailpn_define_constants() {
 		define('MAILPN_DIR', plugin_dir_path(dirname(__FILE__)));
 		define('MAILPN_URL', plugin_dir_url(dirname(__FILE__)));
 		
@@ -120,7 +120,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies() {
+	private function mailpn_load_dependencies() {
 		/**
 		 * The class responsible for orchestrating the actions and filters of the core plugin.
 		 */
@@ -247,13 +247,13 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_i18n() {
+	private function mailpn_load_i18n() {
 		$plugin_i18n = new MAILPN_i18n();
-		$this->mailpn_loader->mailpn_add_action('init', $plugin_i18n, 'load_plugin_textdomain');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_i18n, 'mailpn_load_plugin_textdomain', 20);
 
 		if (class_exists('Polylang')) {
 			$this->mailpn_loader->mailpn_add_filter('pll_get_post_types', $plugin_i18n, 'mailpn_pll_get_post_types', 10, 2);
-    }
+		}
 	}
 
 	/**
@@ -262,7 +262,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_common_hooks() {
+	private function mailpn_define_common_hooks() {
 		$plugin_common = new MAILPN_Common(self::mailpn_get_plugin_name(), self::mailpn_get_version());
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_common, 'mailpn_enqueue_styles');
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_common, 'mailpn_enqueue_scripts');
@@ -284,7 +284,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
+	private function mailpn_define_admin_hooks() {
 		$plugin_admin = new MAILPN_Admin(self::mailpn_get_plugin_name(), self::mailpn_get_version());
 		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_admin, 'mailpn_enqueue_styles');
 		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_admin, 'mailpn_enqueue_scripts');
@@ -296,7 +296,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks() {
+	private function mailpn_define_public_hooks() {
 		$plugin_public = new MAILPN_Public(self::mailpn_get_plugin_name(), self::mailpn_get_version());
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_public, 'mailpn_enqueue_styles');
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_public, 'mailpn_enqueue_scripts');
@@ -311,7 +311,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_post_types() {
+	private function mailpn_define_post_types() {
 		$plugin_post_type_mail = new MAILPN_Post_Type_Mail();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_mail, 'mailpn_register_post_type');
 		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_mail, 'mailpn_add_meta_box');
@@ -339,7 +339,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_taxonomies() {
+	private function mailpn_define_taxonomies() {
 		$plugin_taxonomies_mail = new MAILPN_Taxonomies_Mail();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_mail, 'mailpn_register_taxonomies');
 
@@ -353,7 +353,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_data() {
+	private function mailpn_load_data() {
 		$plugin_data = new MAILPN_Data();
 
 		if (is_admin()) {
@@ -372,7 +372,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_templates() {
+	private function mailpn_load_templates() {
 		if (!defined('DOING_AJAX')) {
 			$plugin_templates = new MAILPN_Templates();
 			$this->mailpn_loader->mailpn_add_action('wp_footer', $plugin_templates, 'load_plugin_templates');
@@ -386,7 +386,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_cron() {
+	private function mailpn_load_cron() {
 		$plugin_cron = new MAILPN_Cron();
 
 		$this->mailpn_loader->mailpn_add_action('wp', $plugin_cron, 'cron_schedule');
@@ -401,7 +401,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_notifications() {
+	private function mailpn_load_notifications() {
 		$plugin_notifications = new MAILPN_Notifications();
 		$this->mailpn_loader->mailpn_add_action('wp_body_open', $plugin_notifications, 'mailpn_wp_body_open');
 	}
@@ -412,7 +412,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_settings() {
+	private function mailpn_load_settings() {
 		$plugin_settings = new MAILPN_Settings();
 		$this->mailpn_loader->mailpn_add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
 		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'activated_plugin');
@@ -429,7 +429,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_ajax() {
+	private function mailpn_load_ajax() {
 		$plugin_ajax = new MAILPN_Ajax();
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax', $plugin_ajax, 'mailpn_ajax_server');
 	}
@@ -440,7 +440,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_ajax_nopriv() {
+	private function mailpn_load_ajax_nopriv() {
 		$plugin_ajax_nopriv = new MAILPN_Ajax_Nopriv();
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_nopriv_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
@@ -452,7 +452,7 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_shortcodes() {
+	private function mailpn_load_shortcodes() {
 		$plugin_shortcodes = new MAILPN_Shortcodes();
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-mail', $plugin_shortcodes, 'mailpn_mail');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-call-to-action', $plugin_shortcodes, 'mailpn_call_to_action');

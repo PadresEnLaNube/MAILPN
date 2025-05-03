@@ -19,18 +19,18 @@ class MAILPN_Ajax_Nopriv {
 	public function mailpn_ajax_nopriv_server() {
     if (array_key_exists('mailpn_ajax_nopriv_type', $_POST)) {
       // Always require nonce verification
-      if (!array_key_exists('ajax_nonce', $_POST)) {
+      if (!array_key_exists('mailpn_ajax_nopriv_nonce', $_POST)) {
         echo wp_json_encode([
-          'error_key' => 'mailpn_nonce_error',
+          'error_key' => 'mailpn_ajax_nopriv_nonce_error_required',
           'error_content' => esc_html(__('Security check failed: Nonce is required.', 'mailpn')),
         ]);
 
         exit();
       }
 
-      if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ajax_nonce'])), 'mailpn-nonce')) {
+      if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_ajax_nopriv_nonce'])), 'mailpn-nonce')) {
         echo wp_json_encode([
-          'error_key' => 'mailpn_nonce_error',
+          'error_key' => 'mailpn_ajax_nopriv_nonce_error_invalid',
           'error_content' => esc_html(__('Security check failed: Invalid nonce.', 'mailpn')),
         ]);
 
@@ -38,27 +38,27 @@ class MAILPN_Ajax_Nopriv {
       }
 
   		$mailpn_ajax_nopriv_type = MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mailpn_ajax_nopriv_type']));
-      $ajax_keys = !empty($_POST['ajax_keys']) ? wp_unslash($_POST['ajax_keys']) : [];
-      $key_value = [];
+      $mailpn_ajax_keys = !empty($_POST['mailpn_ajax_keys']) ? wp_unslash($_POST['mailpn_ajax_keys']) : [];
+      $mailpn_key_value = [];
 
-      if (!empty($ajax_keys)) {
-        foreach ($ajax_keys as $key) {
-          if (strpos($key['id'], '[]') !== false) {
-            $clear_key = str_replace('[]', '', $key['id']);
-            ${$clear_key} = $key_value[$clear_key] = [];
+      if (!empty($mailpn_ajax_keys)) {
+        foreach ($mailpn_ajax_keys as $mailpn_key) {
+          if (strpos($mailpn_key['id'], '[]') !== false) {
+            $mailpn_clear_key = str_replace('[]', '', $mailpn_key['id']);
+            ${$mailpn_clear_key} = $mailpn_key_value[$mailpn_clear_key] = [];
 
-            if (!empty($_POST[$clear_key])) {
-              foreach (wp_unslash($_POST[$clear_key]) as $multi_key => $multi_value) {
-                $final_value = !empty($_POST[$clear_key][$multi_key]) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$clear_key][$multi_key]), $key['node'], $key['type']) : '';
-                ${$clear_key}[$multi_key] = $key_value[$clear_key][$multi_key] = $final_value;
+            if (!empty($_POST[$mailpn_clear_key])) {
+              foreach (wp_unslash($_POST[$mailpn_clear_key]) as $multi_key => $multi_value) {
+                $final_value = !empty($_POST[$mailpn_clear_key][$multi_key]) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$mailpn_clear_key][$multi_key]), $mailpn_key['node'], $mailpn_key['type']) : '';
+                ${$mailpn_clear_key}[$multi_key] = $mailpn_key_value[$mailpn_clear_key][$multi_key] = $final_value;
               }
             }else{
-              ${$clear_key} = '';
-              $key_value[$clear_key][$multi_key] = '';
+              ${$mailpn_clear_key} = '';
+              $mailpn_key_value[$mailpn_clear_key][$multi_key] = '';
             }
           }else{
-            $key_id = !empty($_POST[$key['id']]) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$key['id']]), $key['node'], $key['type']) : '';
-            ${$key['id']} = $key_value[$key['id']] = $key_id;
+            $mailpn_key_id = !empty($_POST[$mailpn_key['id']]) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST[$mailpn_key['id']]), $mailpn_key['node'], $mailpn_key['type']) : '';
+            ${$mailpn_key['id']} = $mailpn_key_value[$mailpn_key['id']] = $mailpn_key_id;
           }
         }
       }
@@ -67,7 +67,7 @@ class MAILPN_Ajax_Nopriv {
         case 'mailpn_form_save':
           $mailpn_form_type = !empty($_POST['mailpn_form_type']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mailpn_form_type'])) : '';
 
-          if (!empty($key_value) && !empty($mailpn_form_type)) {
+          if (!empty($mailpn_key_value) && !empty($mailpn_form_type)) {
             $mailpn_form_id = !empty($_POST['mailpn_form_id']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mailpn_form_id'])) : 0;
             $mailpn_form_subtype = !empty($_POST['mailpn_form_subtype']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mailpn_form_subtype'])) : '';
             $user_id = !empty($_POST['mailpn_form_user_id']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_POST['mailpn_form_user_id'])) : 0;
@@ -80,7 +80,7 @@ class MAILPN_Ajax_Nopriv {
               $_SESSION['mailpn_form'] = [];
               $_SESSION['mailpn_form'][$mailpn_form_id] = [];
               $_SESSION['mailpn_form'][$mailpn_form_id]['form_type'] = $mailpn_form_type;
-              $_SESSION['mailpn_form'][$mailpn_form_id]['values'] = $key_value;
+              $_SESSION['mailpn_form'][$mailpn_form_id]['values'] = $mailpn_key_value;
 
               if (!empty($post_id)) {
                 $_SESSION['mailpn_form'][$mailpn_form_id]['post_id'] = $post_id;
@@ -102,13 +102,13 @@ class MAILPN_Ajax_Nopriv {
                     }
 
                     if (!empty($user_id)) {
-                      foreach ($key_value as $key => $value) {
-                        update_user_meta($user_id, $key, $value);
+                      foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
+                        update_user_meta($user_id, $mailpn_key, $mailpn_value);
                       }
                     }
                   }
 
-                  do_action('mailpn_form_save', $user_id, $key_value, $mailpn_form_type, $mailpn_form_subtype);
+                  do_action('mailpn_form_save', $user_id, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype);
                   break;
                 case 'post':
                   if (empty($mailpn_form_subtype) || in_array($mailpn_form_subtype, ['post_new', 'post_edit'])) {
@@ -123,36 +123,36 @@ class MAILPN_Ajax_Nopriv {
                     }
 
                     if (!empty($post_id)) {
-                      foreach ($key_value as $key => $value) {
-                        if ($key == $post_type . '_title') {
+                      foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
+                        if ($mailpn_key == $post_type . '_title') {
                           wp_update_post([
                             'ID' => $post_id,
-                            'post_title' => esc_html($value),
+                            'post_title' => esc_html($mailpn_value),
                           ]);
                         }
 
-                        if ($key == $post_type . '_description') {
+                        if ($mailpn_key == $post_type . '_description') {
                           wp_update_post([
                             'ID' => $post_id,
-                            'post_content' => esc_html($value),
+                            'post_content' => esc_html($mailpn_value),
                           ]);
                         }
 
-                        update_post_meta($post_id, $key, $value);
+                        update_post_meta($post_id, $mailpn_key, $mailpn_value);
                       }
                     }
                   }
 
-                  do_action('mailpn_form_save', $post_id, $key_value, $mailpn_form_type, $mailpn_form_subtype);
+                  do_action('mailpn_form_save', $post_id, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype);
                   break;
                 case 'option':
                   if (MAILPN_Functions_User::is_user_admin(get_current_user_id())) {
-                    foreach ($key_value as $key => $value) {
-                      update_option($key, $value);
+                    foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
+                      update_option($mailpn_key, $mailpn_value);
                     }
                   }
 
-                  do_action('mailpn_form_save', 0, $key_value, $mailpn_form_type, $mailpn_form_subtype);
+                  do_action('mailpn_form_save', 0, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype);
                   break;
               }
 
@@ -161,19 +161,31 @@ class MAILPN_Ajax_Nopriv {
 
               if ($update_list && !empty($post_type)) {
                 switch ($post_type) {
-                  case 'mailpn_basecpt':
-                    $plugin_post_type_basecpt = new MAILPN_Post_Type_BaseCPT();
-                    $update_html = $plugin_post_type_basecpt->mailpn_basecpt_list();
+                  case 'mailpn_mail':
+                    $plugin_post_type_mail = new MAILPN_Post_Type_Mail();
+                    $update_html = $plugin_post_type_mail->mailpn_mail_list();
                     break;
                 }
               }else{
                 $update_html = '';
               }
 
-              echo wp_json_encode(['error_key' => '', 'popup_close' => $popup_close, 'update_list' => $update_list, 'update_html' => $update_html]);exit();
+              echo wp_json_encode([
+                'error_key' => '', 
+                'popup_close' => $popup_close, 
+                'update_list' => $update_list, 
+                'update_html' => $update_html
+              ]);
+              
+              exit();
             }
           }else{
-            echo wp_json_encode(['error_key' => 'mailpn_form_save_error', ]);exit();
+            echo wp_json_encode([
+              'error_key' => 'mailpn_form_save_error', 
+              'error_content' => esc_html(__('Error saving form.', 'mailpn')),
+            ]);
+
+            exit();
           }
           break;
       }

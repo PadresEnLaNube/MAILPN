@@ -27,6 +27,7 @@ class MAILPN_Post_Type_Rec {
       'id' => 'mailpn_rec_type',
       'class' => 'mailpn-select mailpn-width-100-percent',
       'disabled' => 'true',
+      'required' => 'true',
       'input' => 'select',
       'options' => MAILPN_Data::mailpn_mail_types(),
       'label' => __('Email type', 'mailpn'),
@@ -68,8 +69,8 @@ class MAILPN_Post_Type_Rec {
       'label' => __('Mail HTML content', 'mailpn'),
       'placeholder' => __('Mail HTML content', 'mailpn'),
     ];
-    $mailpn_fields_meta['ajax_nonce'] = [
-      'id' => 'ajax_nonce',
+    $mailpn_fields_meta['mailpn_ajax_nonce'] = [
+      'id' => 'mailpn_ajax_nonce',
       'input' => 'input',
       'type' => 'nonce',
     ];
@@ -151,20 +152,20 @@ class MAILPN_Post_Type_Rec {
    * @return int|void
    */
   public function mailpn_save_post($post_id, $cpt, $update) {
-    if($cpt->post_type == 'mailpn_rec'){
+    if($cpt->post_type == 'mailpn_rec' && array_key_exists('mailpn_rec_type', $_POST)){
       // Always require nonce verification
-      if (!array_key_exists('ajax_nonce', $_POST)) {
+      if (!array_key_exists('mailpn_ajax_nonce', $_POST)) {
         echo wp_json_encode([
-          'error_key' => 'mailpn_nonce_error',
+          'error_key' => 'mailpn_rec_nonce_error_required',
           'error_content' => esc_html(__('Security check failed: Nonce is required.', 'mailpn')),
         ]);
 
         exit();
       }
 
-      if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ajax_nonce'])), 'mailpn-nonce')) {
+      if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_ajax_nonce'])), 'mailpn-nonce')) {
         echo wp_json_encode([
-          'error_key' => 'mailpn_nonce_error',
+          'error_key' => 'mailpn_rec_nonce_error_invalid',
           'error_content' => esc_html(__('Security check failed: Invalid nonce.', 'mailpn')),
         ]);
 
@@ -272,7 +273,7 @@ class MAILPN_Post_Type_Rec {
               }
 
               $post_functions = new MAILPN_Functions_Post();
-              $mail_id = $post_functions->insert_post(esc_html($mailpn_title), $mailpn_description, '', sanitize_title(esc_html($mailpn_title)), 'mailpn_rec', 'publish', get_current_user_id());
+              $mail_id = $post_functions->insert_post(esc_html($rec_), $mailpn_description, '', sanitize_title(esc_html($rec_)), 'mailpn_rec', 'publish', get_current_user_id());
 
               if (!empty($key_value)) {
                 foreach ($key_value as $key => $value) {
@@ -292,7 +293,7 @@ class MAILPN_Post_Type_Rec {
               }
 
               $mail_id = $element_id;
-              wp_update_post(['ID' => $mail_id, 'post_title' => $mailpn_title, 'post_content' => $mailpn_description,]);
+              wp_update_post(['ID' => $mail_id, 'post_title' => $rec_, 'post_content' => $mailpn_description,]);
 
               if (!empty($key_value)) {
                 foreach ($key_value as $key => $value) {

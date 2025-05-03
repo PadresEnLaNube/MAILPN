@@ -113,7 +113,7 @@ class MAILPN_Common {
 
 		wp_localize_script($this->plugin_name, 'mailpn_ajax', [
 			'ajax_url' => admin_url('admin-ajax.php'),
-			'ajax_nonce' => wp_create_nonce('mailpn-nonce'),
+			'mailpn_ajax_nonce' => wp_create_nonce('mailpn-nonce'),
 		]);
 
 		wp_localize_script($this->plugin_name, 'mailpn_path', [
@@ -126,11 +126,14 @@ class MAILPN_Common {
 
 		$mailpn_action = !empty($_GET['mailpn_action']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_action'])) : '';
 		$mailpn_btn_id = !empty($_GET['mailpn_btn_id']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_btn_id'])) : '';
+		$mailpn_popup = !empty($_GET['mailpn_popup']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_popup'])) : '';
+		$mailpn_tab = !empty($_GET['mailpn_tab']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_tab'])) : '';
 		
-		// https://padresenlanube.com/guests/?mailpn_action=btn&mailpn_btn_id=mailpn-popup-guest-add-btn
 		wp_localize_script($this->plugin_name, 'mailpn_action', [
 			'action' => $mailpn_action,
 			'btn_id' => $mailpn_btn_id,
+			'popup' => $mailpn_popup,
+			'tab' => $mailpn_tab,
 		]);
 
 		wp_localize_script($this->plugin_name, 'mailpn_trumbowyg', [

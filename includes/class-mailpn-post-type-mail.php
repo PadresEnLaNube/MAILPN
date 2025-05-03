@@ -203,8 +203,8 @@ class MAILPN_Post_Type_Mail {
       'placeholder' => __('Mail attachments', 'mailpn'),
       'description' => __('You can include several files to be sent with this email as attachments. To see the files here, please upload them in the library and then refresh this page.', 'mailpn'),
     ];
-    $mailpn_fields_meta['ajax_nonce'] = [
-      'id' => 'ajax_nonce',
+    $mailpn_fields_meta['mailpn_ajax_nonce'] = [
+      'id' => 'mailpn_ajax_nonce',
       'input' => 'input',
       'type' => 'nonce',
     ];
@@ -280,20 +280,20 @@ class MAILPN_Post_Type_Mail {
   }
 
   public function mailpn_save_post($post_id, $cpt, $update) {
-    if($cpt->post_type == 'mailpn_mail'){
+    if($cpt->post_type == 'mailpn_mail' && array_key_exists('mailpn_type', $_POST)){
       // Always require nonce verification
-      if (!array_key_exists('ajax_nonce', $_POST)) {
+      if (!array_key_exists('mailpn_ajax_nonce', $_POST)) {
         echo wp_json_encode([
-          'error_key' => 'mailpn_nonce_error',
+          'error_key' => 'mailpn_mail_nonce_error_required',
           'error_content' => esc_html(__('Security check failed: Nonce is required.', 'mailpn')),
         ]);
 
         exit();
       }
 
-      if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ajax_nonce'])), 'mailpn-nonce')) {
+      if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_ajax_nonce'])), 'mailpn-nonce')) {
         echo wp_json_encode([
-          'error_key' => 'mailpn_nonce_error',
+          'error_key' => 'mailpn_mail_nonce_error_invalid',
           'error_content' => esc_html(__('Security check failed: Invalid nonce.', 'mailpn')),
         ]);
 

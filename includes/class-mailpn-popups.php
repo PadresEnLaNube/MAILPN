@@ -39,9 +39,9 @@ class MAILPN_Popups {
             <div class="mailpn-popup-overlay"></div>
             <div class="mailpn-popup-content">
                 <?php if ($options['closeButton']) : ?>
-                    <button type="button" class="mailpn-popup-close">&times;</button>
+                    <button type="button" class="mailpn-popup-close"><i class="material-icons-outlined">close</i></button>
                 <?php endif; ?>
-                <?php echo $content; ?>
+                <?php echo wp_kses_post($content); ?>
             </div>
         </div>
         <?php

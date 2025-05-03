@@ -57,6 +57,7 @@ class MAILPN_Admin {
 	 * @since    1.0.0
 	 */
 	public function mailpn_enqueue_scripts() {
+		wp_enqueue_media();
 		wp_enqueue_script($this->plugin_name . '-admin', MAILPN_URL . 'assets/js/admin/mailpn-admin.js', ['jquery'], $this->version, false);
 	}
 }

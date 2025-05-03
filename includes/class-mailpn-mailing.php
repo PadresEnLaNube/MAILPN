@@ -288,11 +288,14 @@ class MAILPN_Mailing {
                         <table align="center">
                           <tr>
                             <td align="center">
-                              <a href="<?php echo esc_url(home_url()) . '?mailpn_action=popup_open&mailpn_popup=userspn-profile-popup'; ?>"><small><?php esc_html_e('Manage subscription', 'mailpn'); ?></small></a>
+                              <a href="<?php echo esc_url(add_query_arg(['mailpn_action' => 'popup_open', 'mailpn_popup' => 'userspn-profile-popup', 'mailpn_tab' => 'notifications', '_wpnonce' => wp_create_nonce('mailpn_action')], home_url())); ?>"><small><?php esc_html_e('Manage subscription', 'mailpn'); ?></small></a>
                             </td>
+                            
+                            <td></td>
+
                             <td align="center">
                               <?php if (!filter_var($user_id, FILTER_VALIDATE_EMAIL)): ?>
-                                <?php self::mailpn_subscription_unsubscribe_btn($user_id); ?>
+                                <?php echo self::mailpn_subscription_unsubscribe_btn($user_id); ?>
                               <?php endif ?>
                             </td>
                           </tr>

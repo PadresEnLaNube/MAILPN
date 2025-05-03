@@ -28,9 +28,9 @@
 
     var data = {
       action: 'mailpn_ajax',
-      ajax_nonce: mailpn_ajax.ajax_nonce,
       mailpn_ajax_type: 'mailpn_options_save',
-      ajax_keys: [],
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+      mailpn_ajax_keys: [],
     };
 
     if (!(typeof window['mailpn_window_vars'] !== 'undefined')) {
@@ -58,7 +58,7 @@
         }
       }
 
-      data.ajax_keys.push({
+      data.mailpn_ajax_keys.push({
         id: element.id,
         node: element.nodeName,
         type: element.type,
@@ -89,8 +89,8 @@
 
     var data = {
       action: 'mailpn_ajax',
-      ajax_nonce: mailpn_ajax.ajax_nonce,
       mailpn_ajax_type: 'mailpn_resend_errors',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
       mail_id: post_id,
     };
 

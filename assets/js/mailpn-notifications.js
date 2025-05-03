@@ -2,6 +2,6 @@
 	'use strict';
 
     $(document).ready(function() {
-        $.fancybox.open($('#mailpn-popup-notice'), {touch: false});
+        MAILPN_Popup.open($('#mailpn-popup-notice'));
     });
 })(jQuery);

@@ -10,7 +10,7 @@
       var ajax_url = mailpn_ajax.ajax_url;
       var data = {
         action: 'mailpn_ajax_nopriv',
-        ajax_nonce: mailpn_ajax.ajax_nonce,
+        mailpn_ajax_nopriv_nonce: mailpn_ajax.mailpn_ajax_nonce,
         mailpn_ajax_nopriv_type: 'mailpn_form_save',
         mailpn_form_id: mailpn_form.attr('id'),
         mailpn_form_type: mailpn_btn.attr('data-mailpn-type'),
@@ -18,7 +18,7 @@
         mailpn_form_user_id: mailpn_btn.attr('data-mailpn-user-id'),
         mailpn_form_post_id: mailpn_btn.attr('data-mailpn-post-id'),
         mailpn_form_post_type: mailpn_form.attr('data-mailpn-post-type'),
-        ajax_keys: [],
+        mailpn_ajax_keys: [],
       };
 
       if (!(typeof window['mailpn_window_vars'] !== 'undefined')) {
@@ -50,7 +50,7 @@
           }
         }
 
-        data.ajax_keys.push({
+        data.mailpn_ajax_keys.push({
           id: element.name,
           node: element.nodeName,
           type: element.type,
@@ -87,7 +87,7 @@
         if (response_json['check'] == 'post_check') {
           MILLA_Popups.close();
           $('.mailpn-menu-more-overlay').fadeOut('fast');
-          $('.mailpn-' + data.mailpn_form_post_type + '[data-mailpn-' + data.mailpn_form_post_type + '-id="' + data.mailpn_form_post_id + '"] .mailpn-check-wrapper i').text('basecpt_alt');
+          $('.mailpn-' + data.mailpn_form_post_type + '[data-mailpn-' + data.mailpn_form_post_type + '-id="' + data.mailpn_form_post_id + '"] .mailpn-check-wrapper i').text('mail_alt');
         }else if (response_json['check'] == 'post_uncheck') {
           MILLA_Popups.close();
           $('.mailpn-menu-more-overlay').fadeOut('fast');
@@ -99,85 +99,6 @@
 
       delete window['mailpn_window_vars'];
       return false;
-    });
-
-    $(document).on('click', '.mailpn-popup-open-ajax', function(e) {
-      e.preventDefault();
-
-      var mailpn_btn = $(this);
-      var mailpn_ajax_type = mailpn_btn.attr('data-mailpn-ajax-type');
-      var mailpn_basecpt_id = mailpn_btn.closest('.mailpn-basecpt').attr('data-mailpn-basecpt-id');
-      var popup_element = $('#' + mailpn_btn.attr('data-mailpn-popup-id'));
-
-      MAILPN_Popups.open(popup_element, {
-        beforeShow: function(instance, popup) {
-          var ajax_url = mailpn_ajax.ajax_url;
-          var data = {
-            action: 'mailpn_ajax',
-            mailpn_ajax_type: mailpn_ajax_type,
-            mailpn_basecpt_id: mailpn_basecpt_id ? mailpn_basecpt_id : '',
-            ajax_nonce: mailpn_ajax.ajax_nonce
-          };
-
-          // Log the data being sent
-          console.log('MAILPN AJAX - Sending request with data:', data);
-
-          $.ajax({
-            url: ajax_url,
-            type: 'POST',
-            data: data,
-            success: function(response) {
-              try {
-                // First try to parse the response as JSON
-                var jsonResponse = typeof response === 'string' ? JSON.parse(response) : response;
-                
-                // Check for error key in response
-                if (jsonResponse.error_key) {
-                  mailpn_get_main_message('MAILPN AJAX - Server returned error:', jsonResponse.error_key);
-                  // Display the error message if available, otherwise show generic error
-                  var errorMessage = jsonResponse.error_ || mailpn_i18n.an_error_has_occurred;
-                  mailpn_get_main_message(errorMessage);
-                  return;
-                }
-
-                // Check for HTML content
-                if (jsonResponse.html) {
-                  console.log('MAILPN AJAX - HTML content received');
-                  popup_element.find('.mailpn-popup-content').html(jsonResponse.html);
-                  
-                  // Initialize media uploaders if function exists
-                  if (typeof initMediaUpload === 'function') {
-                    $('.mailpn-image-upload-wrapper').each(function() {
-                      initMediaUpload($(this), 'image');
-                    });
-                    $('.mailpn-audio-upload-wrapper').each(function() {
-                      initMediaUpload($(this), 'audio');
-                    });
-                    $('.mailpn-video-upload-wrapper').each(function() {
-                      initMediaUpload($(this), 'video');
-                    });
-                  }
-                } else {
-                  console.log('MAILPN AJAX - Response missing HTML content');
-                  console.log(mailpn_i18n.an_error_has_occurred);
-                }
-              } catch (e) {
-                console.log('MAILPN AJAX - Failed to parse response:', e);
-                console.log('Raw response:', response);
-                console.log(mailpn_i18n.an_error_has_occurred);
-              }
-            },
-            error: function(xhr, status, error) {
-              console.log('MAILPN AJAX - Request failed:', status, error);
-              console.log('Response:', xhr.responseText);
-              console.log(mailpn_i18n.an_error_has_occurred);
-            }
-          });
-        },
-        afterClose: function() {
-          popup_element.find('.mailpn-popup-content').html('<div class="mailpn-loader-circle-wrapper"><div class="mailpn-text-align-center"><div class="mailpn-loader-circle"><div></div><div></div><div></div><div></div></div></div></div>');
-        },
-      });
     });
 
     $(document).on('click', '.mailpn-test-email-btn', function(e) {
@@ -195,7 +116,7 @@
       var data = {
         action: 'mailpn_ajax',
         mailpn_ajax_type: 'mailpn_test_email_send',
-        ajax_nonce: mailpn_ajax.ajax_nonce,
+        mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
       };
 
       $.post(ajax_url, data, function(response) {
@@ -204,10 +125,10 @@
 
         if (response.error_key == '') {
           mailpn_get_main_message(response.error_content);
-          result.html('<span class="mailpn-alert mailpn-alert-success">' + response.error_content + '</span>');
+          result.html('<p class="mailpn-alert mailpn-alert-success">' + response.error_content + '</p>');
         } else {
           mailpn_get_main_message(response.error_content);
-          result.html('<span class="mailpn-alert mailpn-alert-error">' + response.error_content + '</span>');
+          result.html('<p class="mailpn-alert mailpn-alert-error">' + response.error_content + '</p>');
         }
 
         btn.removeClass('mailpn-link-disabled');

@@ -76,4 +76,5 @@ function mailpn_run() {
 	MAILPN_Activator::mailpn_activate();
 }
 
-mailpn_run();
+// Initialize the plugin on plugins_loaded hook
+add_action('plugins_loaded', 'mailpn_run');

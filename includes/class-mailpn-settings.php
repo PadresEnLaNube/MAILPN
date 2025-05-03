@@ -229,10 +229,10 @@ class MAILPN_Settings {
         <img src="<?php echo esc_url(MAILPN_URL . 'assets/media/banner-1544x500.png'); ?>" alt="<?php esc_html_e('Plugin main Banner', 'mailpn'); ?>" title="<?php esc_html_e('Plugin main Banner', 'mailpn'); ?>" class="mailpn-width-100-percent mailpn-border-radius-20 mailpn-mb-30">
 
         <div class="mailpn-display-table mailpn-width-100-percent">
-          <div class="mailpn-display-inline-table mailpn-width-80-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+          <div class="mailpn-display-inline-table mailpn-width-70-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
             <h1 class="mailpn-mb-30"><?php esc_html_e('Mailing Manager - MAILPN Settings', 'mailpn'); ?></h1>
           </div>
-          <div class="mailpn-display-inline-table mailpn-width-20-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+          <div class="mailpn-display-inline-table mailpn-width-30-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-text-align-center">
             <?php echo do_shortcode('[mailpn-test-email-button]'); ?>
           </div>
         </div>
@@ -275,12 +275,19 @@ class MAILPN_Settings {
         return;
     }
 
-    // Add nonce check for all actions
-    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'mailpn_action')) {
-        wp_die(__('Security check failed', 'mailpn'));
-    }
-
     switch (sanitize_text_field($_GET['mailpn_action'])) {
+        case 'popup_open':
+            if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'mailpn_action')) {
+                wp_die(__('Security check failed: invalid nonce', 'mailpn'));
+            }
+            
+            if (!isset($_GET['mailpn_popup'])) {
+                wp_safe_redirect(home_url());
+                exit();
+            }
+            // The popup will be handled by JavaScript
+            break;
+            
         case 'subscription-unsubscribe':
             if (!isset($_GET['subscription-unsubscribe-nonce']) || 
                 !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['subscription-unsubscribe-nonce'])), 'subscription-unsubscribe')) {
