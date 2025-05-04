@@ -302,17 +302,16 @@ class MAILPN_Settings {
 
     switch (sanitize_text_field($_GET['mailpn_action'])) {
         case 'popup_open':
-            if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'mailpn_action')) {
-                wp_die(__('Security check failed: invalid nonce', 'mailpn'));
-            }
-            
-            if (!isset($_GET['mailpn_popup'])) {
-                wp_safe_redirect(home_url());
-                exit;
-            }
-            // The popup will be handled by JavaScript
-            break;
-            
+          if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'mailpn_action')) {
+              wp_die(esc_html__('Security check failed: invalid nonce', 'mailpn'));
+          }
+          
+          if (!isset($_GET['mailpn_popup'])) {
+              wp_safe_redirect(home_url());
+              exit;
+          }
+          // The popup will be handled by JavaScript
+          break;
         case 'subscription-unsubscribe':
             if (!isset($_GET['subscription-unsubscribe-nonce']) || 
                 !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['subscription-unsubscribe-nonce'])), 'subscription-unsubscribe')) {

@@ -293,7 +293,7 @@ class MAILPN_Mailing {
 
                             <td align="center">
                               <?php if (!filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL)): ?>
-                                <?php echo self::mailpn_subscription_unsubscribe_btn($mailpn_user_to); ?>
+                                <?php echo wp_kses_post(self::mailpn_subscription_unsubscribe_btn($mailpn_user_to)); ?>
                               <?php endif ?>
                             </td>
                           </tr>
@@ -386,7 +386,8 @@ class MAILPN_Mailing {
     header('Pragma: no-cache');
     header('Expires: 0');
     
-    echo base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+    // Use a predefined constant for the 1x1 transparent GIF
+    echo "\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\xff\xff\xff\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b";
     exit;
   }
 
