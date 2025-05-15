@@ -54,9 +54,11 @@ class MAILPN_Popups {
      * Close a popup
      */
     public static function close($id = null) {
-        if ($id) {
-            return "<script>jQuery('#" . esc_js($id) . "').remove();</script>";
-        }
-        return "<script>jQuery('.mailpn-popup').remove();</script>";
+        $script = $id 
+            ? "MAILPN_Popups.close('" . esc_js($id) . "');"
+            : "MAILPN_Popups.close();";
+            
+        wp_add_inline_script('mailpn-popups', $script);
+        return '';
     }
 } 

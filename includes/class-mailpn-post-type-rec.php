@@ -118,7 +118,7 @@ class MAILPN_Post_Type_Rec {
       'publicly_queryable'  => false,
       'capability_type'     => 'page',
       'taxonomies'          => MAILPN_ROLE_CAPABILITIES,
-      'show_in_rest'        => true, /* REST API */
+      'show_in_rest'        => false, /* REST API */
     ];
 
     register_post_type('mailpn_rec', $args);

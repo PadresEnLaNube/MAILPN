@@ -104,17 +104,8 @@ The Mailing Manager - PN plugin is tested with the latest version of WordPress. 
 To uninstall the plugin, go to the 'Plugins' screen in WordPress, find the Mailing Manager - PN plugin, and click 'Deactivate'. After deactivating, you can click 'Delete' to remove the plugin and its files from your site. Note that this will not delete your recipes, but you should back up your data before uninstalling any plugin.
 
 
-== Screenshots ==
-
-1. Grid Mail portfolio front-end view.
-2. Recipe details front-end page. It includes the ingredients list view, steps and suggestions.
-3. Interactive view of the recipe steps with time ticking.
-4. Dashboard recipes list view.
-5. Dashboard recipe edition page including meta fields.
-
-
 == Changelog ==
 
 = 1.0.0 =
 
-Hello world!
+Hello mailing world!

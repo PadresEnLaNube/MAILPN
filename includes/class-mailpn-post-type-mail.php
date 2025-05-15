@@ -252,7 +252,7 @@ class MAILPN_Post_Type_Mail {
       'publicly_queryable'  => false,
       'capability_type'     => 'page',
       'taxonomies'          => MAILPN_ROLE_CAPABILITIES,
-      'show_in_rest'        => true, /* REST API */
+      'show_in_rest'        => false, /* REST API */
     ];
 
     register_post_type('mailpn_mail', $args);

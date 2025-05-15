@@ -34,7 +34,7 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('MAILPN_VERSION', '1.0.1');
+define('MAILPN_VERSION', '1.0.0');
 define('MAILPN_DIR', plugin_dir_path(__FILE__));
 define('MAILPN_URL', plugin_dir_url(__FILE__));
 

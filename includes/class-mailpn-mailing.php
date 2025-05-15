@@ -13,10 +13,13 @@
 class MAILPN_Mailing {
   public function mailpn_text($atts) {
     /* echo do_shortcode('[mailpn-text query="addressee_name"]'); */
-    $a = extract(shortcode_atts([
+    $atts = shortcode_atts([
       'user_id' => 'addressee_user_id',
       'query' => 'addressee_name',
-    ], $atts));
+    ], $atts);
+    
+    $user_id = $atts['user_id'];
+    $query = $atts['query'];
 
     $user_info = get_userdata($user_id);
 
@@ -40,9 +43,11 @@ class MAILPN_Mailing {
 
   public function mailpn_contents($atts) {
     /* echo do_shortcode('[mailpn-test mailpn_user_id="1"]'); */
-    $a = extract(shortcode_atts([
+    $atts = shortcode_atts([
       'post_id' => 0,
-    ], $atts));
+    ], $atts);
+    
+    $post_id = $atts['post_id'];
     /* echo do_shortcode('[mailpn-contents]'); */
 
     $mail_type = get_post_meta($post_id, 'mailpn_type', true);
@@ -86,7 +91,7 @@ class MAILPN_Mailing {
 
   public function mailpn_sender($atts, $mailpn_content = null) {
     /* echo do_shortcode('[mailpn-sender mailpn_type="email_welcome" mailpn_user_to="1" mailpn_subject="Mail Subject"]<h2 class="mailpn_h2_styles">Title</h2><p class="mailpn_p_styles">Paragraph</p>[/mailpn-sender]'); */
-    $a = extract(shortcode_atts([
+    $atts = shortcode_atts([
       'mailpn_user_to' => 1,
       'mailpn_id' => 0,
       'post_id' => 0,
@@ -94,7 +99,15 @@ class MAILPN_Mailing {
       'mailpn_once' => 0,
       'mailpn_type' => '',
       'mailpn_subject' => '',
-    ], $atts));
+    ], $atts);
+    
+    $mailpn_user_to = $atts['mailpn_user_to'];
+    $mailpn_id = $atts['mailpn_id'];
+    $post_id = $atts['post_id'];
+    $post_parent_id = $atts['post_parent_id'];
+    $mailpn_once = $atts['mailpn_once'];
+    $mailpn_type = $atts['mailpn_type'];
+    $mailpn_subject = $atts['mailpn_subject'];
 
     $mailpn_result = 0;
     $user_email = get_userdata($mailpn_user_to)->user_email;
@@ -217,10 +230,6 @@ class MAILPN_Mailing {
           <meta name="viewport" content="width=device-width" />
           <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
           <title><?php echo esc_html($mailpn_subject); ?></title>          
-
-          <style>
-            
-          </style>
         </head>
 
         <body class="mailpn-content">
