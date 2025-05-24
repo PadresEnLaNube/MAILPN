@@ -98,6 +98,7 @@ class MAILPN {
 	 * - MAILPN_Cron. Define all cron jobs for the platform.
 	 * - MAILPN_Mailing. Define all mailing functions for the platform.
 	 * - MAILPN_Notifications. Define all notifications for the platform.
+	 * - MAILPN_Click_Tracking. Define click tracking functionality.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks with WordPress.
 	 *
@@ -220,6 +221,11 @@ class MAILPN {
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-popups.php';
 
+		/**
+		 * The class responsible for click tracking functionality.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-click-tracking.php';
+
 		$this->mailpn_loader = new MAILPN_Loader();
 	}
 
@@ -260,6 +266,37 @@ class MAILPN {
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
 		$this->mailpn_loader->mailpn_add_action('mailpn_form_save', $plugin_post_type_rec, 'mailpn_form_save', 4, 999);
+
+		// Add click tracking endpoint
+		add_action('init', function() {
+			add_rewrite_rule(
+				'^mailpn-track/?$',
+				'index.php?mailpn-track=1',
+				'top'
+			);
+		});
+		
+		add_filter('query_vars', function($vars) {
+			$vars[] = 'mailpn-track';
+			$vars[] = 'mail_id';
+			$vars[] = 'user_id';
+			$vars[] = 'url';
+			return $vars;
+		});
+		
+		add_action('template_redirect', function() {
+			if (get_query_var('mailpn-track')) {
+				$mail_id = get_query_var('mail_id');
+				$user_id = get_query_var('user_id');
+				$url = urldecode(get_query_var('url'));
+				
+				if ($mail_id && $user_id && $url) {
+					MAILPN_Click_Tracking::track_click($mail_id, $user_id, $url);
+					wp_redirect($url);
+					exit;
+				}
+			}
+		});
 	}
 
 	/**
@@ -400,11 +437,12 @@ class MAILPN {
 		$plugin_settings = new MAILPN_Settings();
 		$this->mailpn_loader->mailpn_add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
 		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'activated_plugin');
-		$this->mailpn_loader->mailpn_add_action('user_register', $plugin_settings, 'mailpn_user_register', 11, 1);		
-		$this->mailpn_loader->mailpn_add_action('init', $plugin_settings, 'mailpn_init_hook');		
+		$this->mailpn_loader->mailpn_add_action('user_register', $plugin_settings, 'mailpn_user_register', 11, 1);
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_settings, 'mailpn_init_hook');
 		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_settings, 'mailpn_pre_get_posts');
 		$this->mailpn_loader->mailpn_add_filter('wp_mail_from', $plugin_settings, 'mailpn_wp_mail_from', 999);
 		$this->mailpn_loader->mailpn_add_filter('wp_mail_from_name', $plugin_settings, 'mailpn_wp_mail_from_name', 999);
+		$this->mailpn_loader->mailpn_add_filter('plugin_action_links_mailpn/mailpn.php', $plugin_settings, 'mailpn_plugin_action_links');
 	}
 
 	/**

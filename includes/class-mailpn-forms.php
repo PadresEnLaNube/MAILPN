@@ -382,7 +382,7 @@ class MAILPN_Forms {
         }
 
         ?>
-          <div class="mailpn-html-multi-wrapper mailpn-mb-50" <?php echo wp_kses_post($mailpn_parent_block); ?>>
+          <div class="mailpn-field mailpn-html-multi-wrapper mailpn-mb-50" <?php echo wp_kses_post($mailpn_parent_block); ?>>
             <?php if ($html_multi_fields_length): ?>
               <?php foreach (range(0, ($html_multi_fields_length - 1)) as $length_index): ?>
                 <div class="mailpn-html-multi-group mailpn-display-table mailpn-width-100-percent mailpn-mb-30">

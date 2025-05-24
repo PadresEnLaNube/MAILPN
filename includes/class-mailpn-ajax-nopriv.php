@@ -169,8 +169,16 @@ class MAILPN_Ajax_Nopriv {
                   if (MAILPN_Functions_User::is_user_admin(get_current_user_id())) {
                     $mailpn_settings = new MAILPN_Settings();
                     $mailpn_options = $mailpn_settings->mailpn_get_options();
-                    $allowed_options = array_keys($mailpn_options);
+                    $mailpn_allowed_options = array_keys($mailpn_options);
                     
+                    foreach ($mailpn_options as $mailpn_option) {
+                      if ($mailpn_option['input'] == 'html_multi') {
+                        foreach ($mailpn_option['html_multi_fields'] as $mailpn_multi_field) {
+                          $mailpn_allowed_options[] = $mailpn_multi_field['id'];
+                        }
+                      }
+                    }
+
                     foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
                       // Skip action and ajax type keys
                       if (in_array($mailpn_key, ['action', 'mailpn_ajax_nopriv_type'])) {
@@ -183,7 +191,7 @@ class MAILPN_Ajax_Nopriv {
                       }
 
                       // Only update if option is in allowed options list
-                      if (in_array($mailpn_key, $allowed_options)) {
+                      if (in_array($mailpn_key, $mailpn_allowed_options)) {
                         update_option($mailpn_key, $mailpn_value);
                       }
                     }

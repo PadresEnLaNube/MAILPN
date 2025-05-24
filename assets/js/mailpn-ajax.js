@@ -58,6 +58,11 @@
       });
 
       $.post(ajax_url, data, function(response) {
+        console.log('data');
+        console.log(data);
+        console.log('response');
+        console.log(response);
+
         var response_json = $.parseJSON(response);
 
         if (response_json['error_key'] == 'mailpn_form_save_error_unlogged') {

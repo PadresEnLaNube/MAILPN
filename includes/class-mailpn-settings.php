@@ -168,7 +168,86 @@ class MAILPN_Settings {
           'label' => __('Email contents after reset password link', 'mailpn'),
           'description' => __('If you complete this field the contents after the reset password link of the email will be customized with your information.', 'mailpn'),
         ];
-    $mailpn_options['mailpn_section_mechanics_end'] = [
+      $mailpn_options['mailpn_exception_emails'] = [
+        'id' => 'mailpn_exception_emails',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'checkbox',
+        'parent' => 'this',
+        'label' => __('Exception emails', 'mailpn'),
+        'placeholder' => __('Exception emails', 'mailpn'),
+        'description' => __('Set the email addresses or domains that will be excluded from the email sending.', 'mailpn'),
+      ];
+        $mailpn_domain = str_replace(['www.', 'http://', 'https://'], '', get_bloginfo('url'));
+
+        $mailpn_options['mailpn_exception_emails_domains'] = [
+          'id' => 'mailpn_exception_emails_domains',
+          'class' => 'mailpn-input mailpn-width-100-percent',
+          'input' => 'input',
+          'type' => 'checkbox',
+          'parent' => 'this mailpn_exception_emails',
+          'parent_option' => 'on',
+          'label' => __('Exception emails domains', 'mailpn'),
+          'placeholder' => __('Exception emails domains', 'mailpn'),
+          'description' => __('You can set complete domains that will be excluded from the email sending.', 'mailpn'),
+        ];
+          $mailpn_options['mailpn_exception_emails_domains_list'] = [
+            'id' => 'mailpn_exception_emails_domains_list',
+            'class' => 'mailpn-input mailpn-width-100-percent',
+            'input' => 'html_multi',
+            'multi_array' => ['address', ],
+            'parent' => 'mailpn_exception_emails_domains',
+            'parent_option' => 'on',
+            'label' => __('Exception emails domains list', 'mailpn'),
+            'placeholder' => __('Exception emails domains list', 'mailpn'),
+            'description' => __('Set the domains that will be excluded from the email sending. You can set the domains separated by commas.', 'mailpn'),
+            'html_multi_fields' => [
+              $mailpn_exception_emails_domain = [
+                'id' => 'mailpn_exception_emails_domain',
+                'class' => 'mailpn-input mailpn-width-100-percent',
+                'input' => 'input',
+                'type' => 'text',
+                'multiple' => true,
+                'label' => esc_html(__('Domain (for example: @' . $mailpn_domain, 'mailpn')),
+                'placeholder' => esc_html(__('@' . $mailpn_domain, 'mailpn')),
+              ],
+            ]
+          ];
+        $mailpn_options['mailpn_exception_emails_addresses'] = [
+          'id' => 'mailpn_exception_emails_addresses',
+          'class' => 'mailpn-input mailpn-width-100-percent',
+          'input' => 'input',
+          'type' => 'checkbox',
+          'parent' => 'this mailpn_exception_emails',
+          'parent_option' => 'on',
+          'label' => __('Exception emails addresses', 'mailpn'),
+          'placeholder' => __('Exception emails addresses', 'mailpn'),
+          'description' => __('You can set the addresses that will be excluded from the email sending.', 'mailpn'),
+        ];
+          $mailpn_options['mailpn_exception_emails_addresses_list'] = [
+            'id' => 'mailpn_exception_emails_addresses_list',
+            'class' => 'mailpn-input mailpn-width-100-percent',
+            'input' => 'html_multi',
+            'multi_array' => ['address', ],
+            'parent' => 'mailpn_exception_emails_addresses',
+            'parent_option' => 'on',
+            'label' => __('Exception emails addresses list', 'mailpn'),
+            'placeholder' => __('Exception emails addresses list', 'mailpn'),
+            'description' => __('Set the addresses that will be excluded from the email sending. You can set the addresses separated by commas.', 'mailpn'),
+            'html_multi_fields' => [
+              $mailpn_exception_emails_address = [
+                'id' => 'mailpn_exception_emails_address',
+                'class' => 'mailpn-input mailpn-width-100-percent',
+                'input' => 'input',
+                'type' => 'text',
+                'multiple' => 'true',
+                'parent' => 'mailpn_exception_emails_addresses_list',
+                'label' => esc_html(__('Address (for example: info@' . $mailpn_domain, 'mailpn')),
+                'placeholder' => esc_html(__('info@' . $mailpn_domain, 'mailpn')),
+              ],
+            ]
+          ];
+  $mailpn_options['mailpn_section_mechanics_end'] = [
       'section' => 'end',
     ];
     $mailpn_options['mailpn_section_design_start'] = [
@@ -193,6 +272,14 @@ class MAILPN_Settings {
     $mailpn_options['mailpn_section_design_end'] = [
       'section' => 'end',
     ];
+    $mailpn_options['mailpn_click_tracking'] = [
+        'id' => 'mailpn_click_tracking',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'checkbox',
+        'label' => __('Enable click tracking', 'mailpn'),
+        'description' => __('Track clicks on links in emails to gather statistics about user engagement.', 'mailpn'),
+    ];
     $mailpn_options['mailpn_submit'] = [
       'id' => 'mailpn_submit',
       'input' => 'input',
@@ -215,7 +302,7 @@ class MAILPN_Settings {
       'administrator', 
       'mailpn_options', 
       [$this, 'mailpn_options'], 
-      esc_url(MAILPN_URL . 'assets/media/mailpn-menu-icon.svg')
+      esc_url(MAILPN_URL . 'assets/media/mailpn-menu-icon.svg'),
     );
 
     add_submenu_page(
@@ -223,7 +310,7 @@ class MAILPN_Settings {
       esc_html__('Mail Templates', 'mailpn'), 
       esc_html__('Mail Templates', 'mailpn'), 
       'administrator', 
-      'edit.php?post_type=mailpn_mail'
+      'edit.php?post_type=mailpn_mail',
     );
     
     add_submenu_page(
@@ -231,7 +318,7 @@ class MAILPN_Settings {
       esc_html__('Mail Records', 'mailpn'), 
       esc_html__('Mail Records', 'mailpn'), 
       'administrator', 
-      'edit.php?post_type=mailpn_rec'
+      'edit.php?post_type=mailpn_rec',
     );
 
     global $menu;
@@ -350,5 +437,15 @@ class MAILPN_Settings {
         $query->set('meta_query', ['relation'  => 'AND', $meta_query]);
       }
     }
+  }
+
+  /**
+   * Adds the Settings link to the plugin list
+   */
+  public function mailpn_plugin_action_links($links) {
+      $settings_link = '<a href="admin.php?page=mailpn_options">' . esc_html__('Settings', 'mailpn') . '</a>';
+      array_unshift($links, $settings_link);
+      
+      return $links;
   }
 }

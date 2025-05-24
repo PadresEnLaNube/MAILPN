@@ -27,4 +27,20 @@
       mailpn_btn.removeClass('mailpn-link-disabled').siblings('.mailpn-waiting').addClass('mailpn-display-none')
     });
   });
+
+  // MailPN Stats Popup
+  $(document).on('click', '.mailpn-stats-button', function(e) {
+    e.preventDefault();
+    const postId = $(this).data('post-id');
+    const popupContent = $('#mailpn-stats-popup-' + postId).html();
+    
+    // Use the existing popup system
+    MAILPN_Popups.open(popupContent, {
+      id: 'mailpn-stats-popup-' + postId,
+      class: 'mailpn-stats-popup',
+      closeButton: true,
+      overlayClose: true,
+      escClose: true
+    });
+  });
 })(jQuery);

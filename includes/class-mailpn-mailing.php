@@ -111,6 +111,35 @@ class MAILPN_Mailing {
 
     $mailpn_result = 0;
     $user_email = get_userdata($mailpn_user_to)->user_email;
+
+    
+    $mailpn_exception_emails = get_option('mailpn_exception_emails');
+    $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
+    $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
+
+    // Exception domains and emails check
+    if ($mailpn_exception_emails == 'on') {
+      if ($mailpn_exception_emails_domains == 'on') {
+        $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
+
+        if (!empty($mailpn_exception_emails_domain) && strpos($user_email, $mailpn_exception_emails_domain) !== false) {
+          foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
+            if (strpos($user_email, $mailpn_exception_email_domain) !== false) {
+              return false;
+            }
+          }
+        }
+      }
+
+      if ($mailpn_exception_emails_addresses == 'on') {
+        $mailpn_exception_emails_address = get_option('mailpn_exception_emails_address');
+
+        if (!empty($mailpn_exception_emails_address) && in_array($user_email, $mailpn_exception_emails_address)) {
+          return false;
+        }
+      }
+    }
+
     $mailpn_type = !empty($mailpn_type) ? $mailpn_type : (!empty($mailpn_id) ? get_post_meta($mailpn_id, 'mailpn_type', true) : bin2hex(openssl_random_pseudo_bytes(6)));
     $mailpn_subject = !empty($mailpn_subject) ? $mailpn_subject : (!empty($mailpn_id) ? esc_html(get_the_title($mailpn_id)) : esc_html(__('Mail subject', 'mailpn')));
 
@@ -131,6 +160,11 @@ class MAILPN_Mailing {
     }
 
     $mailpn_content = do_shortcode($mailpn_content);
+    
+    // Replace links with tracking links if click tracking is enabled
+    if (!empty($mailpn_id) && !empty($mailpn_user_to) && get_option('mailpn_click_tracking') === 'on') {
+        $mailpn_content = MAILPN_Click_Tracking::replace_links($mailpn_content, $mailpn_id, $mailpn_user_to);
+    }
 
     $mailpn_attachments = [];
     $attachments = !empty($mailpn_id) ? get_post_meta($mailpn_id, 'mailpn_attachments', true) : [];
@@ -193,6 +227,7 @@ class MAILPN_Mailing {
         'mailpn_rec_attachments' => $mailpn_attachments,
         'mailpn_rec_mail_id' => $mailpn_id,
         'mailpn_rec_mail_result' => $mailpn_result,
+        'mailpn_rec_post_id' => $post_id,
       ], false);
 
       return true;
@@ -205,6 +240,7 @@ class MAILPN_Mailing {
         'mailpn_rec_attachments' => $mailpn_attachments,
         'mailpn_rec_mail_id' => $mailpn_id,
         'mailpn_rec_mail_result' => $mailpn_result,
+        'mailpn_rec_post_id' => $post_id,
       ], false);
 
       if (get_option('mailpn_errors_to_admin') == 'on') {
