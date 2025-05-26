@@ -113,6 +113,14 @@ class MAILPN_Settings {
         'label' => __('Send errors to admin account', 'mailpn'),
         'description' => __('Send an email to the administrator account whenever an error is produced on sending.', 'mailpn'),
       ];
+      $mailpn_options['mailpn_click_tracking'] = [
+        'id' => 'mailpn_click_tracking',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'checkbox',
+        'label' => __('Enable click tracking', 'mailpn'),
+        'description' => __('Track clicks on links in emails to gather statistics about user engagement.', 'mailpn'),
+      ];
       $mailpn_options['mailpn_password_new'] = [
         'id' => 'mailpn_password_new',
         'class' => 'mailpn-input mailpn-width-100-percent',
@@ -272,14 +280,7 @@ class MAILPN_Settings {
     $mailpn_options['mailpn_section_design_end'] = [
       'section' => 'end',
     ];
-    $mailpn_options['mailpn_click_tracking'] = [
-        'id' => 'mailpn_click_tracking',
-        'class' => 'mailpn-input mailpn-width-100-percent',
-        'input' => 'input',
-        'type' => 'checkbox',
-        'label' => __('Enable click tracking', 'mailpn'),
-        'description' => __('Track clicks on links in emails to gather statistics about user engagement.', 'mailpn'),
-    ];
+    
     $mailpn_options['mailpn_submit'] = [
       'id' => 'mailpn_submit',
       'input' => 'input',

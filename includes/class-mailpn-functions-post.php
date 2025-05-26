@@ -43,9 +43,8 @@ class MAILPN_Functions_Post {
       'ping_status' => 'closed',
     ];
 
-    if (!is_admin()) {
-      require_once(ABSPATH . 'wp-admin/includes/post.php');
-    }
+    // Always require post.php since post_exists() is needed
+    require_once(ABSPATH . 'wp-admin/includes/post.php');
 
     if (!post_exists($title, '', '', $type) || !$overwrite_id) {
       $post_id = wp_insert_post($post_values);

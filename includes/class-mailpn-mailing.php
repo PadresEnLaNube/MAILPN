@@ -122,7 +122,7 @@ class MAILPN_Mailing {
       if ($mailpn_exception_emails_domains == 'on') {
         $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
 
-        if (!empty($mailpn_exception_emails_domain) && strpos($user_email, $mailpn_exception_emails_domain) !== false) {
+        if (!empty($mailpn_exception_emails_domain)) {
           foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
             if (strpos($user_email, $mailpn_exception_email_domain) !== false) {
               return false;
