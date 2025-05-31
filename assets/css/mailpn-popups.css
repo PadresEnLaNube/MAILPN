@@ -6,47 +6,49 @@
   width: 100%;
   z-index: 9999;
   display: none;
-  max-height: 90vh; /* Altura máxima del 90% de la ventana */
+  max-height: 90vh; /* Maximium window height 90% */
+  border-radius: 10px;
+  background: transparent;
+  overflow-y: auto;
+  background-color: #ffffff;
 }
-.mailpn-popup.mailpn-popup-size-small{
-  width: 300px;
+.mailpn-popup-content {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  z-index: 1;
+  -webkit-overflow-scrolling: touch; /* Better iOS scroll */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.mailpn-popup.mailpn-popup-size-medium{
-  width: 750px;
+.mailpn-popup.mailpn-popup-size-small,.mailpn-popup.mailpn-popup-size-small .mailpn-popup-content{
+  max-width: 300px;
 }
-.mailpn-popup.mailpn-popup-size-large{
-  width: 1000px;
+.mailpn-popup.mailpn-popup-size-medium,.mailpn-popup.mailpn-popup-size-medium .mailpn-popup-content{
+  max-width: 750px;
 }
-.mailpn-popup.mailpn-popup-size-full-size{
-  width: 90%; /* Reducido del 100% para mejor visualización */
-  max-width: 1200px; /* Ancho máximo para pantallas grandes */
+.mailpn-popup.mailpn-popup-size-large,.mailpn-popup.mailpn-popup-size-large .mailpn-popup-content{
+  max-width: 1000px;
+}
+.mailpn-popup.mailpn-popup-size-full-size,.mailpn-popup.mailpn-popup-size-full-size .mailpn-popup-content{
+  max-width: 100%; /* Max width for large screens */
 }
 .mailpn-popup-overlay {
-  position: fixed; /* Cambiado de absolute a fixed */
+  position: fixed; 
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9998;
 }
-
-.mailpn-popup-content {
-  position: relative;
-  width: 100%;
-  max-height: calc(90vh - 60px); /* Altura máxima menos el padding */
-  margin: 0 auto;
-  background: #fff;
-  border-radius: 8px;
-  padding: 30px;
-  overflow-y: auto;
-  z-index: 1;
-  -webkit-overflow-scrolling: touch; /* Mejor scroll en iOS */
-}
-
 .mailpn-popup-close-wrapper {
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 10px;
+  right: 10px;
   background: none;
   border: none;
   font-size: 24px;
@@ -55,8 +57,8 @@
   padding: 5px;
   line-height: 1;
   z-index: 1000;
+  transition: color 0.3s ease;
 }
-
 .mailpn-popup-close-wrapper:hover {
   color: #000;
 }
@@ -68,21 +70,18 @@
   gap: 10px;
   margin-top: 20px;
 }
-
 .mailpn-gallery-item {
   position: relative;
   cursor: pointer;
   overflow: hidden;
   border-radius: 4px;
 }
-
 .mailpn-gallery-item img {
   width: 100%;
   height: auto;
   display: block;
   transition: transform 0.3s ease;
 }
-
 .mailpn-gallery-item:hover img {
   transform: scale(1.05);
 }
@@ -94,7 +93,6 @@
   height: 0;
   overflow: hidden;
 }
-
 .mailpn-video-player iframe,
 .mailpn-video-player video {
   position: absolute;
@@ -104,3 +102,12 @@
   height: 100%;
   border: none;
 } 
+#mailpn-profile-popup{
+  max-width:600px;
+}
+
+@media (max-width: 768px) {
+  .mailpn-popup-content{
+      max-height: 100%;
+  }
+}

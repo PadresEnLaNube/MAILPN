@@ -411,55 +411,59 @@ class MAILPN_Post_Type_Rec {
             </p>
 
             <?php if (is_array($clicks) && !empty($clicks)): ?>
-              <button type="button" class="button button-small mailpn-click-stats-btn" 
-                      data-mail-id="<?php echo esc_attr($mail_id); ?>"
-                      data-record-id="<?php echo esc_attr($post_id); ?>">
-                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-mr-5">link</i>
-                <?php 
-                  $total_clicks = count($clicks);
-                  printf(
-                    _n('%d click', '%d clicks', $total_clicks, 'mailpn'),
-                    $total_clicks
-                  ); 
-                ?>
-              </button>
+              <a href="#" class="mailpn-popup-open" data-mailpn-popup-id="mailpn-click-stats-<?php echo esc_attr($post_id); ?>">
+                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-mr-5">link</i>
+                  <?php 
+                    $total_clicks = count($clicks);
+                    
+                    printf(
+                      _n('%d click', '%d clicks', $total_clicks, 'mailpn'),
+                      $total_clicks
+                    ); 
+                  ?>
+              </a>
               
-              <div id="mailpn-click-stats-<?php echo esc_attr($post_id); ?>" class="mailpn-click-stats-popup" style="display: none;">
-                <div class="mailpn-click-stats-content">
-                  <h3><?php esc_html_e('Click Statistics', 'mailpn'); ?></h3>
-                  <div class="mailpn-click-stats-data">
-                    <?php
-                      $unique_urls = [];
-                      $clicks_by_url = [];
-                      foreach ($clicks as $click) {
-                        $url = $click['url'];
-                        if (!isset($clicks_by_url[$url])) {
-                          $clicks_by_url[$url] = 0;
-                          $unique_urls[] = $url;
+              <div class="mailpn-popup mailpn-popup-size-medium" id="mailpn-click-stats-<?php echo esc_attr($post_id); ?>">
+                <div class="mailpn-popup-content">
+                  <div class="mailpn-p-30">
+                    <h3><?php esc_html_e('Click Statistics', 'mailpn'); ?></h3>
+                  
+                    <div class="mailpn-click-stats-data">
+                      <?php
+                        $unique_urls = [];
+                        $clicks_by_url = [];
+                        foreach ($clicks as $click) {
+                          $url = $click['url'];
+                          if (!isset($clicks_by_url[$url])) {
+                            $clicks_by_url[$url] = 0;
+                            $unique_urls[] = $url;
+                          }
+                          $clicks_by_url[$url]++;
                         }
-                        $clicks_by_url[$url]++;
-                      }
-                    ?>
-                    <p><strong><?php esc_html_e('Total Clicks:', 'mailpn'); ?></strong> <?php echo esc_html($total_clicks); ?></p>
-                    <p><strong><?php esc_html_e('Unique URLs:', 'mailpn'); ?></strong> <?php echo esc_html(count($unique_urls)); ?></p>
-                    <?php if (!empty($clicks_by_url)): ?>
-                      <table class="widefat">
-                        <thead>
-                          <tr>
-                            <th><?php esc_html_e('URL', 'mailpn'); ?></th>
-                            <th><?php esc_html_e('Clicks', 'mailpn'); ?></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <?php foreach ($clicks_by_url as $url => $count): ?>
+                      ?>
+
+                      <p><strong><?php esc_html_e('Total Clicks:', 'mailpn'); ?></strong> <?php echo esc_html($total_clicks); ?></p>
+                      <p><strong><?php esc_html_e('Unique URLs:', 'mailpn'); ?></strong> <?php echo esc_html(count($unique_urls)); ?></p>
+                      
+                      <?php if (!empty($clicks_by_url)): ?>
+                        <table class="widefat">
+                          <thead>
                             <tr>
-                              <td><?php echo esc_html($url); ?></td>
-                              <td><?php echo esc_html($count); ?></td>
+                              <th><?php esc_html_e('URL', 'mailpn'); ?></th>
+                              <th><?php esc_html_e('Clicks', 'mailpn'); ?></th>
                             </tr>
-                          <?php endforeach; ?>
-                        </tbody>
-                      </table>
-                    <?php endif; ?>
+                          </thead>
+                          <tbody>
+                            <?php foreach ($clicks_by_url as $url => $count): ?>
+                              <tr>
+                                <td><?php echo esc_html($url); ?></td>
+                                <td><?php echo esc_html($count); ?></td>
+                              </tr>
+                            <?php endforeach; ?>
+                          </tbody>
+                        </table>
+                      <?php endif; ?>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -467,65 +471,6 @@ class MAILPN_Post_Type_Rec {
           <?php else: ?>
             <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">visibility_off</i> <?php esc_html_e('Not opened', 'mailpn'); ?></p>
           <?php endif; ?>
-          <style>
-            .mailpn-click-stats-popup {
-              position: fixed;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              background: white;
-              padding: 20px;
-              border-radius: 5px;
-              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-              z-index: 100000;
-              max-width: 80%;
-              max-height: 80vh;
-              overflow-y: auto;
-            }
-            .mailpn-click-stats-popup::before {
-              content: '';
-              position: fixed;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background: rgba(0,0,0,0.5);
-              z-index: -1;
-            }
-            .mailpn-click-stats-content {
-              position: relative;
-            }
-            .mailpn-click-stats-content h3 {
-              margin-top: 0;
-              padding-bottom: 10px;
-              border-bottom: 1px solid #eee;
-            }
-            .mailpn-click-stats-data {
-              margin-top: 15px;
-            }
-            .mailpn-click-stats-data table {
-              margin-top: 10px;
-            }
-            .mailpn-click-stats-data td {
-              word-break: break-all;
-            }
-          </style>
-          <script>
-            jQuery(document).ready(function($) {
-              $('.mailpn-click-stats-btn').on('click', function(e) {
-                e.preventDefault();
-                var recordId = $(this).data('record-id');
-                $('#mailpn-click-stats-' + recordId).toggle();
-              });
-
-              // Close popup when clicking outside
-              $(document).on('click', function(e) {
-                if (!$(e.target).closest('.mailpn-click-stats-popup, .mailpn-click-stats-btn').length) {
-                  $('.mailpn-click-stats-popup').hide();
-                }
-              });
-            });
-          </script>
         <?php
         break;
     }
