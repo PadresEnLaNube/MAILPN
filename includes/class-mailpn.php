@@ -340,11 +340,13 @@ class MAILPN {
 		// Add new column hooks
 		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_mail_posts_columns', $plugin_post_type_mail, 'mailpn_mail_posts_columns');
 		$this->mailpn_loader->mailpn_add_action('manage_mailpn_mail_posts_custom_column', $plugin_post_type_mail, 'mailpn_mail_posts_custom_column', 10, 2);
+		$this->mailpn_loader->mailpn_add_filter('rest_authentication_errors', $plugin_post_type_mail, 'mailpn_mail_block_rest_api_access');
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_rec, 'mailpn_register_post_type');
 		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_rec, 'mailpn_add_meta_box');
 		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_rec', $plugin_post_type_rec, 'mailpn_save_post', 10, 3);
+		$this->mailpn_loader->mailpn_add_filter('rest_authentication_errors', $plugin_post_type_rec, 'mailpn_rec_block_rest_api_access');
 		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10);
 		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
 		$this->mailpn_loader->mailpn_add_filter('manage_edit-mailpn_rec_sortable_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10, 3);
@@ -436,7 +438,7 @@ class MAILPN {
 	private function mailpn_load_settings() {
 		$plugin_settings = new MAILPN_Settings();
 		$this->mailpn_loader->mailpn_add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
-		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'activated_plugin');
+		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'mailpn_activated_plugin');
 		$this->mailpn_loader->mailpn_add_action('user_register', $plugin_settings, 'mailpn_user_register', 11, 1);
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_settings, 'mailpn_init_hook');
 		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_settings, 'mailpn_pre_get_posts');

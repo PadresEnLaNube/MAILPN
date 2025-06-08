@@ -33,6 +33,84 @@ class MAILPN_Post_Type_Rec {
       'label' => __('Email type', 'mailpn'),
       'placeholder' => __('Email type', 'mailpn'),
     ];
+
+    // New fields for additional email information
+    $mailpn_fields_meta['mailpn_rec_subject'] = [
+      'id' => 'mailpn_rec_subject',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'disabled' => 'true',
+      'input' => 'input',
+      'type' => 'text',
+      'label' => __('Email Subject', 'mailpn'),
+      'placeholder' => __('Email subject line', 'mailpn'),
+    ];
+
+    $mailpn_fields_meta['mailpn_rec_content_html'] = [
+      'id' => 'mailpn_rec_content_html',
+      'class' => 'mailpn-input mailpn-width-100-percent mailpn-height-300',
+      'disabled' => 'true',
+      'input' => 'textarea',
+      'label' => __('Email HTML Content', 'mailpn'),
+      'placeholder' => __('Email HTML content', 'mailpn'),
+    ];
+
+    $mailpn_fields_meta['mailpn_rec_content_text'] = [
+      'id' => 'mailpn_rec_content_text',
+      'class' => 'mailpn-input mailpn-width-100-percent mailpn-height-300',
+      'disabled' => 'true',
+      'input' => 'textarea',
+      'label' => __('Email Text Content', 'mailpn'),
+      'placeholder' => __('Email plain text content', 'mailpn'),
+    ];
+
+    $mailpn_fields_meta['mailpn_rec_headers'] = [
+      'id' => 'mailpn_rec_headers',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'disabled' => 'true',
+      'input' => 'textarea',
+      'label' => __('Email Headers', 'mailpn'),
+      'placeholder' => __('Email headers (From, Reply-To, CC, BCC)', 'mailpn'),
+    ];
+
+    $mailpn_fields_meta['mailpn_rec_error'] = [
+      'id' => 'mailpn_rec_error',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'disabled' => 'true',
+      'input' => 'textarea',
+      'label' => __('Error Message', 'mailpn'),
+      'placeholder' => __('Error message if email failed to send', 'mailpn'),
+    ];
+
+    $mailpn_fields_meta['mailpn_rec_server_ip'] = [
+      'id' => 'mailpn_rec_server_ip',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'disabled' => 'true',
+      'input' => 'input',
+      'type' => 'text',
+      'label' => __('Server IP Address', 'mailpn'),
+      'placeholder' => __('IP address of originating server', 'mailpn'),
+    ];
+
+    $mailpn_fields_meta['mailpn_rec_sent_datetime'] = [
+      'id' => 'mailpn_rec_sent_datetime',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'disabled' => 'true',
+      'input' => 'input',
+      'type' => 'text',
+      'label' => __('Date and Time Sent', 'mailpn'),
+      'placeholder' => __('Date and time when email was sent', 'mailpn'),
+    ];
+
+    $mailpn_fields_meta['mailpn_rec_to_email'] = [
+      'id' => 'mailpn_rec_to_email',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'disabled' => 'true',
+      'input' => 'input',
+      'type' => 'email',
+      'label' => __('Recipient Email', 'mailpn'),
+      'placeholder' => __('Recipient email address', 'mailpn'),
+    ];
+
     $mailpn_fields_meta['mailpn_rec_post_id'] = [
       'id' => 'mailpn_rec_post_id',
       'class' => 'mailpn-input mailpn-width-100-percent',
@@ -50,15 +128,6 @@ class MAILPN_Post_Type_Rec {
       'options' => $mailpn_user_options,
       'label' => __('Mail addressee', 'mailpn'),
       'placeholder' => __('Mail addressee', 'mailpn'),
-    ];
-    $mailpn_fields_meta['mailpn_rec_to_email'] = [
-      'id' => 'mailpn_rec_to_email',
-      'class' => 'mailpn-input mailpn-width-100-percent',
-      'disabled' => 'true',
-      'input' => 'input',
-      'type' => 'email',
-      'label' => __('Addressee email adress', 'mailpn'),
-      'placeholder' => __('Addressee email adress', 'mailpn'),
     ];
     $mailpn_fields_meta['mailpn_rec_attachments'] = [
       'id' => 'mailpn_rec_attachments',
@@ -127,11 +196,41 @@ class MAILPN_Post_Type_Rec {
       'publicly_queryable'  => false,
       'capability_type'     => 'page',
       'taxonomies'          => MAILPN_ROLE_CAPABILITIES,
-      'show_in_rest'        => false, /* REST API */
+      'show_in_rest'        => true,
     ];
 
     register_post_type('mailpn_rec', $args);
     add_theme_support('post-thumbnails', ['page', 'mailpn_rec']);
+  }
+
+  /**
+   * Block REST API access for mailpn_rec post type while keeping Gutenberg editor
+   *
+   * @param WP_Error|null|bool $errors WP_Error if authentication error, null if authentication method wasn't used, true if authentication succeeded.
+   * @return WP_Error|null|bool
+   */
+  public function mailpn_rec_block_rest_api_access($errors) {
+    // Get the current REST route
+    $current_route = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+    
+    // Check if this is a request to the mailpn_rec endpoint
+    if (strpos($current_route, '/wp-json/wp/v2/mailpn_rec') !== false) {
+      // Allow all POST/PUT/DELETE requests (needed for saving/updating posts)
+      if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+        return $errors;
+      }
+      
+      // For GET requests, only allow access for authenticated users in admin context
+      if (!is_user_logged_in() || !is_admin()) {
+        return new WP_Error(
+          'rest_forbidden',
+          __('Sorry, you are not allowed to access this endpoint.', 'mailpn'),
+          ['status' => rest_authorization_required_code()]
+        );
+      }
+    }
+    
+    return $errors;
   }
 
   /**

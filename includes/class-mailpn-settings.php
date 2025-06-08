@@ -54,6 +54,7 @@ class MAILPN_Settings {
         'class' => 'mailpn-input mailpn-width-100-percent',
         'input' => 'input',
         'type' => 'text',
+        'label' => __('Legal name', 'mailpn'),
         'label' => __('Enterprise legal name', 'mailpn'),
         'placeholder' => __('Enterprise legal name', 'mailpn'),
       ];
@@ -104,14 +105,6 @@ class MAILPN_Settings {
         'type' => 'checkbox',
         'label' => __('New users active notifications', 'mailpn'),
         'description' => __('If you turn on this options the system will activate users notifications automatically on new accounts creation. It implieas that contacts will receive platform communications from the their user creation. Please, take into account to add this feature in your policies pages.', 'mailpn'),
-      ];
-      $mailpn_options['mailpn_errors_to_admin'] = [
-        'id' => 'mailpn_errors_to_admin',
-        'class' => 'mailpn-input mailpn-width-100-percent',
-        'input' => 'input',
-        'type' => 'checkbox',
-        'label' => __('Send errors to admin account', 'mailpn'),
-        'description' => __('Send an email to the administrator account whenever an error is produced on sending.', 'mailpn'),
       ];
       $mailpn_options['mailpn_click_tracking'] = [
         'id' => 'mailpn_click_tracking',
@@ -255,9 +248,138 @@ class MAILPN_Settings {
               ],
             ]
           ];
+        $mailpn_options['mailpn_errors_to_admin'] = [
+          'id' => 'mailpn_errors_to_admin',
+          'class' => 'mailpn-input mailpn-width-100-percent',
+          'input' => 'input',
+          'type' => 'checkbox',
+          'label' => __('Send errors to admin account', 'mailpn'),
+          'description' => __('Send an email to the administrator account whenever an error is produced on sending. It can reduce dramatically the number of emails sent to the users.', 'mailpn'),
+        ];
   $mailpn_options['mailpn_section_mechanics_end'] = [
       'section' => 'end',
     ];
+
+    // SMTP Configuration Section
+    $mailpn_options['mailpn_section_smtp_start'] = [
+      'section' => 'start',
+      'label' => __('SMTP Configuration', 'mailpn'),
+      'description' => __('Configure your SMTP server settings for sending emails.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_enabled'] = [
+      'id' => 'mailpn_smtp_enabled',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'checkbox',
+      'parent' => 'this',
+      'label' => __('Enable SMTP', 'mailpn'),
+      'description' => __('Enable SMTP for sending emails instead of using the default mail() function.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_host'] = [
+      'id' => 'mailpn_smtp_host',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'text',
+      'parent' => 'mailpn_smtp_enabled',
+      'parent_option' => 'on',
+      'label' => __('SMTP Host', 'mailpn'),
+      'placeholder' => 'smtp.example.com',
+      'description' => __('The hostname of your SMTP server.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_port'] = [
+      'id' => 'mailpn_smtp_port',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'number',
+      'parent' => 'mailpn_smtp_enabled',
+      'parent_option' => 'on',
+      'label' => __('SMTP Port', 'mailpn'),
+      'placeholder' => '587',
+      'description' => __('The port number of your SMTP server. Common ports: 587 (TLS), 465 (SSL).', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_secure'] = [
+      'id' => 'mailpn_smtp_secure',
+      'class' => 'mailpn-select mailpn-width-100-percent',
+      'input' => 'select',
+      'parent' => 'mailpn_smtp_enabled',
+      'parent_option' => 'on',
+      'options' => [
+        'none' => __('None', 'mailpn'),
+        'ssl' => __('SSL', 'mailpn'),
+        'tls' => __('TLS', 'mailpn'),
+      ],
+      'label' => __('SMTP Security', 'mailpn'),
+      'description' => __('The security type for your SMTP connection.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_auth'] = [
+      'id' => 'mailpn_smtp_auth',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'checkbox',
+      'parent' => 'this mailpn_smtp_enabled',
+      'parent_option' => 'on',
+      'label' => __('SMTP Authentication', 'mailpn'),
+      'description' => __('Enable if your SMTP server requires authentication.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_username'] = [
+      'id' => 'mailpn_smtp_username',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'text',
+      'parent' => 'mailpn_smtp_auth',
+      'parent_option' => 'on',
+      'label' => __('SMTP Username', 'mailpn'),
+      'placeholder' => __('your@email.com', 'mailpn'),
+      'description' => __('Your SMTP username or email address.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_password'] = [
+      'id' => 'mailpn_smtp_password',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'password',
+      'parent' => 'mailpn_smtp_auth',
+      'parent_option' => 'on',
+      'label' => __('SMTP Password', 'mailpn'),
+      'placeholder' => '••••••••',
+      'description' => __('Your SMTP password or app password. For Gmail, you may need to use an App Password.', 'mailpn'),
+      'autocomplete' => 'new-password',
+    ];
+
+    $mailpn_options['mailpn_smtp_from_email'] = [
+      'id' => 'mailpn_smtp_from_email',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'email',
+      'parent' => 'mailpn_smtp_enabled',
+      'parent_option' => 'on',
+      'label' => __('From Email (SMTP)', 'mailpn'),
+      'placeholder' => __('your@email.com', 'mailpn'),
+      'description' => __('The email address that will be used as the sender when using SMTP.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_from_name'] = [
+      'id' => 'mailpn_smtp_from_name',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'text',
+      'parent' => 'mailpn_smtp_enabled',
+      'parent_option' => 'on',
+      'label' => __('From Name (SMTP)', 'mailpn'),
+      'placeholder' => 'Your Name',
+      'description' => __('The name that will be used as the sender when using SMTP.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_section_smtp_end'] = [
+      'section' => 'end',
+    ];
+
     $mailpn_options['mailpn_section_design_start'] = [
       'section' => 'start',
       'label' => __('Email design', 'mailpn'),

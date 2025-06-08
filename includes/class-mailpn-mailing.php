@@ -101,6 +101,17 @@ class MAILPN_Mailing {
       'mailpn_subject' => '',
     ], $atts);
     
+    // Configure PHPMailer for SMTP if enabled
+    if (get_option('mailpn_smtp_enabled') === 'on') {
+      try {
+        add_action('phpmailer_init', [$this, 'mailpn_configure_smtp']);
+      } catch (Exception $e) {
+        // Log the error and continue with default mail settings
+        error_log('MAILPN SMTP Configuration Error: ' . $e->getMessage());
+        // Don't remove the action - let it try with default settings
+      }
+    }
+
     $mailpn_user_to = $atts['mailpn_user_to'];
     $mailpn_id = $atts['mailpn_id'];
     $post_id = $atts['post_id'];
@@ -228,10 +239,54 @@ class MAILPN_Mailing {
         'mailpn_rec_mail_id' => $mailpn_id,
         'mailpn_rec_mail_result' => $mailpn_result,
         'mailpn_rec_post_id' => $post_id,
+        'mailpn_rec_headers' => implode("\n", $headers),
+        'mailpn_rec_error' => '',
+        'mailpn_rec_server_ip' => $_SERVER['SERVER_ADDR'] ?? '',
+        'mailpn_rec_sent_datetime' => current_time('mysql'),
+        'mailpn_rec_subject' => $mailpn_subject,
+        'mailpn_rec_content_html' => $mailpn_message,
+        'mailpn_rec_content_text' => wp_strip_all_tags($mailpn_message),
       ], false);
 
       return true;
     }else{
+      // Enhanced error handling
+      $error_message = '';
+      $error_details = [];
+      
+      // Check PHPMailer error
+      if (isset($GLOBALS['phpmailer']) && is_object($GLOBALS['phpmailer'])) {
+        $error_message = $GLOBALS['phpmailer']->ErrorInfo;
+        
+        // Get additional error details
+        $error_details[] = 'PHPMailer Error: ' . $error_message;
+        
+        // Get SMTP settings for error reporting
+        $error_details[] = 'SMTP Settings:';
+        $error_details[] = '- SMTP Enabled: ' . (get_option('mailpn_smtp_enabled') === 'on' ? 'Yes' : 'No');
+        $error_details[] = '- SMTP Host: ' . get_option('mailpn_smtp_host');
+        $error_details[] = '- SMTP Port: ' . get_option('mailpn_smtp_port');
+        $error_details[] = '- SMTP Secure: ' . get_option('mailpn_smtp_secure');
+        $error_details[] = '- SMTP Auth: ' . (get_option('mailpn_smtp_auth') === 'on' ? 'Enabled' : 'Disabled');
+        
+        // Check WordPress mail settings
+        $error_details[] = 'WordPress Mail Settings:';
+        $error_details[] = '- wp_mail() function exists: ' . (function_exists('wp_mail') ? 'Yes' : 'No');
+        $error_details[] = '- Default mail server: ' . (ini_get('sendmail_path') ? ini_get('sendmail_path') : 'Not configured');
+        
+        // Add server information
+        $error_details[] = 'Server Information:';
+        $error_details[] = '- PHP Version: ' . PHP_VERSION;
+        $error_details[] = '- WordPress Version: ' . get_bloginfo('version');
+        $error_details[] = '- Server Software: ' . $_SERVER['SERVER_SOFTWARE'];
+      } else {
+        $error_message = 'PHPMailer object not available';
+        $error_details[] = 'PHPMailer Error: ' . $error_message;
+      }
+
+      // Log the error
+      error_log('MAILPN Mail Sending Error: ' . implode("\n", $error_details));
+
       $post_functions->mailpn_insert_post($mailpn_subject, $mailpn_message, '', esc_url($mailpn_subject), 'mailpn_rec', 'publish', 1, 0, [], [], [
         'mailpn_rec_content' => $mailpn_message,
         'mailpn_rec_type' => $mailpn_type,
@@ -241,13 +296,105 @@ class MAILPN_Mailing {
         'mailpn_rec_mail_id' => $mailpn_id,
         'mailpn_rec_mail_result' => $mailpn_result,
         'mailpn_rec_post_id' => $post_id,
+        'mailpn_rec_headers' => implode("\n", $headers),
+        'mailpn_rec_error' => implode("\n", $error_details),
+        'mailpn_rec_server_ip' => $_SERVER['SERVER_ADDR'] ?? '',
+        'mailpn_rec_sent_datetime' => current_time('mysql'),
+        'mailpn_rec_subject' => $mailpn_subject,
+        'mailpn_rec_content_html' => $mailpn_message,
+        'mailpn_rec_content_text' => wp_strip_all_tags($mailpn_message),
       ], false);
 
       if (get_option('mailpn_errors_to_admin') == 'on') {
-        $error_email = wp_mail(get_bloginfo('admin_email'), 'Error sending mail - ' . get_bloginfo('name'), 'mailpn_user_to: ' . $mailpn_user_to . '<br>mailpn_type: ' . $mailpn_type . '<br>mailpn_subject: ' . $mailpn_subject . '<br>mailpn_attachments: ' . implode(', ', $mailpn_attachments) . '<br>', $headers, $mailpn_attachments);
+        $admin_error_message = 'Error sending mail - ' . get_bloginfo('name') . "\n\n";
+        $admin_error_message .= "Recipient: {$user_email}\n";
+        $admin_error_message .= "Type: {$mailpn_type}\n";
+        $admin_error_message .= "Subject: {$mailpn_subject}\n";
+        $admin_error_message .= "Attachments: " . implode(', ', $mailpn_attachments) . "\n\n";
+        $admin_error_message .= "Error Details:\n" . implode("\n", $error_details);
+        
+        $error_email = wp_mail(
+          get_bloginfo('admin_email'), 
+          'Error sending mail - ' . get_bloginfo('name'),
+          $admin_error_message,
+          ['Content-Type: text/plain; charset=UTF-8'],
+          $mailpn_attachments
+        );
       }
 
       return false;
+    }
+  }
+
+  /**
+   * Configure PHPMailer to use SMTP
+   *
+   * @param PHPMailer $phpmailer The PHPMailer instance
+   */
+  public function mailpn_configure_smtp($phpmailer) {
+    try {
+      // Enable SMTP
+      $phpmailer->isSMTP();
+      
+      // Get SMTP settings
+      $smtp_host = get_option('mailpn_smtp_host');
+      $smtp_port = get_option('mailpn_smtp_port');
+      $smtp_secure = get_option('mailpn_smtp_secure');
+      $smtp_auth = get_option('mailpn_smtp_auth');
+      $smtp_username = get_option('mailpn_smtp_username');
+      $smtp_password = get_option('mailpn_smtp_password');
+      $smtp_from_email = get_option('mailpn_smtp_from_email');
+      $smtp_from_name = get_option('mailpn_smtp_from_name');
+
+      // Validate required settings
+      if (empty($smtp_host)) {
+        throw new Exception('SMTP host is not configured');
+      }
+      if (empty($smtp_port)) {
+        throw new Exception('SMTP port is not configured');
+      }
+
+      // Configure SMTP settings
+      $phpmailer->Host = $smtp_host;
+      $phpmailer->Port = $smtp_port;
+      
+      // Set security type
+      if (!empty($smtp_secure) && $smtp_secure !== 'none') {
+        $phpmailer->SMTPSecure = $smtp_secure;
+      }
+
+      // Set authentication if enabled
+      if ($smtp_auth === 'on') {
+        if (empty($smtp_username) || empty($smtp_password)) {
+          throw new Exception('SMTP authentication is enabled but username or password is missing');
+        }
+        $phpmailer->SMTPAuth = true;
+        $phpmailer->Username = $smtp_username;
+        $phpmailer->Password = $smtp_password;
+      }
+
+      // Set sender information if configured
+      if (!empty($smtp_from_email)) {
+        $phpmailer->From = $smtp_from_email;
+      }
+      if (!empty($smtp_from_name)) {
+        $phpmailer->FromName = $smtp_from_name;
+      }
+
+      // Enable debug output if WP_DEBUG is enabled
+      if (defined('WP_DEBUG') && WP_DEBUG) {
+        $phpmailer->SMTPDebug = 2; // Enable verbose debug output
+        $phpmailer->Debugoutput = function($str, $level) {
+          error_log("PHPMailer Debug: $str");
+        };
+      }
+
+      // Set timeout
+      $phpmailer->Timeout = 30; // 30 seconds timeout
+
+    } catch (Exception $e) {
+      error_log('MAILPN SMTP Configuration Error: ' . $e->getMessage());
+      throw $e; // Re-throw to be caught by the calling function
     }
   }
 
@@ -346,14 +493,6 @@ class MAILPN_Mailing {
                       <?php endif ?>
 
                       <p><?php echo esc_html($mailpn_legal_address); ?></p>
-
-                      <!-- Fallback confirmation button -->
-                      <div style="margin-top: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; display: none;" id="mailpn-confirm-read">
-                        <p style="margin-bottom: 10px;"><?php esc_html_e('Please confirm that you have read this email:', 'mailpn'); ?></p>
-                        <a href="<?php echo esc_url(home_url('wp-json/mailpn/v1/track/' . $mailpn_user_to . '/' . $mailpn_id . '?confirm=1')); ?>" style="display: inline-block; padding: 8px 16px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
-                          <?php esc_html_e('Confirm Reading', 'mailpn'); ?>
-                        </a>
-                      </div>
                     </small>
                   </div>
                 </td>
@@ -543,7 +682,7 @@ class MAILPN_Mailing {
               <?php endforeach ?>
             </ul>
 
-            <a href="#" data-mailpn-post-id="<?php echo esc_html($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend emails', 'mailpn'); ?></a><?php esc_html(MAILPN_Data::loader()); ?>
+            <a href="#" data-mailpn-post-id="<?php echo esc_html($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend emails', 'mailpn'); ?></a><?php esc_html(MAILPN_Data::mailpn_loader()); ?>
           </div>
         <?php else: ?>
           <div class="mailpn-progress">
@@ -561,7 +700,7 @@ class MAILPN_Mailing {
                 <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <?php esc_html(MAILPN_Data::mailpn_loader(true)); ?>
                   
                 <div class="mailpn-progress-bar">
-                  <p class="mailpn-font-weight-bold"><?php echo number_format(((intval($emails_sent) * 100) / intval($emails_total)), 1); ?>% <?php esc_html_e('of total job', 'mailpn'); ?> (<?php echo esc_html($emails_sent); ?> <?php esc_html_e('emails sent', 'mailpn'); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?>)</p>
+                  <p class="mailpn-font-weight-bold"><?php echo $emails_total > 0 ? number_format(((intval($emails_sent) * 100) / intval($emails_total)), 1) : 0; ?>% <?php esc_html_e('of total job', 'mailpn'); ?> (<?php echo esc_html($emails_sent); ?> <?php esc_html_e('emails sent', 'mailpn'); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?>)</p>
                 </div>
 
                 <div class="mailpn-text-align-right">
@@ -704,7 +843,7 @@ class MAILPN_Mailing {
           }
         }
       }else{
-        if (strtotime(datetime: gmdate('+1 day', $mailpn_queue_paused)) < strtotime('now')) {
+        if (($mailpn_queue_paused + DAY_IN_SECONDS) < time()) {
           delete_option('mailpn_queue_paused');
           delete_option('mailpn_mails_sent_today');
         }

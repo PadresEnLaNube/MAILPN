@@ -84,11 +84,11 @@ class MAILPN_Ajax {
           }
           break;
         case 'mailpn_resend_errors':
-          if (!empty($mail_id)) {
+          if (!empty($mailpn_mail_id)) {
             $plugin_mailing = new MAILPN_Mailing();
-            $plugin_mailing->mailpn_resend_errors($mail_id);
+            $plugin_mailing->mailpn_resend_errors($mailpn_mail_id);
 
-            update_post_meta($mail_id, 'mailpn_status', 'queue');
+            update_post_meta($mailpn_mail_id, 'mailpn_status', 'queue');
           }else{
             echo wp_json_encode(['error_key' => 'mailpn_resend_errors_error', 'error_content' => esc_html(__('An error occurred while resending the errors.', 'mailpn')), ]);exit();
           }

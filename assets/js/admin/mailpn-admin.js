@@ -13,7 +13,7 @@
       action: 'mailpn_ajax',
       mailpn_ajax_type: 'mailpn_resend_errors',
       mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
-      mail_id: post_id,
+      mailpn_mail_id: post_id,
     };
 
     $.post(ajax_url, data, function(response) {

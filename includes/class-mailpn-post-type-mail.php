@@ -252,11 +252,41 @@ class MAILPN_Post_Type_Mail {
       'publicly_queryable'  => false,
       'capability_type'     => 'page',
       'taxonomies'          => MAILPN_ROLE_CAPABILITIES,
-      'show_in_rest'        => false, /* REST API */
+      'show_in_rest'        => true,
     ];
 
     register_post_type('mailpn_mail', $args);
     add_theme_support('post-thumbnails', ['page', 'mailpn_mail']);
+  }
+
+  /**
+   * Block REST API access for mailpn_mail post type while keeping Gutenberg editor
+   *
+   * @param WP_Error|null|bool $errors WP_Error if authentication error, null if authentication method wasn't used, true if authentication succeeded.
+   * @return WP_Error|null|bool
+   */
+  public function mailpn_mail_block_rest_api_access($errors) {
+    // Get the current REST route
+    $current_route = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+    
+    // Check if this is a request to the mailpn_mail endpoint
+    if (strpos($current_route, '/wp-json/wp/v2/mailpn_mail') !== false) {
+      // Allow all POST/PUT/DELETE requests (needed for saving/updating posts)
+      if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+        return $errors;
+      }
+      
+      // For GET requests, only allow access for authenticated users in admin context
+      if (!is_user_logged_in() || !is_admin()) {
+        return new WP_Error(
+          'rest_forbidden',
+          __('Sorry, you are not allowed to access this endpoint.', 'mailpn'),
+          ['status' => rest_authorization_required_code()]
+        );
+      }
+    }
+    
+    return $errors;
   }
 
   /**
