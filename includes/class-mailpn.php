@@ -324,6 +324,7 @@ class MAILPN {
 
 		$plugin_user = new MAILPN_Functions_User();
 		$this->mailpn_loader->mailpn_add_action('wp_login', $plugin_user, 'mailpn_wp_login');
+		$this->mailpn_loader->mailpn_add_action('updated_user_meta', $plugin_user, 'mailpn_newsletter_activation_hook', 10, 4);
 	}
 
 	/**
@@ -440,6 +441,8 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
 		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'mailpn_activated_plugin');
 		$this->mailpn_loader->mailpn_add_action('user_register', $plugin_settings, 'mailpn_user_register', 11, 1);
+		$this->mailpn_loader->mailpn_add_action('set_user_role', $plugin_settings, 'mailpn_process_pending_welcome_registrations', 20, 3);
+		$this->mailpn_loader->mailpn_add_action('profile_update', $plugin_settings, 'mailpn_process_pending_welcome_registrations', 20, 2);
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_settings, 'mailpn_init_hook');
 		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_settings, 'mailpn_pre_get_posts');
 		$this->mailpn_loader->mailpn_add_filter('wp_mail_from', $plugin_settings, 'mailpn_wp_mail_from', 999);

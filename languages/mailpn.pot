@@ -1036,3 +1036,267 @@ msgstr ""
 #: includes/class-mailpn-mailing.php:272
 msgid "You receive this email for your relationship with the project."
 msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:58
+msgid "Enable delayed sending"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:59
+msgid "If enabled, the welcome email will be sent after a specified delay instead of immediately upon user registration."
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:67
+msgid "Delay value"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:68
+msgid "Enter delay value"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:69
+msgid "The number of time units to wait before sending the welcome email."
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:77
+msgid "Delay unit"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:78
+msgid "Select time unit"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:79
+msgid "The time unit for the delay period."
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:82
+msgid "Hours"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:83
+msgid "Days"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:84
+msgid "Weeks"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:85
+msgid "Months"
+msgstr ""
+
+#: includes/class-mailpn-post-type-mail.php:86
+msgid "Years"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:497
+msgid "Scheduled Welcome Emails"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:498
+msgid "Pending Scheduled Emails"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:499
+msgid "No pending scheduled welcome emails."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:500
+msgid "Email Template"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:501
+msgid "User"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:502
+msgid "Scheduled Time"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:503
+msgid "Created Time"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:504
+msgid "Status"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:505
+msgid "Unknown"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:506
+msgid "Ready to send"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:507
+msgid "Scheduled"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:508
+msgid "Recently Sent Scheduled Emails"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:509
+msgid "No recently sent scheduled welcome emails."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:510
+msgid "Sent Time"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:497
+msgid "Mail Templates"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:498
+msgid "Mail Records"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:450
+msgid "Pending Welcome Registrations"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:470
+msgid "Pending User Registrations"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:471
+msgid "These are user registrations waiting to be processed for welcome emails. They will be processed automatically when user roles are properly defined."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:475
+msgid "No pending welcome registrations."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:478
+msgid "Email"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:479
+msgid "Registration Time"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:480
+msgid "User Roles"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:481
+msgid "User not found"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:482
+msgid "N/A"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:483
+msgid "No roles"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:484
+msgid "Processed"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:485
+msgid "Pending"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:456
+msgid "Process Pending Registrations"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:455
+msgid "Pending registrations processed successfully."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:520
+msgid "Process Scheduled Emails"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:521
+msgid "Scheduled emails processed successfully."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:522
+msgid "Email sent immediately and removed from scheduled list."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:523
+msgid "Failed to send email."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:524
+msgid "Scheduled email removed successfully."
+msgstr ""
+
+#: includes/class-mailpn-settings.php:525
+msgid "Debug Tool"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:526
+msgid "Actions"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:527
+msgid "Send Now"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:528
+msgid "Are you sure you want to send this email now?"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:529
+msgid "Remove"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:530
+msgid "Are you sure you want to remove this scheduled email?"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:531
+msgid "Delay"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:532
+msgid "days"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:533
+msgid "hours"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:534
+msgid "minutes"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:535
+msgid "Immediate"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:536
+msgid "System Information"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:537
+msgid "Current Time"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:538
+msgid "Timezone"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:539
+msgid "Next 10-minute Cron"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:540
+msgid "Not scheduled"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:541
+msgid "Total Scheduled Emails"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:542
+msgid "Total Sent Logs"
+msgstr ""

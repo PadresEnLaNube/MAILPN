@@ -1,0 +1,686 @@
+/**
+ * QR Scanner Web Application Styles for MAILPN Plugin
+ *
+ * @package MAILPN
+ * @since 1.0.0
+ */
+
+/* Main Scanner App Container */
+.mailpn-qr-scanner-app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Header Section */
+.mailpn-scanner-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 30px;
+    background: linear-gradient(135deg, #79bea8 0%, #5a9b8a 100%);
+    border-radius: 15px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(121, 190, 168, 0.3);
+}
+
+.mailpn-scanner-header h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #ffffff;
+}
+
+.mailpn-scanner-header p {
+    font-size: 16px;
+    margin: 0;
+    color: #ffffff!important;
+    opacity: 0.9;
+}
+
+/* Stats Section */
+.mailpn-scanner-stats {
+    margin-bottom: 30px;
+}
+
+.mailpn-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.mailpn-stat-item {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.mailpn-stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.mailpn-stat-number {
+    display: block;
+    font-size: 36px;
+    font-weight: 700;
+    color: #79bea8;
+    margin-bottom: 8px;
+}
+
+.mailpn-stat-label {
+    display: block;
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Main Scanner Section */
+.mailpn-scanner-main {
+    margin-bottom: 30px;
+}
+
+.mailpn-scanner-container {
+    display: block;
+    margin-bottom: 30px;
+}
+
+/* Manual Input Section */
+.mailpn-scanner-manual {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.mailpn-scanner-manual h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.mailpn-manual-input {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mailpn-manual-input textarea {
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.mailpn-manual-input textarea:focus {
+    outline: none;
+    border-color: #79bea8;
+    box-shadow: 0 0 0 3px rgba(121, 190, 168, 0.1);
+}
+
+/* Buttons */
+.mailpn-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.mailpn-btn-primary {
+    background: linear-gradient(135deg, #79bea8 0%, #5a9b8a 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(121, 190, 168, 0.3);
+}
+
+.mailpn-btn-primary:hover {
+    background: linear-gradient(135deg, #5a9b8a 0%, #4a8a7a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(121, 190, 168, 0.4);
+}
+
+.mailpn-btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.mailpn-btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+}
+
+.mailpn-btn-success {
+    background: linear-gradient(135deg, #79bea8 0%, #5a9b8a 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(121, 190, 168, 0.3);
+}
+
+.mailpn-btn-success:hover {
+    background: linear-gradient(135deg, #5a9b8a 0%, #4a8a7a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(121, 190, 168, 0.4);
+}
+
+.mailpn-btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.mailpn-btn-danger:hover {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.mailpn-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.mailpn-btn-icon {
+    font-size: 16px;
+}
+
+/* Results Section */
+.mailpn-scanner-results {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.mailpn-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.mailpn-result-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.mailpn-result-status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    min-width: 80px;
+    border: 1px solid transparent;
+}
+
+.mailpn-result-status.valid {
+    background: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.mailpn-result-status.invalid {
+    background: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+.mailpn-result-status.pending {
+    background: #fff3cd;
+    color: #856404;
+    border-color: #ffeaa7;
+}
+
+.mailpn-result-content {
+    margin-bottom: 25px;
+}
+
+.mailpn-result-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.mailpn-result-info h4 {
+    color: #333;
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.mailpn-result-info p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #666;
+}
+
+.mailpn-result-info strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.mailpn-result-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* History Section */
+.mailpn-scanner-history {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.mailpn-scanner-history h3 {
+    margin: 0 0 20px 0;
+    color: #333;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.mailpn-history-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.mailpn-history-item {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.mailpn-history-item:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.mailpn-history-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.mailpn-history-order {
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+.mailpn-history-customer {
+    font-size: 14px;
+    color: #666;
+}
+
+.mailpn-history-date {
+    font-size: 12px;
+    color: #999;
+}
+
+.mailpn-history-status {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+    min-width: auto;
+}
+
+.mailpn-history-validated {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    text-align: center !important;
+    min-width: 80px !important;
+    display: inline-block !important;
+    margin: 2px !important;
+}
+
+.mailpn-history-validated.valid {
+    background: #d4edda !important;
+    color: #155724 !important;
+    border: 1px solid #c3e6cb !important;
+}
+
+.mailpn-history-validated.pending {
+    background: #fff3cd !important;
+    color: #856404 !important;
+    border: 1px solid #ffeaa7 !important;
+}
+
+.mailpn-history-delivered {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    text-align: center !important;
+    min-width: 80px !important;
+    display: inline-block !important;
+    margin: 2px !important;
+}
+
+.mailpn-history-delivered.delivered {
+    background: #d1ecf1 !important;
+    color: #0c5460 !important;
+    border: 1px solid #bee5eb !important;
+}
+
+.mailpn-history-delivered.not-delivered {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border: 1px solid #f5c6cb !important;
+}
+
+/* Loading Overlay */
+.mailpn-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.mailpn-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #79bea8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.mailpn-loading-text {
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* Error Messages */
+.mailpn-scanner-error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    margin: 20px 0;
+}
+
+.mailpn-error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.mailpn-success-message {
+    background: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+    margin: 15px 0;
+    text-align: center;
+}
+
+/* Popup Integration Styles */
+.mailpn-scanner-popup {
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.mailpn-scanner-popup .mailpn-popup-content {
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.mailpn-scanner-popup .mailpn-popup-close-wrapper {
+    color: #79bea8;
+    font-size: 28px;
+    top: 15px;
+    right: 15px;
+}
+
+.mailpn-scanner-popup .mailpn-popup-close-wrapper:hover {
+    color: #5a9b8a;
+}
+
+/* QR Code Display in Popup */
+.mailpn-qr-code-display {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.mailpn-qr-code-display img {
+    max-width: 200px;
+    height: auto;
+    border: 2px solid #79bea8;
+    border-radius: 8px;
+    padding: 10px;
+    background: white;
+}
+
+.mailpn-qr-code-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mailpn-qr-scanner-app {
+        padding: 15px;
+    }
+    
+    .mailpn-scanner-header {
+        padding: 20px;
+    }
+    
+    .mailpn-scanner-header h2 {
+        font-size: 24px;
+    }
+    
+    .mailpn-scanner-container {
+        display: block;
+        gap: 20px;
+    }
+    
+    .mailpn-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .mailpn-stat-item {
+        padding: 20px;
+    }
+    
+    .mailpn-stat-number {
+        font-size: 28px;
+    }
+    
+    .mailpn-scanner-manual {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .mailpn-result-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .mailpn-result-actions {
+        flex-direction: column;
+    }
+    
+    .mailpn-history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .mailpn-history-status {
+        align-items: flex-start;
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    .mailpn-scanner-popup {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .mailpn-scanner-popup .mailpn-popup-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mailpn-scanner-header h2 {
+        font-size: 20px;
+    }
+    
+    .mailpn-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .mailpn-scanner-manual {
+        padding: 15px;
+    }
+    
+    .mailpn-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .mailpn-scanner-app {
+        background: white;
+    }
+    
+    .mailpn-scanner-header {
+        background: #f8f9fa;
+        color: #333;
+    }
+    
+    .mailpn-loading-overlay {
+        display: none !important;
+    }
+}
+
+/* Accessibility */
+.mailpn-btn:focus {
+    outline: 2px solid #79bea8;
+    outline-offset: 2px;
+}
+
+.mailpn-manual-input textarea:focus {
+    outline: 2px solid #79bea8;
+    outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .mailpn-scanner-app {
+        background: white;
+    }
+    
+    .mailpn-stat-item,
+    .mailpn-scanner-camera,
+    .mailpn-scanner-manual,
+    .mailpn-scanner-results,
+    .mailpn-scanner-history {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .mailpn-scan-line {
+        animation: none;
+    }
+    
+    .mailpn-loading-spinner {
+        animation: none;
+    }
+    
+    .mailpn-stat-item:hover,
+    .mailpn-btn:hover,
+    .mailpn-history-item:hover {
+        transform: none;
+    }
+} 

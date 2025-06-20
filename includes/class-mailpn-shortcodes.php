@@ -55,4 +55,7 @@ class MAILPN_Shortcodes {
     ob_end_clean(); 
     return $mailpn_return_string;
   }
+
+  public function mailpn_test($atts) {
+  }
 }

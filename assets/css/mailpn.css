@@ -1,11 +1,12 @@
 :root {
-  --mailpn-color-main:#aa8800;
-  --mailpn-bg-color-main:#aa8800;
-  --mailpn-border-color-main:#aa8800;
-  --mailpn-color-main-alt:#232323;
-  --mailpn-bg-color-main-alt:#232323;
-  --mailpn-border-color-main-alt:#232323;
-  --mailpn-color-main-blue:#6e6eff;
+  --mailpn-color-main:#86b3ac;
+  --mailpn-bg-color-main:#86b3ac;
+  --mailpn-border-color-main:#86b3ac;
+  --mailpn-color-main-alt:#6a9a94;
+  --mailpn-bg-color-main-alt:#6a9a94;
+  --mailpn-border-color-main-alt:#6a9a94;
+  --mailpn-color-main-blue:#86b3ac;
+  --mailpn-color-main-green:#86b3ac;
 }
 
 /*Global styles*/
@@ -886,10 +887,10 @@ input:checked + .mailpn-slider:before{
   color:#da1d4c;
 }
 .mailpn-color-blue{
-  color:var(--mailpn-color-main-blue);
+  color:var(--mailpn-color-main-green);
 }
 .mailpn-color-green{
-  color:#a3ad20;
+  color:var(--mailpn-color-main-green);
 }
 .mailpn-filter-grayscale{
   filter:grayscale(100%);

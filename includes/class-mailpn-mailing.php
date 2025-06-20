@@ -371,6 +371,18 @@ class MAILPN_Mailing {
         $phpmailer->SMTPAuth = true;
         $phpmailer->Username = $smtp_username;
         $phpmailer->Password = $smtp_password;
+        
+        // Additional Gmail-specific settings
+        if (strpos($smtp_host, 'gmail.com') !== false) {
+          // Gmail requires these specific settings
+          $phpmailer->SMTPOptions = array(
+            'ssl' => array(
+              'verify_peer' => false,
+              'verify_peer_name' => false,
+              'allow_self_signed' => true
+            )
+          );
+        }
       }
 
       // Set sender information if configured
@@ -666,7 +678,7 @@ class MAILPN_Mailing {
       <?php if (in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded'])): ?>
         <?php $mailpn_status = get_post_meta($post_id, 'mailpn_status', true); ?>
         
-        <?php if (!empty(get_option('mailpn_error')[$post_id])): ?>
+        <?php if (!empty(get_option('mailpn_error')[$post_id]) && $mailpn_status == 'sent'): ?>
           <div class="mailpn-error">
             <p class="mailpn-alert-error"><?php esc_html_e('Some errors have occurred. Please check if contacts have their notifications enabled.', 'mailpn'); ?></p>
 
@@ -709,6 +721,10 @@ class MAILPN_Mailing {
               </div>
             <?php else: ?>
               <p class="mailpn-alert-warning"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></p>
+            <?php endif ?>
+
+            <?php if (!empty(get_option('mailpn_queue_paused'))): ?>
+              <p class="mailpn-alert-warning"><?php esc_html_e('The mail queue is paused. Please check the mail queue settings.', 'mailpn'); ?></p>
             <?php endif ?>
           </div>
 
@@ -897,7 +913,7 @@ class MAILPN_Mailing {
     return false;
   }
 
-  public function mailpn_get_users_to($mail_id) {
+  public static function mailpn_get_users_to($mail_id) {
     if (get_post_type($mail_id) != 'mailpn_mail') {
       return false;
     }
@@ -910,7 +926,7 @@ class MAILPN_Mailing {
 
       if (!empty($mailpn_distribution_role)) {
         foreach ($mailpn_distribution_role as $role) {
-          $users_role = get_users(['fields' => 'ids', 'number' => -1, 'role' => $role, ]);
+          $users_role = get_users(['fields' => 'ids', 'number' => -1, 'role' => $role, 'orderby' => 'ID', 'order' => 'ASC']);
           
           if (!empty($users_role)) {
             foreach ($users_role as $user_id) {
@@ -920,11 +936,20 @@ class MAILPN_Mailing {
         }
       }
 
+      // Sort all user IDs by ID to ensure consistent order
+      sort($user_ids, SORT_NUMERIC);
       return $user_ids;
     }elseif ($mail_distribution == 'private_user') {
-      return get_post_meta($mail_id, 'mailpn_distribution_user', true);
+      $user_ids = get_post_meta($mail_id, 'mailpn_distribution_user', true);
+
+      // Sort user IDs if it's an array
+      if (is_array($user_ids)) {
+        sort($user_ids, SORT_NUMERIC);
+      }
+      
+      return $user_ids;
     }else{
-      return get_users(['fields' => 'ids', 'number' => -1, ]);
+      return get_users(['fields' => 'ids', 'number' => -1, 'orderby' => 'ID', 'order' => 'ASC']);
     }
   }
 

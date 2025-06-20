@@ -348,7 +348,7 @@ class MAILPN_Settings {
       'parent_option' => 'on',
       'label' => __('SMTP Password', 'mailpn'),
       'placeholder' => '••••••••',
-      'description' => __('Your SMTP password or app password. For Gmail, you may need to use an App Password.', 'mailpn'),
+      'description' => __('Your SMTP password or app password. For Gmail, you MUST use an App Password (not your regular password). To create an App Password: 1) Enable 2-Factor Authentication on your Google Account, 2) Go to Security → App passwords, 3) Generate a password for "Mail".', 'mailpn'),
       'autocomplete' => 'new-password',
     ];
 
@@ -422,7 +422,7 @@ class MAILPN_Settings {
     add_menu_page(
       esc_html__('Mail Settings', 'mailpn'), 
       esc_html__('Mail Settings', 'mailpn'), 
-      'administrator', 
+      'manage_options', 
       'mailpn_options', 
       [$this, 'mailpn_options'], 
       esc_url(MAILPN_URL . 'assets/media/mailpn-menu-icon.svg'),
@@ -432,7 +432,7 @@ class MAILPN_Settings {
       'mailpn_options', 
       esc_html__('Mail Templates', 'mailpn'), 
       esc_html__('Mail Templates', 'mailpn'), 
-      'administrator', 
+      'manage_options', 
       'edit.php?post_type=mailpn_mail',
     );
     
@@ -440,8 +440,28 @@ class MAILPN_Settings {
       'mailpn_options', 
       esc_html__('Mail Records', 'mailpn'), 
       esc_html__('Mail Records', 'mailpn'), 
-      'administrator', 
+      'manage_options', 
       'edit.php?post_type=mailpn_rec',
+    );
+
+    // Add submenu for scheduled welcome emails
+    add_submenu_page(
+      'mailpn_options',
+      esc_html(__('Scheduled Welcome Emails', 'mailpn')),
+      esc_html(__('Scheduled Welcome Emails', 'mailpn')),
+      'manage_options',
+      'mailpn-scheduled-welcome',
+      [$this, 'mailpn_scheduled_welcome_page']
+    );
+
+    // Add submenu for pending welcome registrations
+    add_submenu_page(
+      'mailpn_options',
+      esc_html(__('Pending Welcome Registrations', 'mailpn')),
+      esc_html(__('Pending Welcome Registrations', 'mailpn')),
+      'manage_options',
+      'mailpn-pending-welcome',
+      [$this, 'mailpn_pending_welcome_page']
     );
 
     global $menu;
@@ -483,6 +503,368 @@ class MAILPN_Settings {
 	  <?php
 	}
 
+	/**
+	 * Scheduled Welcome Emails page
+	 *
+	 * @since    1.0.0
+	 */
+	public function mailpn_scheduled_welcome_page() {
+		// Handle manual processing
+		if (isset($_POST['mailpn_process_scheduled']) && wp_verify_nonce($_POST['mailpn_process_scheduled_nonce'], 'mailpn_process_scheduled')) {
+			$cron = new MAILPN_Cron();
+			$cron->mailpn_process_scheduled_welcome_emails();
+			echo '<div class="notice notice-success"><p>' . esc_html__('Scheduled emails processed successfully.', 'mailpn') . '</p></div>';
+		}
+		
+		// Handle manual actions
+		if (isset($_POST['mailpn_send_now']) && wp_verify_nonce($_POST['mailpn_send_now_nonce'], 'mailpn_send_now')) {
+			$index = intval($_POST['mailpn_email_index']);
+			$scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
+			
+			if (isset($scheduled_emails[$index])) {
+				$scheduled_email = $scheduled_emails[$index];
+				$mailing = new MAILPN_Mailing();
+				
+				$result = $mailing->mailpn_queue_add($scheduled_email['email_id'], $scheduled_email['user_id']);
+				
+				if ($result) {
+					// Remove from scheduled list
+					unset($scheduled_emails[$index]);
+					$scheduled_emails = array_values($scheduled_emails);
+					update_option('mailpn_scheduled_welcome_emails', $scheduled_emails);
+					
+					echo '<div class="notice notice-success"><p>' . esc_html__('Email sent immediately and removed from scheduled list.', 'mailpn') . '</p></div>';
+				} else {
+					echo '<div class="notice notice-error"><p>' . esc_html__('Failed to send email.', 'mailpn') . '</p></div>';
+				}
+			}
+		}
+		
+		if (isset($_POST['mailpn_remove_scheduled']) && wp_verify_nonce($_POST['mailpn_remove_scheduled_nonce'], 'mailpn_remove_scheduled')) {
+			$index = intval($_POST['mailpn_email_index']);
+			$scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
+			
+			if (isset($scheduled_emails[$index])) {
+				unset($scheduled_emails[$index]);
+				$scheduled_emails = array_values($scheduled_emails);
+				update_option('mailpn_scheduled_welcome_emails', $scheduled_emails);
+				
+				echo '<div class="notice notice-success"><p>' . esc_html__('Scheduled email removed successfully.', 'mailpn') . '</p></div>';
+			}
+		}
+		
+		?>
+		<div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
+			<div class="mailpn-display-table mailpn-width-100-percent">
+				<div class="mailpn-display-inline-table mailpn-width-70-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+					<h1 class="mailpn-mb-30"><?php esc_html_e('Scheduled Welcome Emails', 'mailpn'); ?></h1>
+				</div>
+				<div class="mailpn-display-inline-table mailpn-width-30-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-text-align-center">
+					<form method="post" style="display: inline;">
+						<?php wp_nonce_field('mailpn_process_scheduled', 'mailpn_process_scheduled_nonce'); ?>
+						<input type="submit" name="mailpn_process_scheduled" class="button button-primary" value="<?php esc_attr_e('Process Scheduled Emails', 'mailpn'); ?>">
+					</form>
+					<a href="<?php echo esc_url(admin_url('admin.php?page=mailpn_options')); ?>" class="button button-secondary"><?php esc_html_e('Debug Tool', 'mailpn'); ?></a>
+				</div>
+			</div>
+
+			<div class="mailpn-scheduled-emails mailpn-mb-30">
+				<h2><?php esc_html_e('Pending Scheduled Emails', 'mailpn'); ?></h2>
+				<?php
+				$scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
+				
+				// Ensure $scheduled_emails is always an array
+				if (!is_array($scheduled_emails)) {
+					$scheduled_emails = [];
+				}
+				
+				if (empty($scheduled_emails)) {
+					echo '<p>' . esc_html__('No pending scheduled welcome emails.', 'mailpn') . '</p>';
+				} else {
+          ?>
+					<table class="wp-list-table widefat fixed striped">
+            <thead>
+              <tr>
+                <th><?php esc_html_e('Email Template', 'mailpn'); ?></th>
+                <th><?php esc_html_e('User', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Scheduled Time', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Created Time', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Status', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Actions', 'mailpn'); ?></th>
+              </tr>
+            </thead>
+					  <tbody>
+					<?php
+
+					foreach ($scheduled_emails as $index => $scheduled_email) {
+						$email_post = get_post($scheduled_email['email_id']);
+						$user = get_userdata($scheduled_email['user_id']);
+						
+						$email_title = $email_post ? $email_post->post_title : esc_html__('Unknown', 'mailpn');
+						$user_name = $user ? $user->display_name : esc_html__('Unknown', 'mailpn');
+						$user_email = $user ? $user->user_email : esc_html__('Unknown', 'mailpn');
+						$scheduled_time = date('Y-m-d H:i:s', $scheduled_email['scheduled_time']);
+						$created_time = date('Y-m-d H:i:s', $scheduled_email['created_time']);
+						
+						$current_time = time();
+						$status = ($scheduled_email['scheduled_time'] <= $current_time) ? 
+							'<span style="color: green; font-weight: bold;">' . esc_html__('Ready to send', 'mailpn') . '</span>' : 
+							'<span style="color: orange;">' . esc_html__('Scheduled', 'mailpn') . '</span>';
+						
+            ?>
+						<tr>
+						<td>
+							<strong><?php echo esc_html($email_title); ?></strong><br>
+							<small>ID: <?php echo esc_html($scheduled_email['email_id']); ?></small>
+						</td>
+						<td>
+							<strong><?php echo esc_html($user_name); ?></strong><br>
+							<small><?php echo esc_html($user_email); ?></small><br>
+							<small>ID: <?php echo esc_html($scheduled_email['user_id']); ?></small>
+						</td>
+						<td><?php echo esc_html($scheduled_time); ?></td>
+						<td><?php echo esc_html($created_time); ?></td>
+						<td><?php echo $status; ?></td>
+						<td>
+							<form method="post" style="display: inline;">
+								<?php wp_nonce_field('mailpn_send_now', 'mailpn_send_now_nonce'); ?>
+								<input type="hidden" name="mailpn_email_index" value="<?php echo esc_attr($index); ?>">
+								<input type="submit" name="mailpn_send_now" class="button button-small button-primary" value="<?php esc_attr_e('Send Now', 'mailpn'); ?>" onclick="return confirm('<?php esc_attr_e('Are you sure you want to send this email now?', 'mailpn'); ?>')">
+							</form>
+							<form method="post" style="display: inline;">
+								<?php wp_nonce_field('mailpn_remove_scheduled', 'mailpn_remove_scheduled_nonce'); ?>
+								<input type="hidden" name="mailpn_email_index" value="<?php echo esc_attr($index); ?>">
+								<input type="submit" name="mailpn_remove_scheduled" class="button button-small button-secondary" value="<?php esc_attr_e('Remove', 'mailpn'); ?>" onclick="return confirm('<?php esc_attr_e('Are you sure you want to remove this scheduled email?', 'mailpn'); ?>')">
+							</form>
+						</td>
+						</tr>
+            <?php
+					}
+          ?>
+					</tbody>
+					</table>
+          <?php
+				}
+				?>
+			</div>
+
+			<div class="mailpn-sent-emails mailpn-mb-30">
+				<h2><?php esc_html_e('Recently Sent Scheduled Emails', 'mailpn'); ?></h2>
+				<?php
+				$scheduled_logs = get_option('mailpn_scheduled_welcome_logs', []);
+				
+				// Ensure $scheduled_logs is always an array
+				if (!is_array($scheduled_logs)) {
+					$scheduled_logs = [];
+				}
+				
+				if (empty($scheduled_logs)) {
+          ?>
+					  <p><?php esc_html_e('No recently sent scheduled welcome emails.', 'mailpn'); ?></p>
+          <?php
+				} else {
+					// Show only the last 20 sent emails
+					$recent_logs = array_slice($scheduled_logs, -20);
+					
+					?>
+					<table class="wp-list-table widefat fixed striped">
+            <thead>
+              <tr>
+                <th><?php esc_html_e('Email Template', 'mailpn'); ?></th>
+                <th><?php esc_html_e('User', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Scheduled Time', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Sent Time', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Delay', 'mailpn'); ?></th>
+              </tr>
+            </thead>
+					  <tbody>
+					<?php
+
+					foreach ($recent_logs as $log) {
+						$email_post = get_post($log['email_id']);
+						$user = get_userdata($log['user_id']);
+						
+						$email_title = $email_post ? $email_post->post_title : esc_html__('Unknown', 'mailpn');
+						$user_name = $user ? $user->display_name : esc_html__('Unknown', 'mailpn');
+						$user_email = $user ? $user->user_email : esc_html__('Unknown', 'mailpn');
+						$scheduled_time = date('Y-m-d H:i:s', $log['scheduled_time']);
+						$sent_time = date('Y-m-d H:i:s', $log['sent_time']);
+						
+						// Calculate delay
+						$delay_seconds = $log['scheduled_time'] - $log['created_time'];
+						$delay_text = '';
+						if ($delay_seconds > 0) {
+							if ($delay_seconds >= DAY_IN_SECONDS) {
+								$delay_text = round($delay_seconds / DAY_IN_SECONDS, 1) . ' ' . esc_html__('days', 'mailpn');
+							} elseif ($delay_seconds >= HOUR_IN_SECONDS) {
+								$delay_text = round($delay_seconds / HOUR_IN_SECONDS, 1) . ' ' . esc_html__('hours', 'mailpn');
+							} else {
+								$delay_text = round($delay_seconds / 60, 1) . ' ' . esc_html__('minutes', 'mailpn');
+							}
+						} else {
+							$delay_text = esc_html__('Immediate', 'mailpn');
+						}
+						
+						?>
+              <tr>
+                <td>
+					<strong><?php echo esc_html($email_title); ?></strong><br>
+					<small>ID: <?php echo esc_html($log['email_id']); ?></small>
+				</td>
+                <td>
+					<strong><?php echo esc_html($user_name); ?></strong><br>
+					<small><?php echo esc_html($user_email); ?></small><br>
+					<small>ID: <?php echo esc_html($log['user_id']); ?></small>
+				</td>
+                <td><?php echo esc_html($scheduled_time); ?></td>
+                <td><?php echo esc_html($sent_time); ?></td>
+                <td><?php echo esc_html($delay_text); ?></td>
+              </tr>
+            <?php
+					}
+
+          ?>
+            </tbody>
+          </table>
+          <?php
+				}
+				?>
+			</div>
+			
+			<div class="mailpn-system-info mailpn-mb-30">
+				<h2><?php esc_html_e('System Information', 'mailpn'); ?></h2>
+				<table class="wp-list-table widefat fixed striped">
+					<tbody>
+						<tr>
+							<td><strong><?php esc_html_e('Current Time', 'mailpn'); ?></strong></td>
+							<td><?php echo esc_html(date('Y-m-d H:i:s')); ?></td>
+						</tr>
+						<tr>
+							<td><strong><?php esc_html_e('Timezone', 'mailpn'); ?></strong></td>
+							<td><?php echo esc_html(wp_timezone_string()); ?></td>
+						</tr>
+						<tr>
+							<td><strong><?php esc_html_e('Next 10-minute Cron', 'mailpn'); ?></strong></td>
+							<td>
+								<?php 
+								$next_cron = wp_next_scheduled('mailpn_cron_ten_minutes');
+								if ($next_cron) {
+									echo esc_html(date('Y-m-d H:i:s', $next_cron));
+								} else {
+									echo '<span style="color: red;">' . esc_html__('Not scheduled', 'mailpn') . '</span>';
+								}
+								?>
+							</td>
+						</tr>
+						<tr>
+							<td><strong><?php esc_html_e('Total Scheduled Emails', 'mailpn'); ?></strong></td>
+							<td><?php echo esc_html(count($scheduled_emails)); ?></td>
+						</tr>
+						<tr>
+							<td><strong><?php esc_html_e('Total Sent Logs', 'mailpn'); ?></strong></td>
+							<td><?php echo esc_html(count($scheduled_logs)); ?></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Pending Welcome Registrations page
+	 *
+	 * @since    1.0.0
+	 */
+	public function mailpn_pending_welcome_page() {
+		// Handle manual processing
+		if (isset($_POST['mailpn_process_pending']) && wp_verify_nonce($_POST['mailpn_process_pending_nonce'], 'mailpn_process_pending')) {
+			$this->mailpn_process_pending_welcome_registrations();
+			echo '<div class="notice notice-success"><p>' . esc_html__('Pending registrations processed successfully.', 'mailpn') . '</p></div>';
+		}
+		
+		?>
+		<div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
+			<div class="mailpn-display-table mailpn-width-100-percent">
+				<div class="mailpn-display-inline-table mailpn-width-70-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+					<h1 class="mailpn-mb-30"><?php esc_html_e('Pending Welcome Registrations', 'mailpn'); ?></h1>
+				</div>
+				<div class="mailpn-display-inline-table mailpn-width-30-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-text-align-center">
+					<form method="post" style="display: inline;">
+						<?php wp_nonce_field('mailpn_process_pending', 'mailpn_process_pending_nonce'); ?>
+						<input type="submit" name="mailpn_process_pending" class="button button-primary" value="<?php esc_attr_e('Process Pending Registrations', 'mailpn'); ?>">
+					</form>
+				</div>
+			</div>
+
+			<div class="mailpn-pending-registrations mailpn-mb-30">
+				<h2><?php esc_html_e('Pending User Registrations', 'mailpn'); ?></h2>
+				<p><?php esc_html_e('These are user registrations waiting to be processed for welcome emails. They will be processed automatically when user roles are properly defined.', 'mailpn'); ?></p>
+				
+				<?php
+				$pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+				
+				// Ensure $pending_registrations is always an array
+				if (!is_array($pending_registrations)) {
+					$pending_registrations = [];
+				}
+				
+				if (empty($pending_registrations)) {
+					echo '<p>' . esc_html__('No pending welcome registrations.', 'mailpn') . '</p>';
+				} else {
+          ?>
+					<table class="wp-list-table widefat fixed striped">
+            <thead>
+              <tr>
+                <th><?php esc_html_e('User', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Email', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Registration Time', 'mailpn'); ?></th>
+                <th><?php esc_html_e('User Roles', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Status', 'mailpn'); ?></th>
+              </tr>
+            </thead>
+            <tbody>
+					<?php
+
+					foreach ($pending_registrations as $registration) {
+						$user = get_userdata($registration['user_id']);
+						
+						if (!$user) {
+							$user_name = esc_html__('User not found', 'mailpn');
+							$user_email = esc_html__('N/A', 'mailpn');
+							$user_roles = esc_html__('N/A', 'mailpn');
+						} else {
+							$user_name = $user->display_name;
+							$user_email = $user->user_email;
+							$user_roles = !empty($user->roles) ? implode(', ', $user->roles) : esc_html__('No roles', 'mailpn');
+						}
+						
+						$registration_time = date('Y-m-d H:i:s', $registration['registration_time']);
+						$status = $registration['processed'] ? 
+							'<span style="color: green;">' . esc_html__('Processed', 'mailpn') . '</span>' : 
+							'<span style="color: orange;">' . esc_html__('Pending', 'mailpn') . '</span>';
+						
+						?>
+              <tr>
+                <td><?php echo esc_html($user_name); ?></td>
+                <td><?php echo esc_html($user_email); ?></td>
+                <td><?php echo esc_html($registration_time); ?></td>
+                <td><?php echo esc_html($user_roles); ?></td>
+                <td><?php echo $status; ?></td>
+              </tr>
+            <?php
+					}
+          ?>
+					  </tbody>
+					</table>
+          <?php
+				}
+				?>
+			</div>
+		</div>
+		<?php
+	}
+
   public function mailpn_activated_plugin($plugin) {
     if($plugin == 'mailpn/mailpn.php') {
       wp_safe_redirect(esc_url(admin_url('admin.php?page=mailpn_options')));exit;
@@ -502,6 +884,290 @@ class MAILPN_Settings {
   public function mailpn_user_register($user_id) {
     if (get_option('mailpn_new_user_notifications') == 'on') {
       update_user_meta($user_id, 'userspn_notifications', 'on');
+    }
+    
+    // Instead of triggering welcome emails immediately, accumulate the registration
+    // for later processing when roles are properly defined
+    $this->mailpn_accumulate_user_registration($user_id);
+
+    // Immediately try to process to handle simple registration cases without delay
+    $this->mailpn_process_pending_welcome_registrations();
+  }
+  
+  /**
+   * Accumulate user registration for later welcome email processing
+   *
+   * @param int $user_id The user ID
+   */
+  public function mailpn_accumulate_user_registration($user_id) {
+    $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+    
+    // Ensure $pending_registrations is always an array
+    if (!is_array($pending_registrations)) {
+      $pending_registrations = [];
+    }
+    
+    // Add this user to pending registrations
+    $pending_registrations[] = [
+      'user_id' => $user_id,
+      'registration_time' => time(),
+      'processed' => false
+    ];
+    
+    update_option('mailpn_pending_welcome_registrations', $pending_registrations);
+  }
+  
+  /**
+   * Process pending user registrations for welcome emails
+   * This should be called after user roles are properly defined
+   * 
+   * @param int $user_id The user ID (optional, for hook compatibility)
+   * @param string $role The new role (optional, for set_user_role hook)
+   * @param array $old_roles The old roles (optional, for set_user_role hook)
+   */
+  public function mailpn_process_pending_welcome_registrations($user_id = null, $role = null, $old_roles = null) {
+    $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+    
+    // Ensure $pending_registrations is always an array
+    if (!is_array($pending_registrations)) {
+      $pending_registrations = [];
+    }
+    
+    if (empty($pending_registrations)) {
+      return;
+    }
+    
+    $updated_pending_registrations = [];
+    
+    foreach ($pending_registrations as $registration) {
+      // If already processed, keep it for cleanup later
+      if ($registration['processed']) {
+        $updated_pending_registrations[] = $registration;
+        continue;
+      }
+      
+      $reg_user_id = $registration['user_id'];
+      $user = get_userdata($reg_user_id);
+      
+      // If user doesn't exist, discard this registration
+      if (!$user) {
+        continue;
+      }
+      
+      // If user has the newsletter subscriber role, mark as processed and keep
+      if (in_array('userspn_newsletter_subscriber', $user->roles)) {
+        $registration['processed'] = true;
+        $updated_pending_registrations[] = $registration;
+        continue;
+      }
+      
+      // Try to send welcome emails
+      $sent = $this->mailpn_trigger_welcome_emails($reg_user_id);
+      
+      // If an email was sent, mark as processed
+      if ($sent) {
+        $registration['processed'] = true;
+      }
+      
+      // Always add the registration back to the list (it's either now processed or will be retried)
+      $updated_pending_registrations[] = $registration;
+    }
+    
+    update_option('mailpn_pending_welcome_registrations', $updated_pending_registrations);
+  }
+  
+  /**
+   * Process a specific welcome registration
+   *
+   * @param array $registration The registration data
+   * @return bool True if processed successfully, false otherwise
+   */
+  public function mailpn_process_specific_welcome_registration($registration) {
+    $reg_user_id = $registration['user_id'];
+    $user = get_userdata($reg_user_id);
+    
+    // If user doesn't exist, return false
+    if (!$user) {
+      return false;
+    }
+    
+    // If user has the newsletter subscriber role, mark as processed
+    if (in_array('userspn_newsletter_subscriber', $user->roles)) {
+      return true;
+    }
+    
+    // Try to send welcome emails
+    $sent = $this->mailpn_trigger_welcome_emails($reg_user_id);
+    
+    return $sent;
+  }
+  
+  /**
+   * Clean up old processed registrations (older than 7 days)
+   */
+  public function mailpn_cleanup_old_pending_registrations() {
+    $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+    
+    // Ensure $pending_registrations is always an array
+    if (!is_array($pending_registrations)) {
+      $pending_registrations = [];
+    }
+    
+    $seven_days_ago = time() - (7 * DAY_IN_SECONDS);
+    $cleaned_registrations = [];
+    
+    foreach ($pending_registrations as $registration) {
+      // Keep only recent registrations or unprocessed ones
+      if ($registration['registration_time'] > $seven_days_ago || !$registration['processed']) {
+        $cleaned_registrations[] = $registration;
+      }
+    }
+    
+    update_option('mailpn_pending_welcome_registrations', $cleaned_registrations);
+  }
+  
+  /**
+   * Trigger welcome emails for newly registered users
+   *
+   * @param int $user_id The user ID
+   */
+  public function mailpn_trigger_welcome_emails($user_id) {
+    // Get all welcome email templates
+    $welcome_emails = get_posts([
+      'fields' => 'ids',
+      'numberposts' => -1,
+      'post_type' => 'mailpn_mail',
+      'post_status' => 'publish',
+      'meta_query' => [
+        [
+          'key' => 'mailpn_type',
+          'value' => 'email_welcome',
+          'compare' => '='
+        ]
+      ]
+    ]);
+    
+    if (empty($welcome_emails)) {
+      return false;
+    }
+    
+    $mailing_plugin = new MAILPN_Mailing();
+    $email_queued = false;
+    
+    foreach ($welcome_emails as $email_id) {
+      // Check if user should receive this email based on distribution settings
+      $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
+      $should_send = false;
+      
+      switch ($distribution) {
+        case 'public':
+          $should_send = true;
+          break;
+        case 'private_role':
+          $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
+          $user = get_userdata($user_id);
+          if (!empty($user_roles) && !empty($user)) {
+            foreach ($user_roles as $role) {
+              if (in_array($role, $user->roles)) {
+                $should_send = true;
+                break;
+              }
+            }
+          }
+          break;
+        case 'private_user':
+          $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
+          if (!empty($user_list) && in_array($user_id, $user_list)) {
+            $should_send = true;
+          }
+          break;
+      }
+      
+      if (!$should_send) {
+        continue;
+      }
+      
+      // Check if delay is enabled for this welcome email
+      $delay_enabled = get_post_meta($email_id, 'mailpn_welcome_delay_enabled', true);
+      
+      if ($delay_enabled === 'on') {
+        // Schedule the email for delayed sending
+        $this->mailpn_schedule_delayed_welcome_email($email_id, $user_id);
+      } else {
+        // Send immediately
+        $mailing_plugin->mailpn_queue_add($email_id, $user_id);
+      }
+      $email_queued = true;
+    }
+    return $email_queued;
+  }
+  
+  /**
+   * Schedule a delayed welcome email
+   *
+   * @param int $email_id The email template ID
+   * @param int $user_id The user ID
+   */
+  public function mailpn_schedule_delayed_welcome_email($email_id, $user_id) {
+    $delay_value = get_post_meta($email_id, 'mailpn_welcome_delay_value', true);
+    $delay_unit = get_post_meta($email_id, 'mailpn_welcome_delay_unit', true);
+    
+    if (empty($delay_value) || empty($delay_unit)) {
+      return;
+    }
+    
+    // Calculate the delay in seconds
+    $delay_seconds = $this->mailpn_calculate_delay_seconds($delay_value, $delay_unit);
+    
+    if ($delay_seconds <= 0) {
+      return;
+    }
+    
+    // Calculate the scheduled time
+    $scheduled_time = time() + $delay_seconds;
+    
+    // Get existing scheduled emails
+    $scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
+    
+    // Ensure $scheduled_emails is always an array
+    if (!is_array($scheduled_emails)) {
+      $scheduled_emails = [];
+    }
+    
+    // Add this email to the scheduled list
+    $scheduled_emails[] = [
+      'email_id' => $email_id,
+      'user_id' => $user_id,
+      'scheduled_time' => $scheduled_time,
+      'created_time' => time()
+    ];
+    
+    update_option('mailpn_scheduled_welcome_emails', $scheduled_emails);
+  }
+  
+  /**
+   * Calculate delay in seconds based on value and unit
+   *
+   * @param int $value The delay value
+   * @param string $unit The delay unit (hours, days, weeks, months, years)
+   * @return int The delay in seconds
+   */
+  public function mailpn_calculate_delay_seconds($value, $unit) {
+    $value = intval($value);
+    
+    switch ($unit) {
+      case 'hours':
+        return $value * HOUR_IN_SECONDS;
+      case 'days':
+        return $value * DAY_IN_SECONDS;
+      case 'weeks':
+        return $value * WEEK_IN_SECONDS;
+      case 'months':
+        return $value * MONTH_IN_SECONDS;
+      case 'years':
+        return $value * YEAR_IN_SECONDS;
+      default:
+        return 0;
     }
   }
 

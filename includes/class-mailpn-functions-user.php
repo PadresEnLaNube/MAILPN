@@ -128,4 +128,98 @@ class MAILPN_Functions_User {
 
     update_user_meta($user_id, 'userspn_newsletter_active', true);
   }
+
+  /**
+   * Process delayed welcome emails when newsletter is activated
+   *
+   * @param int $user_id The user ID
+   */
+  public function mailpn_process_delayed_welcome_emails_on_newsletter_activation($user_id) {
+    // Get all welcome emails that are configured as delayed
+    $delayed_welcome_emails = get_posts([
+      'post_type' => 'mailpn_mail',
+      'post_status' => 'publish',
+      'numberposts' => -1,
+      'meta_query' => [
+        [
+          'key' => 'mailpn_type',
+          'value' => 'email_welcome',
+          'compare' => '='
+        ],
+        [
+          'key' => 'mailpn_welcome_delay_enabled',
+          'value' => 'on',
+          'compare' => '='
+        ]
+      ]
+    ]);
+    
+    if (empty($delayed_welcome_emails)) {
+      return;
+    }
+    
+    $mailing_plugin = new MAILPN_Mailing();
+    
+    foreach ($delayed_welcome_emails as $email) {
+      $email_id = $email->ID;
+      
+      // Check if user should receive this email based on distribution settings
+      $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
+      $should_send = false;
+      
+      switch ($distribution) {
+        case 'public':
+          $should_send = true;
+          break;
+        case 'private_role':
+          $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
+          $user = get_userdata($user_id);
+          if (!empty($user_roles) && !empty($user)) {
+            foreach ($user_roles as $role) {
+              if (in_array($role, $user->roles)) {
+                $should_send = true;
+                break;
+              }
+            }
+          }
+          break;
+        case 'private_user':
+          $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
+          if (!empty($user_list) && in_array($user_id, $user_list)) {
+            $should_send = true;
+          }
+          break;
+      }
+      
+      if ($should_send) {
+        // Add to queue for immediate sending since newsletter is now active
+        $mailing_plugin->mailpn_queue_add($email_id, $user_id);
+      }
+    }
+  }
+
+  /**
+   * Hook to detect changes in userspn_newsletter_active meta
+   * This function is called when the meta is updated
+   *
+   * @param int $meta_id The meta ID
+   * @param int $user_id The user ID
+   * @param string $meta_key The meta key
+   * @param mixed $meta_value The meta value
+   */
+  public function mailpn_newsletter_activation_hook($meta_id, $user_id, $meta_key, $meta_value) {
+    // Only process if the meta key is userspn_newsletter_active
+    if ($meta_key !== 'userspn_newsletter_active') {
+      return;
+    }
+
+    // Get the previous value to check if this is a new activation
+    $previous_value = get_user_meta($user_id, 'userspn_newsletter_active', true);
+    
+    // If the previous value was empty or false, and now we have a value, it's a new activation
+    if (empty($previous_value) && !empty($meta_value)) {
+      // Process delayed welcome emails for this user
+      $this->mailpn_process_delayed_welcome_emails_on_newsletter_activation($user_id);
+    }
+  }
 }
