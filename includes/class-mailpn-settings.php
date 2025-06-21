@@ -420,8 +420,8 @@ class MAILPN_Settings {
 	 */
 	public function mailpn_admin_menu() {
     add_menu_page(
-      esc_html__('Mail Settings', 'mailpn'), 
-      esc_html__('Mail Settings', 'mailpn'), 
+      esc_html__('Email Settings', 'mailpn'), 
+      esc_html__('Email Settings', 'mailpn'), 
       'manage_options', 
       'mailpn_options', 
       [$this, 'mailpn_options'], 
@@ -430,38 +430,28 @@ class MAILPN_Settings {
 
     add_submenu_page(
       'mailpn_options', 
-      esc_html__('Mail Templates', 'mailpn'), 
-      esc_html__('Mail Templates', 'mailpn'), 
+      esc_html__('Email Templates', 'mailpn'), 
+      esc_html__('Email Templates', 'mailpn'), 
       'manage_options', 
       'edit.php?post_type=mailpn_mail',
     );
     
     add_submenu_page(
       'mailpn_options', 
-      esc_html__('Mail Records', 'mailpn'), 
-      esc_html__('Mail Records', 'mailpn'), 
+      esc_html__('Emails sent', 'mailpn'), 
+      esc_html__('Emails sent', 'mailpn'), 
       'manage_options', 
       'edit.php?post_type=mailpn_rec',
     );
 
-    // Add submenu for scheduled welcome emails
+    // Add submenu for pending welcome registrations and scheduled welcome emails (unified)
     add_submenu_page(
       'mailpn_options',
-      esc_html(__('Scheduled Welcome Emails', 'mailpn')),
-      esc_html(__('Scheduled Welcome Emails', 'mailpn')),
+      esc_html__('Welcome Email Management', 'mailpn'),
+      esc_html__('Welcome Email Management', 'mailpn'),
       'manage_options',
-      'mailpn-scheduled-welcome',
-      [$this, 'mailpn_scheduled_welcome_page']
-    );
-
-    // Add submenu for pending welcome registrations
-    add_submenu_page(
-      'mailpn_options',
-      esc_html(__('Pending Welcome Registrations', 'mailpn')),
-      esc_html(__('Pending Welcome Registrations', 'mailpn')),
-      'manage_options',
-      'mailpn-pending-welcome',
-      [$this, 'mailpn_pending_welcome_page']
+      'mailpn-welcome-management',
+      [$this, 'mailpn_welcome_management_page']
     );
 
     global $menu;
@@ -504,19 +494,19 @@ class MAILPN_Settings {
 	}
 
 	/**
-	 * Scheduled Welcome Emails page
+	 * Welcome Email Management page (unified)
 	 *
 	 * @since    1.0.0
 	 */
-	public function mailpn_scheduled_welcome_page() {
-		// Handle manual processing
+	public function mailpn_welcome_management_page() {
+		// Handle manual processing for scheduled emails
 		if (isset($_POST['mailpn_process_scheduled']) && wp_verify_nonce($_POST['mailpn_process_scheduled_nonce'], 'mailpn_process_scheduled')) {
 			$cron = new MAILPN_Cron();
 			$cron->mailpn_process_scheduled_welcome_emails();
 			echo '<div class="notice notice-success"><p>' . esc_html__('Scheduled emails processed successfully.', 'mailpn') . '</p></div>';
 		}
 		
-		// Handle manual actions
+		// Handle manual actions for scheduled emails
 		if (isset($_POST['mailpn_send_now']) && wp_verify_nonce($_POST['mailpn_send_now_nonce'], 'mailpn_send_now')) {
 			$index = intval($_POST['mailpn_email_index']);
 			$scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
@@ -552,24 +542,100 @@ class MAILPN_Settings {
 				echo '<div class="notice notice-success"><p>' . esc_html__('Scheduled email removed successfully.', 'mailpn') . '</p></div>';
 			}
 		}
+
+		// Handle manual processing for pending registrations
+		if (isset($_POST['mailpn_process_pending']) && wp_verify_nonce($_POST['mailpn_process_pending_nonce'], 'mailpn_process_pending')) {
+			$this->mailpn_process_pending_welcome_registrations();
+			echo '<div class="notice notice-success"><p>' . esc_html__('Pending registrations processed successfully.', 'mailpn') . '</p></div>';
+		}
 		
 		?>
 		<div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
 			<div class="mailpn-display-table mailpn-width-100-percent">
 				<div class="mailpn-display-inline-table mailpn-width-70-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
-					<h1 class="mailpn-mb-30"><?php esc_html_e('Scheduled Welcome Emails', 'mailpn'); ?></h1>
+					<h1 class="mailpn-mb-30"><?php esc_html_e('Welcome Email Management', 'mailpn'); ?></h1>
 				</div>
 				<div class="mailpn-display-inline-table mailpn-width-30-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-text-align-center">
 					<form method="post" style="display: inline;">
 						<?php wp_nonce_field('mailpn_process_scheduled', 'mailpn_process_scheduled_nonce'); ?>
 						<input type="submit" name="mailpn_process_scheduled" class="button button-primary" value="<?php esc_attr_e('Process Scheduled Emails', 'mailpn'); ?>">
 					</form>
-					<a href="<?php echo esc_url(admin_url('admin.php?page=mailpn_options')); ?>" class="button button-secondary"><?php esc_html_e('Debug Tool', 'mailpn'); ?></a>
+					<form method="post" style="display: inline;">
+						<?php wp_nonce_field('mailpn_process_pending', 'mailpn_process_pending_nonce'); ?>
+						<input type="submit" name="mailpn_process_pending" class="button button-secondary" value="<?php esc_attr_e('Process Pending Registrations', 'mailpn'); ?>">
+					</form>
 				</div>
 			</div>
 
+      <!-- PENDING WELCOME REGISTRATIONS SECTION -->
+      <div class="mailpn-pending-registrations mailpn-mb-30">
+        <h2><?php esc_html_e('Pending Welcome Registrations', 'mailpn'); ?></h2>
+        <p><?php esc_html_e('These are user registrations waiting to be processed for welcome emails. They will be processed automatically when user roles are properly defined.', 'mailpn'); ?></p>
+        
+        <?php
+        $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+        
+        // Ensure $pending_registrations is always an array
+        if (!is_array($pending_registrations)) {
+          $pending_registrations = [];
+        }
+        
+        if (empty($pending_registrations)) {
+          echo '<p>' . esc_html__('No pending welcome registrations.', 'mailpn') . '</p>';
+        } else {
+          ?>
+          <table class="wp-list-table widefat fixed striped">
+            <thead>
+              <tr>
+                <th><?php esc_html_e('User', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Email', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Registration Time', 'mailpn'); ?></th>
+                <th><?php esc_html_e('User Roles', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Status', 'mailpn'); ?></th>
+              </tr>
+            </thead>
+            <tbody>
+          <?php
+
+          foreach ($pending_registrations as $registration) {
+            $user = get_userdata($registration['user_id']);
+            
+            if (!$user) {
+              $user_name = esc_html__('User not found', 'mailpn');
+              $user_email = esc_html__('N/A', 'mailpn');
+              $user_roles = esc_html__('N/A', 'mailpn');
+            } else {
+              $user_name = $user->display_name;
+              $user_email = $user->user_email;
+              $user_roles = !empty($user->roles) ? implode(', ', $user->roles) : esc_html__('No roles', 'mailpn');
+            }
+            
+            $registration_time = date('Y-m-d H:i:s', $registration['registration_time']);
+            $status = $registration['processed'] ? 
+              '<span style="color: green;">' . esc_html__('Processed', 'mailpn') . '</span>' : 
+              '<span style="color: orange;">' . esc_html__('Pending', 'mailpn') . '</span>';
+            
+            ?>
+              <tr>
+                <td><?php echo esc_html($user_name); ?></td>
+                <td><?php echo esc_html($user_email); ?></td>
+                <td><?php echo esc_html($registration_time); ?></td>
+                <td><?php echo esc_html($user_roles); ?></td>
+                <td><?php echo $status; ?></td>
+              </tr>
+            <?php
+          }
+          ?>
+            </tbody>
+          </table>
+          <?php
+        }
+        ?>
+      </div>
+
+			<!-- SCHEDULED WELCOME EMAILS SECTION -->
 			<div class="mailpn-scheduled-emails mailpn-mb-30">
-				<h2><?php esc_html_e('Pending Scheduled Emails', 'mailpn'); ?></h2>
+				<h2><?php esc_html_e('Scheduled Welcome Emails', 'mailpn'); ?></h2>
 				<?php
 				$scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
 				
@@ -764,102 +830,12 @@ class MAILPN_Settings {
 							<td><strong><?php esc_html_e('Total Sent Logs', 'mailpn'); ?></strong></td>
 							<td><?php echo esc_html(count($scheduled_logs)); ?></td>
 						</tr>
+						<tr>
+							<td><strong><?php esc_html_e('Total Pending Registrations', 'mailpn'); ?></strong></td>
+							<td><?php echo esc_html(count($pending_registrations)); ?></td>
+						</tr>
 					</tbody>
 				</table>
-			</div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Pending Welcome Registrations page
-	 *
-	 * @since    1.0.0
-	 */
-	public function mailpn_pending_welcome_page() {
-		// Handle manual processing
-		if (isset($_POST['mailpn_process_pending']) && wp_verify_nonce($_POST['mailpn_process_pending_nonce'], 'mailpn_process_pending')) {
-			$this->mailpn_process_pending_welcome_registrations();
-			echo '<div class="notice notice-success"><p>' . esc_html__('Pending registrations processed successfully.', 'mailpn') . '</p></div>';
-		}
-		
-		?>
-		<div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
-			<div class="mailpn-display-table mailpn-width-100-percent">
-				<div class="mailpn-display-inline-table mailpn-width-70-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
-					<h1 class="mailpn-mb-30"><?php esc_html_e('Pending Welcome Registrations', 'mailpn'); ?></h1>
-				</div>
-				<div class="mailpn-display-inline-table mailpn-width-30-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-text-align-center">
-					<form method="post" style="display: inline;">
-						<?php wp_nonce_field('mailpn_process_pending', 'mailpn_process_pending_nonce'); ?>
-						<input type="submit" name="mailpn_process_pending" class="button button-primary" value="<?php esc_attr_e('Process Pending Registrations', 'mailpn'); ?>">
-					</form>
-				</div>
-			</div>
-
-			<div class="mailpn-pending-registrations mailpn-mb-30">
-				<h2><?php esc_html_e('Pending User Registrations', 'mailpn'); ?></h2>
-				<p><?php esc_html_e('These are user registrations waiting to be processed for welcome emails. They will be processed automatically when user roles are properly defined.', 'mailpn'); ?></p>
-				
-				<?php
-				$pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
-				
-				// Ensure $pending_registrations is always an array
-				if (!is_array($pending_registrations)) {
-					$pending_registrations = [];
-				}
-				
-				if (empty($pending_registrations)) {
-					echo '<p>' . esc_html__('No pending welcome registrations.', 'mailpn') . '</p>';
-				} else {
-          ?>
-					<table class="wp-list-table widefat fixed striped">
-            <thead>
-              <tr>
-                <th><?php esc_html_e('User', 'mailpn'); ?></th>
-                <th><?php esc_html_e('Email', 'mailpn'); ?></th>
-                <th><?php esc_html_e('Registration Time', 'mailpn'); ?></th>
-                <th><?php esc_html_e('User Roles', 'mailpn'); ?></th>
-                <th><?php esc_html_e('Status', 'mailpn'); ?></th>
-              </tr>
-            </thead>
-            <tbody>
-					<?php
-
-					foreach ($pending_registrations as $registration) {
-						$user = get_userdata($registration['user_id']);
-						
-						if (!$user) {
-							$user_name = esc_html__('User not found', 'mailpn');
-							$user_email = esc_html__('N/A', 'mailpn');
-							$user_roles = esc_html__('N/A', 'mailpn');
-						} else {
-							$user_name = $user->display_name;
-							$user_email = $user->user_email;
-							$user_roles = !empty($user->roles) ? implode(', ', $user->roles) : esc_html__('No roles', 'mailpn');
-						}
-						
-						$registration_time = date('Y-m-d H:i:s', $registration['registration_time']);
-						$status = $registration['processed'] ? 
-							'<span style="color: green;">' . esc_html__('Processed', 'mailpn') . '</span>' : 
-							'<span style="color: orange;">' . esc_html__('Pending', 'mailpn') . '</span>';
-						
-						?>
-              <tr>
-                <td><?php echo esc_html($user_name); ?></td>
-                <td><?php echo esc_html($user_email); ?></td>
-                <td><?php echo esc_html($registration_time); ?></td>
-                <td><?php echo esc_html($user_roles); ?></td>
-                <td><?php echo $status; ?></td>
-              </tr>
-            <?php
-					}
-          ?>
-					  </tbody>
-					</table>
-          <?php
-				}
-				?>
 			</div>
 		</div>
 		<?php
