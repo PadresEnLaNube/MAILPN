@@ -4,7 +4,7 @@ Donate link: https://padresenlanube.com/
 Tags: email, mailing, notifications, sender, mail address
 Requires at least: 3.0
 Tested up to: 6.8
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Effortlessly manage your email campaigns. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
@@ -106,6 +106,31 @@ To uninstall the plugin, go to the 'Plugins' screen in WordPress, find the Maili
 
 == Changelog ==
 
+= 1.0.1 =
+
+Update plugin requirements and refactor function names for consistency
+Add test email functionality and refactor sanitization methods
+Update README and enhance AJAX handling in mailpn
+Add popup functionality and related styles
+Remove fancyBox assets and enhance AJAX nonce verification
+Refactor AJAX handling and improve plugin initialization
+Refactor post insertion methods for consistency
+Refactor post insertion methods for consistency
+Enhance email tracking and popup functionality
+Update version and enhance plugin structure
+Enhance security and improve code readability
+Revert version number to 1.0.0 and remove outdated screenshots
+Remove mailpn.zip and enhance email exception handling
+Refactor post handling and enhance email exception logic
+Enhance popup styling and functionality
+Refactor email handling and enhance SMTP configuration
+Implement delayed welcome email functionality and enhance email processing
+Remove deprecated debug scripts and cron status check files
+Refactor role capabilities and enhance post type registration
+
+
 = 1.0.0 =
 
 Hello mailing world!
+
+
