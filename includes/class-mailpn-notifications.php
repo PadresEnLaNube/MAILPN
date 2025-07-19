@@ -21,40 +21,46 @@ class MAILPN_Notifications {
           <?php wp_enqueue_script('mailpn-notifications', MAILPN_URL . 'assets/js/mailpn-notifications.js', ['jquery'], MAILPN_VERSION, false, ['in_footer' => true, 'strategy' => 'defer']); ?>
         <?php endif ?>
 
-        <div id="mailpn-popup-notice" class="mailpn-popup mailpn-display-none-soft">
-          <div class="mailpn-popup-content mailpn-text-align-center mailpn-p-30 mailpn-z-index-top mailpn-bg-color-white">
-            <?php
-              switch ($mailpn_notice) {
-                case 'subscription-unsubscribe-success':
-                  ?>
-                    <p class="mailpn-alert mailpn-alert-success"><?php esc_html_e('All done! You have been unsubscribed.', 'mailpn'); ?></p>
+        <div id="mailpn-popup-notice" class="mailpn-popup mailpn-popup-size-small mailpn-display-none-soft">
+          <button class="mailpn-popup-close-wrapper">
+            <i class="material-icons-outlined">close</i>
+          </button>
 
-                      <?php if (class_exists('USERSPN')): ?>
-                        <a href="#" class="userspn-profile-popup-btn userspn-btn userspn-btn-mini" data-userspn-action="notifications"><?php esc_html_e('Subscribe again', 'mailpn'); ?></a>
+          <div class="mailpn-popup-content mailpn-text-align-center">
+            <div class="mailpn-p-30">
+              <?php
+                switch ($mailpn_notice) {
+                  case 'subscription-unsubscribe-success':
+                    ?>
+                      <p class="mailpn-alert mailpn-alert-success"><?php esc_html_e('All done! You have been unsubscribed.', 'mailpn'); ?></p>
+
+                        <?php if (class_exists('USERSPN')): ?>
+                          <a href="#" class="userspn-profile-popup-btn userspn-btn userspn-btn-mini" data-userspn-action="notifications"><?php esc_html_e('Subscribe again', 'mailpn'); ?></a>
+                        <?php endif ?>
+                    <?php
+                    break;
+                  case 'subscription-unsubscribe-error':
+                    ?>
+                      <p class="mailpn-alert mailpn-alert-error"><?php esc_html_e('Oppps! We are not able to unsubscribe your account.', 'mailpn'); ?></p>
+
+                      <?php if (is_user_logged_in()): ?>
+                        <p class="mailpn-mb-20"><?php esc_html_e('It looks like the link followed has expired. Please, set your notification preferences.', 'mailpn'); ?></p>
+
+                        <?php if (class_exists('USERSPN')): ?>
+                          <a href="#" class="userspn-profile-popup-btn userspn-btn userspn-btn-mini" data-userspn-action="notifications"><?php esc_html_e('Notifications', 'mailpn'); ?></a>
+                        <?php endif ?>
+                      <?php else: ?>
+                        <p class="mailpn-mb-20"><?php esc_html_e('Please, login to edit your preferences.', 'mailpn'); ?></p>
+
+                        <?php if (class_exists('USERSPN')): ?>
+                          <a href="#" class="userspn-profile-popup-btn userspn-btn userspn-btn-mini" data-userspn-action="login"><?php esc_html_e('Login', 'mailpn'); ?></a>
+                        <?php endif ?>
                       <?php endif ?>
-                  <?php
-                  break;
-                case 'subscription-unsubscribe-error':
-                  ?>
-                    <p class="mailpn-alert mailpn-alert-error"><?php esc_html_e('Oppps! We are not able to unsubscribe your account.', 'mailpn'); ?></p>
-
-                    <?php if (is_user_logged_in()): ?>
-                      <p class="mailpn-mb-20"><?php esc_html_e('It looks like the link followed has expired. Please, set your notification preferences.', 'mailpn'); ?></p>
-
-                      <?php if (class_exists('USERSPN')): ?>
-                        <a href="#" class="userspn-profile-popup-btn userspn-btn userspn-btn-mini" data-userspn-action="notifications"><?php esc_html_e('Notifications', 'mailpn'); ?></a>
-                      <?php endif ?>
-                    <?php else: ?>
-                      <p class="mailpn-mb-20"><?php esc_html_e('Please, login to edit your preferences.', 'mailpn'); ?></p>
-
-                      <?php if (class_exists('USERSPN')): ?>
-                        <a href="#" class="userspn-profile-popup-btn userspn-btn userspn-btn-mini" data-userspn-action="login"><?php esc_html_e('Login', 'mailpn'); ?></a>
-                      <?php endif ?>
-                    <?php endif ?>
-                  <?php
-                  break;
-              }
-            ?>
+                    <?php
+                    break;
+                }
+              ?>
+            </div>
           </div>
         </div>
       <?php endif ?>

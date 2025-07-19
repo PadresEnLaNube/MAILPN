@@ -417,6 +417,8 @@ class MAILPN_Mailing {
     wp_enqueue_style('mail-template-css');
     wp_add_inline_style('mail-template-css', $mailpn_template_css);
     
+    $mailpn_max_width = get_option('mailpn_max_width');
+    $max_width_style = (!empty($mailpn_max_width) && is_numeric($mailpn_max_width)) ? 'max-width:' . intval($mailpn_max_width) . 'px; margin:auto;' : '';
     ob_start();
     ?>
       <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -428,7 +430,7 @@ class MAILPN_Mailing {
         </head>
 
         <body class="mailpn-content">
-          <table class="mailpn-table-main" align="center">
+          <table class="mailpn-table-main" align="center" style="<?php echo esc_attr($max_width_style); ?>">
             <tbody>
               <?php if (!empty(get_option('mailpn_image_header'))): ?>
                 <tr style="text-align:center;">

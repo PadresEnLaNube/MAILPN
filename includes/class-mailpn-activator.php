@@ -27,15 +27,15 @@ class MAILPN_Activator {
 
     add_role('mailpn_role_manager', esc_html(__('Mailing Manager - PN', 'mailpn')));
 
-    $role_admin = get_role('administrator');
+    $mailpn_role_admin = get_role('administrator');
     $mailpn_role_manager = get_role('mailpn_role_manager');
 
     $mailpn_role_manager->add_cap('upload_files'); 
     $mailpn_role_manager->add_cap('read'); 
 
-    foreach (MAILPN_ROLE_CAPABILITIES as $cap_key => $cap_value) {
-      $role_admin->add_cap($cap_value); 
-      $mailpn_role_manager->add_cap($cap_value); 
+    foreach (MAILPN_CPTS as $cpt_key => $cpt_name) { 
+      $mailpn_role_admin->add_cap('manage_' . $cpt_key . '_options');
+      $mailpn_role_manager->add_cap('manage_' . $cpt_key . '_options');
     }
 
     if (empty(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_mail', 'post_status' => 'any', ]))) {

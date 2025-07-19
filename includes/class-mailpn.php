@@ -335,7 +335,7 @@ class MAILPN {
 	 */
 	private function mailpn_define_post_types() {
 		$plugin_post_type_mail = new MAILPN_Post_Type_Mail();
-		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_mail, 'mailpn_register_post_type');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_mail, 'mailpn_register_post_type', 10);
 		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_mail, 'mailpn_add_meta_box');
 		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_mail', $plugin_post_type_mail, 'mailpn_save_post', 10, 3);
 		// Add new column hooks
@@ -344,7 +344,7 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_filter('rest_authentication_errors', $plugin_post_type_mail, 'mailpn_mail_block_rest_api_access');
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
-		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_rec, 'mailpn_register_post_type');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_rec, 'mailpn_register_post_type', 10);
 		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_rec, 'mailpn_add_meta_box');
 		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_rec', $plugin_post_type_rec, 'mailpn_save_post', 10, 3);
 		$this->mailpn_loader->mailpn_add_filter('rest_authentication_errors', $plugin_post_type_rec, 'mailpn_rec_block_rest_api_access');
@@ -365,10 +365,10 @@ class MAILPN {
 	 */
 	private function mailpn_define_taxonomies() {
 		$plugin_taxonomies_mail = new MAILPN_Taxonomies_Mail();
-		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_mail, 'mailpn_register_taxonomies');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_mail, 'mailpn_register_taxonomies', 15);
 
 		$plugin_taxonomies_rec = new MAILPN_Taxonomies_Rec();
-		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_rec, 'mailpn_register_taxonomies');
+		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_rec, 'mailpn_register_taxonomies', 15);
 	}
 
 	/**

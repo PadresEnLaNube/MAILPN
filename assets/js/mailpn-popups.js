@@ -136,7 +136,7 @@
       });
   
       // Close popup when clicking close button
-      $(document).on('click', '.mailpn-popup-close', function(e) {
+      $(document).on('click', '.mailpn-popup-close, .mailpn-popup-close-wrapper', function(e) {
         e.preventDefault();
         MAILPN_Popups.close();
       });

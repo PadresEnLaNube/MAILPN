@@ -38,27 +38,51 @@ define('MAILPN_VERSION', '1.0.0');
 define('MAILPN_DIR', plugin_dir_path(__FILE__));
 define('MAILPN_URL', plugin_dir_url(__FILE__));
 
-define('MAILPN_ROLE_CAPABILITIES', [
-	'edit_post' => 'edit_mailpn_mail',
-	'edit_posts' => 'edit_mailpn',
-	'edit_private_posts' => 'edit_private_mailpn',
-	'edit_published_posts' => 'edit_published_mailpn',
-	'edit_others_posts' => 'edit_other_mailpn',
-	'publish_posts' => 'publish_mailpn',
-	'read_post' => 'read_mailpn_mail',
-	'read_private_posts' => 'read_private_mailpn',
-	'delete_post' => 'delete_mailpn_mail',
-	'delete_posts' => 'delete_mailpn',
-	'delete_private_posts' => 'delete_private_mailpn',
-	'delete_published_posts' => 'delete_published_mailpn',
-	'delete_others_posts' => 'delete_others_mailpn',
-	'upload_files' => 'upload_files',
-	'manage_terms' => 'manage_mailpn_category',
-	'edit_terms' => 'edit_mailpn_category',
-	'delete_terms' => 'delete_mailpn_category',
-	'assign_terms' => 'assign_mailpn_category',
-	'manage_options' => 'manage_mailpn_options',
+define('MAILPN_CPTS', [
+	'mailpn_mail' => 'Mail',
+	'mailpn_rec' => 'Record',
 ]);
+
+/**
+ * Plugin role capabilities
+ */
+$mailpn_role_cpt_capabilities = [];
+
+foreach (MAILPN_CPTS as $cpt_key => $cpt_value) {
+	$mailpn_role_cpt_capabilities[$cpt_key] = [
+		'edit_post' 				=> 'edit_' . $cpt_key,
+		'edit_posts' 				=> 'edit_' . $cpt_key,
+		'edit_private_posts' 		=> 'edit_private_' . $cpt_key,
+		'edit_published_posts' 		=> 'edit_published_' . $cpt_key,
+		'edit_others_posts' 		=> 'edit_others_' . $cpt_key,
+		'publish_posts' 			=> 'publish_' . $cpt_key,
+
+		// Post reading capabilities
+		'read_post' 				=> 'read_' . $cpt_key,
+		'read_private_posts' 		=> 'read_private_' . $cpt_key,
+		
+		// Post deletion capabilities
+		'delete_post' 				=> 'delete_' . $cpt_key,
+		'delete_posts' 				=> 'delete_' . $cpt_key,
+		'delete_private_posts' 		=> 'delete_private_' . $cpt_key,
+		'delete_published_posts' 	=> 'delete_published_' . $cpt_key,
+		'delete_others_posts'		=> 'delete_others_' . $cpt_key,
+
+		// Media capabilities
+		'upload_files' 				=> 'upload_files',
+
+		// Taxonomy capabilities
+		'manage_terms' 				=> 'manage_' . $cpt_key . '_category',
+		'edit_terms' 				=> 'edit_' . $cpt_key . '_category',
+		'delete_terms' 				=> 'delete_' . $cpt_key . '_category',
+		'assign_terms' 				=> 'assign_' . $cpt_key . '_category',
+
+		// Options capabilities
+		'manage_options' 			=> 'manage_' . $cpt_key . '_options'
+	];
+	
+	define('MAILPN_ROLE_' . strtoupper($cpt_key) . '_CAPABILITIES', $mailpn_role_cpt_capabilities[$cpt_key]);
+}
 
 define('MAILPN_KSES', [
 	'div' => [
@@ -237,10 +261,7 @@ require plugin_dir_path(__FILE__) . 'includes/class-mailpn.php';
 function mailpn_run() {
 	$plugin = new MAILPN();
 	$plugin->mailpn_run();
-
-	require_once plugin_dir_path(__FILE__) . 'includes/class-mailpn-activator.php';
-	MAILPN_Activator::mailpn_activate();
 }
 
-// Initialize the plugin on plugins_loaded hook
-add_action('plugins_loaded', 'mailpn_run');
+// Initialize the plugin on init hook
+add_action('init', 'mailpn_run', 0);

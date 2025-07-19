@@ -195,7 +195,7 @@ class MAILPN_Post_Type_Rec {
       'exclude_from_search' => true,
       'publicly_queryable'  => false,
       'capability_type'     => 'page',
-      'taxonomies'          => MAILPN_ROLE_CAPABILITIES,
+      'taxonomies'          => ['mailpn_rec_category'],
       'show_in_rest'        => true,
     ];
 

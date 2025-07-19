@@ -295,7 +295,8 @@ public function mailpn_register_post_type() {
     'exclude_from_search' => true,
     'publicly_queryable'  => false,
     'capability_type'     => 'page',
-    'taxonomies'          => MAILPN_ROLE_CAPABILITIES,
+    'map_meta_cap'        => true,
+    'taxonomies'          => ['mailpn_mail_category'],
     'show_in_rest'        => true,
   ];
 
