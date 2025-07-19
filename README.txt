@@ -108,6 +108,7 @@ To uninstall the plugin, go to the 'Plugins' screen in WordPress, find the Maili
 
 = 1.0.1 =
 
+Update version to 1.0.1 and reflect changes in README
 Update plugin requirements and refactor function names for consistency
 Add test email functionality and refactor sanitization methods
 Update README and enhance AJAX handling in mailpn
