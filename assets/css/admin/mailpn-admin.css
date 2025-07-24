@@ -110,3 +110,42 @@
     font-size: 11px;
     line-height: 1.4;
 }
+
+.mailpn-admin-notice {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+}
+.mailpn-admin-notice .dashicons {
+    font-size: 22px;
+    color: #0073aa;
+    margin-right: 6px;
+}
+.mailpn-admin-notice p {
+    margin: 0;
+    font-size: 15px;
+}
+
+.mailpn-admin-notice-front {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    background: #f0f6fa;
+    border: 1px solid #b3d3ea;
+    border-radius: 3px;
+    color: #222;
+    margin: 16px auto;
+    max-width: 700px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.mailpn-admin-notice-front .dashicons {
+    font-size: 22px;
+    color: #0073aa;
+    margin-right: 6px;
+}
+.mailpn-admin-notice-front p {
+    margin: 0;
+    font-size: 15px;
+}

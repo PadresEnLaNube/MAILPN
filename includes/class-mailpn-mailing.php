@@ -1023,7 +1023,7 @@ class MAILPN_Mailing {
     $mail_content = ob_get_contents(); 
     ob_end_clean(); 
 
-    do_shortcode('[mailpn-sender mailpn_type="email_password_reset" mailpn_user_to="' . $user_data->ID . '" mailpn_subject="' . esc_html(__('Password reset', 'mailpn')) . '"]' . $mail_content . '[/mailpn-sender]');
+    do_shortcode('[mailpn-sender mailpn_type="email_password_reset" mailpn_user_to="' . $user_data->ID . '" mailpn_subject="' . esc_html(__('Password reset', 'mailpn')) . ' ' . get_bloginfo('name') . '"]' . $mail_content . '[/mailpn-sender]');
 
     return '';
   }

@@ -66,4 +66,51 @@ class MAILPN_Notifications {
       <?php endif ?>
     <?php
   }
+
+  /**
+   * Show a notice if the newsletter is enabled but there are no welcome emails configured.
+   * The notice is shown only to administrators, both in admin and front-end.
+   * @since 1.0.0
+   */
+  public static function mailpn_check_welcome_notice() {
+    if (!current_user_can('administrator')) {
+      return;
+    }
+
+    if (get_option('userspn_newsletter_activation') !== 'on') {
+      return;
+    }
+    // Look for posts of type mailpn_mail with meta key/type 'newsletter_welcome'
+    $args = array(
+      'post_type'      => 'mailpn_mail',
+      'post_status'    => 'publish',
+      'posts_per_page' => 1,
+      'meta_query'     => array(
+        array(
+          'key'   => 'mailpn_type',
+          'value' => 'newsletter_welcome',
+        ),
+      ),
+    );
+    $welcome_query = new WP_Query($args);
+    if ($welcome_query->have_posts()) {
+      return;
+    }
+    // Link to the plugin options page
+    $settings_url = admin_url('edit.php?post_type=mailpn_mail');
+    $message = __('No newsletter welcome emails configured in MailPN. Please, create one to make the newsletter work correctly.', 'mailpn');
+    $link_text = __('Go to MailPN templates', 'mailpn');
+    if (is_admin()) {
+      $notice = '<div class="notice notice-warning is-dismissible mailpn-admin-notice">'
+        . '<img src="https://padresenlanube.com/wp-content/plugins/mailpn/assets/media/mailpn-menu-icon.svg" alt="MailPN logo">'
+        . '<p>' . esc_html($message) . ' <a href="' . esc_url($settings_url) . '">' . esc_html($link_text) . '</a></p>'
+        . '</div>';
+      echo $notice;
+    } else {
+      echo '<div class="mailpn-admin-notice-front">'
+        . '<img src="https://padresenlanube.com/wp-content/plugins/mailpn/assets/media/mailpn-menu-icon.svg" alt="MailPN logo">'
+        . '<p>' . esc_html($message) . ' <a href="' . esc_url($settings_url) . '">' . esc_html($link_text) . '</a></p>'
+        . '</div>';
+    }
+  }
 }

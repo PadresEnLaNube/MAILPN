@@ -428,6 +428,13 @@ class MAILPN {
 	private function mailpn_load_notifications() {
 		$plugin_notifications = new MAILPN_Notifications();
 		$this->mailpn_loader->mailpn_add_action('wp_body_open', $plugin_notifications, 'mailpn_wp_body_open');
+
+		if (class_exists('MAILPN_Notifications')) {
+			// Aviso en admin
+			$this->mailpn_loader->mailpn_add_action('admin_notices', 'MAILPN_Notifications', 'mailpn_check_welcome_notice');
+			// Aviso en front-end (solo administradores)
+			$this->mailpn_loader->mailpn_add_action('wp_body_open', 'MAILPN_Notifications', 'mailpn_check_welcome_notice');
+		}
 	}
 	
 	/**

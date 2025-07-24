@@ -40,7 +40,7 @@ class MAILPN_Cron {
 	 *
 	 * @since       1.0.0
 	 */
-	public function cron_daily() {
+	public function mailpn_cron_daily() {
 		$posts_user_removed_atts = [
       'fields' => 'ids',
       'numberposts' => -1,
@@ -67,38 +67,13 @@ class MAILPN_Cron {
     $settings_plugin = new MAILPN_Settings();
     $settings_plugin->mailpn_cleanup_old_pending_registrations();
   }
-  
-  /**
-   * Clean up old scheduled welcome email logs
-   *
-   * @since       1.0.0
-   */
-  public function mailpn_cleanup_old_scheduled_logs() {
-    $scheduled_logs = get_option('mailpn_scheduled_welcome_logs', []);
-    
-    // Ensure $scheduled_logs is always an array
-    if (!is_array($scheduled_logs)) {
-      $scheduled_logs = [];
-    }
-    
-    $thirty_days_ago = time() - (30 * DAY_IN_SECONDS);
-    $cleaned_logs = [];
-    
-    foreach ($scheduled_logs as $log) {
-      if ($log['sent_time'] > $thirty_days_ago) {
-        $cleaned_logs[] = $log;
-      }
-    }
-    
-    update_option('mailpn_scheduled_welcome_logs', $cleaned_logs);
-  }
 
   /**
 	 * Set the plugin cron every ten minutes functions to be executed
 	 *
 	 * @since       1.0.0
 	 */
-	public function cron_ten_minutes() {
+	public function mailpn_cron_ten_minutes() {
     $mailing_plugin = new MAILPN_Mailing();
     $mailing_plugin->mailpn_queue_process();
     
@@ -186,5 +161,30 @@ class MAILPN_Cron {
     
     $scheduled_logs[] = $log_data;
     update_option('mailpn_scheduled_welcome_logs', $scheduled_logs);
+  }
+  
+  /**
+   * Clean up old scheduled welcome email logs
+   *
+   * @since       1.0.0
+   */
+  public function mailpn_cleanup_old_scheduled_logs() {
+    $scheduled_logs = get_option('mailpn_scheduled_welcome_logs', []);
+    
+    // Ensure $scheduled_logs is always an array
+    if (!is_array($scheduled_logs)) {
+      $scheduled_logs = [];
+    }
+    
+    $thirty_days_ago = time() - (30 * DAY_IN_SECONDS);
+    $cleaned_logs = [];
+    
+    foreach ($scheduled_logs as $log) {
+      if ($log['sent_time'] > $thirty_days_ago) {
+        $cleaned_logs[] = $log;
+      }
+    }
+    
+    update_option('mailpn_scheduled_welcome_logs', $cleaned_logs);
   }
 }
