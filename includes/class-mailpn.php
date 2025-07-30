@@ -217,6 +217,11 @@ class MAILPN {
 		require_once MAILPN_DIR . 'includes/class-mailpn-notifications.php';
 
 		/**
+		 * The class defining dashboard functionality.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-dashboard.php';
+
+		/**
 		 * The class responsible for popups functionality.
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-popups.php';
@@ -416,6 +421,7 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_action('wp', $plugin_cron, 'cron_schedule');
 		$this->mailpn_loader->mailpn_add_action('mailpn_cron_daily', $plugin_cron, 'cron_daily');
 		$this->mailpn_loader->mailpn_add_action('mailpn_cron_ten_minutes', $plugin_cron, 'cron_ten_minutes');
+		$this->mailpn_loader->mailpn_add_action('mailpn_cron_weekly', $plugin_cron, 'cron_weekly');
 		$this->mailpn_loader->mailpn_add_filter('cron_schedules', $plugin_cron, 'cron_ten_minutes_schedule');
 	}
 

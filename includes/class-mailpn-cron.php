@@ -24,6 +24,10 @@ class MAILPN_Cron {
     if (!wp_next_scheduled('mailpn_cron_ten_minutes')){
       wp_schedule_event(time(), 'mailpn_ten_minutes', 'mailpn_cron_ten_minutes');
     }
+
+    if (!wp_next_scheduled('mailpn_cron_weekly')){
+      wp_schedule_event(time(), 'weekly', 'mailpn_cron_weekly');
+    }
 	}
 
 	public function cron_ten_minutes_schedule($schedules) {
@@ -66,6 +70,18 @@ class MAILPN_Cron {
     // Clean up old pending welcome registrations (older than 7 days)
     $settings_plugin = new MAILPN_Settings();
     $settings_plugin->mailpn_cleanup_old_pending_registrations();
+    
+    // Clean up stuck pending registrations (older than 30 days)
+    $removed_count = $settings_plugin->mailpn_cleanup_stuck_pending_registrations();
+    if ($removed_count > 0) {
+      error_log("MAILPN: Daily cron cleaned up $removed_count stuck pending registrations");
+    }
+    
+    // Clean up problematic pending registrations
+    $problematic_result = $settings_plugin->mailpn_cleanup_problematic_pending_registrations();
+    if ($problematic_result['removed_count'] > 0) {
+      error_log("MAILPN: Daily cron cleaned up {$problematic_result['removed_count']} problematic pending registrations");
+    }
   }
 
   /**
@@ -84,6 +100,23 @@ class MAILPN_Cron {
     $settings_plugin = new MAILPN_Settings();
     $settings_plugin->mailpn_process_pending_welcome_registrations();
   }
+
+	/**
+	 * Set the plugin cron weekly functions to be executed
+	 *
+	 * @since       1.0.0
+	 */
+	public function mailpn_cron_weekly() {
+		// Clean up processed pending registrations weekly
+		$settings_plugin = new MAILPN_Settings();
+		$settings_plugin->mailpn_cleanup_processed_pending_registrations();
+		
+		// Clean up scheduled emails with unknown users weekly
+		$scheduled_cleanup_result = $this->mailpn_cleanup_scheduled_unknown_users();
+		if ($scheduled_cleanup_result['removed_count'] > 0) {
+			error_log("MAILPN: Weekly cron cleaned up {$scheduled_cleanup_result['removed_count']} scheduled emails with unknown users");
+		}
+	}
   
   /**
    * Process scheduled welcome emails
@@ -93,6 +126,7 @@ class MAILPN_Cron {
   public function mailpn_process_scheduled_welcome_emails() {
     $current_time = time();
     $mailing_plugin = new MAILPN_Mailing();
+    $settings_plugin = new MAILPN_Settings();
     
     // Process emails in a loop until no more are ready to be sent
     while (true) {
@@ -113,11 +147,17 @@ class MAILPN_Cron {
       foreach ($scheduled_emails as $scheduled_email) {
         // Check if it's time to send this email
         if ($scheduled_email['scheduled_time'] <= $current_time) {
-          // Add to queue for immediate sending
-          $mailing_plugin->mailpn_queue_add($scheduled_email['email_id'], $scheduled_email['user_id']);
-          
-          // Log the scheduled email as sent
-          $this->mailpn_log_scheduled_welcome_email($scheduled_email);
+          // Check if user's email is in the exception lists
+          if (!$settings_plugin->mailpn_is_email_excepted($scheduled_email['user_id'])) {
+            // Add to queue for immediate sending
+            $mailing_plugin->mailpn_queue_add($scheduled_email['email_id'], $scheduled_email['user_id']);
+            
+            // Log the scheduled email as sent
+            $this->mailpn_log_scheduled_welcome_email($scheduled_email);
+          } else {
+            // Log the scheduled email as skipped due to exception
+            $this->mailpn_log_scheduled_welcome_email($scheduled_email, 'skipped_exception');
+          }
           
           $emails_processed = true;
         } else {
@@ -140,8 +180,9 @@ class MAILPN_Cron {
    * Log a scheduled welcome email as sent
    *
    * @param array $scheduled_email The scheduled email data
+   * @param string $status The status of the email (sent, skipped_exception)
    */
-  public function mailpn_log_scheduled_welcome_email($scheduled_email) {
+  public function mailpn_log_scheduled_welcome_email($scheduled_email, $status = 'sent') {
     // Create a log entry for the scheduled email
     $log_data = [
       'email_id' => $scheduled_email['email_id'],
@@ -149,7 +190,8 @@ class MAILPN_Cron {
       'scheduled_time' => $scheduled_email['scheduled_time'],
       'created_time' => $scheduled_email['created_time'],
       'sent_time' => time(),
-      'type' => 'scheduled_welcome_email'
+      'type' => 'scheduled_welcome_email',
+      'status' => $status
     ];
     
     $scheduled_logs = get_option('mailpn_scheduled_welcome_logs', []);
@@ -186,5 +228,47 @@ class MAILPN_Cron {
     }
     
     update_option('mailpn_scheduled_welcome_logs', $cleaned_logs);
+  }
+  
+  /**
+   * Clean up scheduled emails with unknown users
+   *
+   * @since       1.0.0
+   * @return array Array with removed_count and removed_user_ids
+   */
+  public function mailpn_cleanup_scheduled_unknown_users() {
+    $scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
+    
+    if (!is_array($scheduled_emails)) {
+      $scheduled_emails = [];
+    }
+    
+    $cleaned_emails = [];
+    $removed_count = 0;
+    $removed_user_ids = [];
+    
+    foreach ($scheduled_emails as $scheduled_email) {
+      $user_id = $scheduled_email['user_id'];
+      $user = get_userdata($user_id);
+      
+      // Remove scheduled emails for non-existent users (Desconocido)
+      if (!$user) {
+        $removed_count++;
+        if (!in_array($user_id, $removed_user_ids)) {
+          $removed_user_ids[] = $user_id;
+        }
+        continue;
+      }
+      
+      // Keep this scheduled email
+      $cleaned_emails[] = $scheduled_email;
+    }
+    
+    update_option('mailpn_scheduled_welcome_emails', $cleaned_emails);
+    
+    return [
+      'removed_count' => $removed_count,
+      'removed_user_ids' => $removed_user_ids
+    ];
   }
 }

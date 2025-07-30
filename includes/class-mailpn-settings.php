@@ -430,6 +430,15 @@ class MAILPN_Settings {
 
     add_submenu_page(
       'mailpn_options', 
+      esc_html__('Dashboard', 'mailpn'), 
+      esc_html__('Dashboard', 'mailpn'), 
+      'manage_options', 
+      'mailpn_dashboard',
+      [$this, 'mailpn_dashboard_page']
+    );
+
+    add_submenu_page(
+      'mailpn_options', 
       esc_html__('Email Templates', 'mailpn'), 
       esc_html__('Email Templates', 'mailpn'), 
       'manage_options', 
@@ -491,6 +500,16 @@ class MAILPN_Settings {
         </div>
       </div>
 	  <?php
+	}
+
+	/**
+	 * Dashboard page
+	 *
+	 * @since    1.0.0
+	 */
+	public function mailpn_dashboard_page() {
+		$dashboard = new MAILPN_Dashboard();
+		$dashboard->render_dashboard_page();
 	}
 
 	/**
@@ -894,12 +913,55 @@ class MAILPN_Settings {
   }
   
   /**
-   * Process pending user registrations for welcome emails
-   * This should be called after user roles are properly defined
-   * 
-   * @param int $user_id The user ID (optional, for hook compatibility)
-   * @param string $role The new role (optional, for set_user_role hook)
-   * @param array $old_roles The old roles (optional, for set_user_role hook)
+   * Check if a user's email is in the exception lists
+   *
+   * @param int $user_id The user ID
+   * @return bool True if email should be excluded, false otherwise
+   */
+  public function mailpn_is_email_excepted($user_id) {
+    $user = get_userdata($user_id);
+    if (!$user) {
+      return false;
+    }
+    
+    $user_email = $user->user_email;
+    
+    $mailpn_exception_emails = get_option('mailpn_exception_emails');
+    $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
+    $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
+
+    // Exception domains and emails check
+    if ($mailpn_exception_emails == 'on') {
+      if ($mailpn_exception_emails_domains == 'on') {
+        $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
+
+        if (!empty($mailpn_exception_emails_domain)) {
+          foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
+            if (strpos($user_email, $mailpn_exception_email_domain) !== false) {
+              return true;
+            }
+          }
+        }
+      }
+
+      if ($mailpn_exception_emails_addresses == 'on') {
+        $mailpn_exception_emails_address = get_option('mailpn_exception_emails_address');
+
+        if (!empty($mailpn_exception_emails_address) && in_array($user_email, $mailpn_exception_emails_address)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Process pending welcome registrations
+   *
+   * @param int|null $user_id The user ID (optional)
+   * @param string|null $role The role (optional)
+   * @param array|null $old_roles The old roles (optional)
    */
   public function mailpn_process_pending_welcome_registrations($user_id = null, $role = null, $old_roles = null) {
     $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
@@ -910,15 +972,21 @@ class MAILPN_Settings {
     }
     
     if (empty($pending_registrations)) {
+      error_log("MAILPN: No pending registrations to process");
       return;
     }
     
+    error_log("MAILPN: Processing " . count($pending_registrations) . " pending registrations");
+    
     $updated_pending_registrations = [];
+    $processed_count = 0;
+    $skipped_count = 0;
     
     foreach ($pending_registrations as $registration) {
       // If already processed, keep it for cleanup later
       if ($registration['processed']) {
         $updated_pending_registrations[] = $registration;
+        $processed_count++;
         continue;
       }
       
@@ -927,13 +995,28 @@ class MAILPN_Settings {
       
       // If user doesn't exist, discard this registration
       if (!$user) {
+        error_log("MAILPN: User $reg_user_id doesn't exist, discarding registration");
+        $skipped_count++;
         continue;
       }
+      
+      error_log("MAILPN: Processing registration for user $reg_user_id (email: {$user->user_email})");
       
       // If user has the newsletter subscriber role, mark as processed and keep
       if (in_array('userspn_newsletter_subscriber', $user->roles)) {
         $registration['processed'] = true;
         $updated_pending_registrations[] = $registration;
+        error_log("MAILPN: User $reg_user_id has newsletter subscriber role, marking as processed");
+        $processed_count++;
+        continue;
+      }
+      
+      // If user's email is in the exception lists, mark as processed and keep
+      if ($this->mailpn_is_email_excepted($reg_user_id)) {
+        $registration['processed'] = true;
+        $updated_pending_registrations[] = $registration;
+        error_log("MAILPN: User $reg_user_id email is in exception list, marking as processed");
+        $processed_count++;
         continue;
       }
       
@@ -943,11 +1026,18 @@ class MAILPN_Settings {
       // If an email was sent, mark as processed
       if ($sent) {
         $registration['processed'] = true;
+        error_log("MAILPN: Successfully processed welcome emails for user $reg_user_id");
+        $processed_count++;
+      } else {
+        error_log("MAILPN: Failed to send welcome emails for user $reg_user_id - will retry later");
+        $skipped_count++;
       }
       
       // Always add the registration back to the list (it's either now processed or will be retried)
       $updated_pending_registrations[] = $registration;
     }
+    
+    error_log("MAILPN: Processing complete - Processed: $processed_count, Skipped: $skipped_count, Total: " . count($updated_pending_registrations));
     
     update_option('mailpn_pending_welcome_registrations', $updated_pending_registrations);
   }
@@ -969,6 +1059,11 @@ class MAILPN_Settings {
     
     // If user has the newsletter subscriber role, mark as processed
     if (in_array('userspn_newsletter_subscriber', $user->roles)) {
+      return true;
+    }
+    
+    // If user's email is in the exception lists, mark as processed
+    if ($this->mailpn_is_email_excepted($reg_user_id)) {
       return true;
     }
     
@@ -1001,6 +1096,29 @@ class MAILPN_Settings {
     
     update_option('mailpn_pending_welcome_registrations', $cleaned_registrations);
   }
+
+  /**
+   * Clean up all processed pending registrations (weekly cleanup)
+   */
+  public function mailpn_cleanup_processed_pending_registrations() {
+    $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+    
+    // Ensure $pending_registrations is always an array
+    if (!is_array($pending_registrations)) {
+      $pending_registrations = [];
+    }
+    
+    $cleaned_registrations = [];
+    
+    foreach ($pending_registrations as $registration) {
+      // Keep only unprocessed registrations
+      if (!$registration['processed']) {
+        $cleaned_registrations[] = $registration;
+      }
+    }
+    
+    update_option('mailpn_pending_welcome_registrations', $cleaned_registrations);
+  }
   
   /**
    * Trigger welcome emails for newly registered users
@@ -1008,6 +1126,12 @@ class MAILPN_Settings {
    * @param int $user_id The user ID
    */
   public function mailpn_trigger_welcome_emails($user_id) {
+    // Check if user's email is in the exception lists
+    if ($this->mailpn_is_email_excepted($user_id)) {
+      error_log("MAILPN: User $user_id email is in exception list, skipping welcome emails");
+      return false;
+    }
+    
     // Get all welcome email templates
     $welcome_emails = get_posts([
       'fields' => 'ids',
@@ -1024,42 +1148,56 @@ class MAILPN_Settings {
     ]);
     
     if (empty($welcome_emails)) {
+      error_log("MAILPN: No welcome email templates found for user $user_id");
       return false;
     }
     
+    error_log("MAILPN: Found " . count($welcome_emails) . " welcome email templates for user $user_id");
+    
     $mailing_plugin = new MAILPN_Mailing();
     $email_queued = false;
+    $user = get_userdata($user_id);
     
     foreach ($welcome_emails as $email_id) {
       // Check if user should receive this email based on distribution settings
       $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
       $should_send = false;
       
+      error_log("MAILPN: Email $email_id has distribution: $distribution");
+      
       switch ($distribution) {
         case 'public':
           $should_send = true;
+          error_log("MAILPN: Public distribution - should send to user $user_id");
           break;
         case 'private_role':
           $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
-          $user = get_userdata($user_id);
           if (!empty($user_roles) && !empty($user)) {
             foreach ($user_roles as $role) {
               if (in_array($role, $user->roles)) {
                 $should_send = true;
+                error_log("MAILPN: User $user_id has role $role - should send email $email_id");
                 break;
               }
             }
+          }
+          if (!$should_send) {
+            error_log("MAILPN: User $user_id roles (" . implode(',', $user->roles) . ") don't match email $email_id roles (" . implode(',', $user_roles) . ")");
           }
           break;
         case 'private_user':
           $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
           if (!empty($user_list) && in_array($user_id, $user_list)) {
             $should_send = true;
+            error_log("MAILPN: User $user_id is in private user list - should send email $email_id");
+          } else {
+            error_log("MAILPN: User $user_id is not in private user list for email $email_id");
           }
           break;
       }
       
       if (!$should_send) {
+        error_log("MAILPN: Skipping email $email_id for user $user_id - distribution mismatch");
         continue;
       }
       
@@ -1069,12 +1207,16 @@ class MAILPN_Settings {
       if ($delay_enabled === 'on') {
         // Schedule the email for delayed sending
         $this->mailpn_schedule_delayed_welcome_email($email_id, $user_id);
+        error_log("MAILPN: Scheduled delayed welcome email $email_id for user $user_id");
       } else {
         // Send immediately
-        $mailing_plugin->mailpn_queue_add($email_id, $user_id);
+        $result = $mailing_plugin->mailpn_queue_add($email_id, $user_id);
+        error_log("MAILPN: Added welcome email $email_id to queue for user $user_id - result: " . ($result ? 'success' : 'failed'));
       }
       $email_queued = true;
     }
+    
+    error_log("MAILPN: Final result for user $user_id - email_queued: " . ($email_queued ? 'true' : 'false'));
     return $email_queued;
   }
   
@@ -1085,6 +1227,11 @@ class MAILPN_Settings {
    * @param int $user_id The user ID
    */
   public function mailpn_schedule_delayed_welcome_email($email_id, $user_id) {
+    // Check if user's email is in the exception lists
+    if ($this->mailpn_is_email_excepted($user_id)) {
+      return;
+    }
+    
     $delay_value = get_post_meta($email_id, 'mailpn_welcome_delay_value', true);
     $delay_unit = get_post_meta($email_id, 'mailpn_welcome_delay_unit', true);
     
@@ -1110,7 +1257,7 @@ class MAILPN_Settings {
       $scheduled_emails = [];
     }
     
-    // Add this email to the scheduled list
+    // Add the new scheduled email
     $scheduled_emails[] = [
       'email_id' => $email_id,
       'user_id' => $user_id,
@@ -1145,6 +1292,281 @@ class MAILPN_Settings {
       default:
         return 0;
     }
+  }
+
+  /**
+   * Diagnostic function to check pending registrations status
+   * This can be called manually to debug why registrations are not being processed
+   */
+  public function mailpn_diagnose_pending_registrations() {
+    $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+    
+    if (!is_array($pending_registrations)) {
+      $pending_registrations = [];
+    }
+    
+    if (empty($pending_registrations)) {
+      echo "No pending registrations found.\n";
+      return;
+    }
+    
+    echo "Found " . count($pending_registrations) . " pending registrations:\n\n";
+    
+    $unprocessed_count = 0;
+    $processed_count = 0;
+    
+    foreach ($pending_registrations as $index => $registration) {
+      $user_id = $registration['user_id'];
+      $registration_time = $registration['registration_time'];
+      $processed = $registration['processed'];
+      $days_old = round((time() - $registration_time) / DAY_IN_SECONDS, 1);
+      
+      $user = get_userdata($user_id);
+      $user_email = $user ? $user->user_email : 'User not found';
+      $user_roles = $user ? implode(', ', $user->roles) : 'N/A';
+      
+      echo "Registration #$index:\n";
+      echo "  User ID: $user_id\n";
+      echo "  Email: $user_email\n";
+      echo "  Roles: $user_roles\n";
+      echo "  Registration time: " . date('Y-m-d H:i:s', $registration_time) . " ($days_old days ago)\n";
+      echo "  Processed: " . ($processed ? 'Yes' : 'No') . "\n";
+      
+      if (!$processed) {
+        $unprocessed_count++;
+        
+        // Check why it's not processed
+        if (!$user) {
+          echo "  Reason: User doesn't exist\n";
+        } elseif (in_array('userspn_newsletter_subscriber', $user->roles)) {
+          echo "  Reason: User has newsletter subscriber role\n";
+        } elseif ($this->mailpn_is_email_excepted($user_id)) {
+          echo "  Reason: User email is in exception list\n";
+        } else {
+          // Check if there are welcome email templates
+          $welcome_emails = get_posts([
+            'fields' => 'ids',
+            'numberposts' => -1,
+            'post_type' => 'mailpn_mail',
+            'post_status' => 'publish',
+            'meta_query' => [
+              [
+                'key' => 'mailpn_type',
+                'value' => 'email_welcome',
+                'compare' => '='
+              ]
+            ]
+          ]);
+          
+          if (empty($welcome_emails)) {
+            echo "  Reason: No welcome email templates found\n";
+          } else {
+            echo "  Reason: Welcome email templates exist but distribution may not match\n";
+            echo "  Available templates: " . implode(', ', $welcome_emails) . "\n";
+            
+            // Check distribution for each template
+            foreach ($welcome_emails as $email_id) {
+              $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
+              echo "    Template $email_id distribution: $distribution\n";
+              
+              if ($distribution === 'private_role') {
+                $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
+                echo "    Required roles: " . implode(', ', $user_roles) . "\n";
+              } elseif ($distribution === 'private_user') {
+                $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
+                echo "    User list: " . implode(', ', $user_list) . "\n";
+              }
+            }
+          }
+        }
+      } else {
+        $processed_count++;
+      }
+      
+      echo "\n";
+    }
+    
+    echo "Summary:\n";
+    echo "  Total registrations: " . count($pending_registrations) . "\n";
+    echo "  Processed: $processed_count\n";
+    echo "  Unprocessed: $unprocessed_count\n";
+    
+    // Check cron status
+    $next_cron = wp_next_scheduled('mailpn_cron_ten_minutes');
+    if ($next_cron) {
+      echo "  Next cron execution: " . date('Y-m-d H:i:s', $next_cron) . "\n";
+    } else {
+      echo "  Cron not scheduled!\n";
+    }
+  }
+
+  /**
+   * Force process pending registrations manually
+   * This can be called to process stuck registrations
+   */
+  public function mailpn_force_process_pending_registrations() {
+    echo "Starting forced processing of pending registrations...\n";
+    
+    // First, diagnose the current state
+    $this->mailpn_diagnose_pending_registrations();
+    
+    echo "\n--- Processing registrations ---\n";
+    
+    // Process all pending registrations
+    $this->mailpn_process_pending_welcome_registrations();
+    
+    echo "\n--- Processing complete ---\n";
+    
+    // Diagnose again to see the results
+    $this->mailpn_diagnose_pending_registrations();
+    
+    echo "\nForced processing complete.\n";
+  }
+
+  /**
+   * Clean up old unprocessed registrations (older than 30 days)
+   * This can help remove stuck registrations that can't be processed
+   */
+  public function mailpn_cleanup_stuck_pending_registrations() {
+    $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+    
+    if (!is_array($pending_registrations)) {
+      $pending_registrations = [];
+    }
+    
+    $thirty_days_ago = time() - (30 * DAY_IN_SECONDS);
+    $cleaned_registrations = [];
+    $removed_count = 0;
+    
+    foreach ($pending_registrations as $registration) {
+      // Keep processed registrations and recent unprocessed ones
+      if ($registration['processed'] || $registration['registration_time'] > $thirty_days_ago) {
+        $cleaned_registrations[] = $registration;
+      } else {
+        $removed_count++;
+        error_log("MAILPN: Removed stuck registration for user {$registration['user_id']} (older than 30 days)");
+      }
+    }
+    
+    update_option('mailpn_pending_welcome_registrations', $cleaned_registrations);
+    
+    if ($removed_count > 0) {
+      error_log("MAILPN: Cleaned up $removed_count stuck pending registrations");
+    }
+    
+    return $removed_count;
+  }
+
+  /**
+   * Clean up problematic pending registrations
+   * Removes registrations for non-existent users and those that can't be processed
+   */
+  public function mailpn_cleanup_problematic_pending_registrations() {
+    $pending_registrations = get_option('mailpn_pending_welcome_registrations', []);
+    
+    if (!is_array($pending_registrations)) {
+      $pending_registrations = [];
+    }
+    
+    $cleaned_registrations = [];
+    $removed_count = 0;
+    $removed_reasons = [];
+    
+    foreach ($pending_registrations as $registration) {
+      $reg_user_id = $registration['user_id'];
+      $user = get_userdata($reg_user_id);
+      
+      // Remove registrations for non-existent users
+      if (!$user) {
+        $removed_count++;
+        $removed_reasons['non_existent_users'] = ($removed_reasons['non_existent_users'] ?? 0) + 1;
+        error_log("MAILPN: Removed registration for non-existent user $reg_user_id");
+        continue;
+      }
+      
+      // Remove registrations for users with newsletter subscriber role
+      if (in_array('userspn_newsletter_subscriber', $user->roles)) {
+        $removed_count++;
+        $removed_reasons['newsletter_subscribers'] = ($removed_reasons['newsletter_subscribers'] ?? 0) + 1;
+        error_log("MAILPN: Removed registration for newsletter subscriber user $reg_user_id");
+        continue;
+      }
+      
+      // Remove registrations for users with emails in exception list
+      if ($this->mailpn_is_email_excepted($reg_user_id)) {
+        $removed_count++;
+        $removed_reasons['excepted_emails'] = ($removed_reasons['excepted_emails'] ?? 0) + 1;
+        error_log("MAILPN: Removed registration for excepted email user $reg_user_id");
+        continue;
+      }
+      
+      // Check if user can receive any welcome emails
+      $welcome_emails = get_posts([
+        'fields' => 'ids',
+        'numberposts' => -1,
+        'post_type' => 'mailpn_mail',
+        'post_status' => 'publish',
+        'meta_query' => [
+          [
+            'key' => 'mailpn_type',
+            'value' => 'email_welcome',
+            'compare' => '='
+          ]
+        ]
+      ]);
+      
+      $can_receive_emails = false;
+      foreach ($welcome_emails as $email_id) {
+        $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
+        
+        if ($distribution === 'public') {
+          $can_receive_emails = true;
+          break;
+        } elseif ($distribution === 'private_role') {
+          $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
+          if (!empty($user_roles)) {
+            foreach ($user_roles as $role) {
+              if (in_array($role, $user->roles)) {
+                $can_receive_emails = true;
+                break 2;
+              }
+            }
+          }
+        } elseif ($distribution === 'private_user') {
+          $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
+          if (!empty($user_list) && in_array($reg_user_id, $user_list)) {
+            $can_receive_emails = true;
+            break;
+          }
+        }
+      }
+      
+      // Remove registrations for users who can't receive any welcome emails
+      if (!$can_receive_emails) {
+        $removed_count++;
+        $removed_reasons['role_mismatch'] = ($removed_reasons['role_mismatch'] ?? 0) + 1;
+        error_log("MAILPN: Removed registration for user $reg_user_id - no matching email templates");
+        continue;
+      }
+      
+      // Keep this registration
+      $cleaned_registrations[] = $registration;
+    }
+    
+    update_option('mailpn_pending_welcome_registrations', $cleaned_registrations);
+    
+    if ($removed_count > 0) {
+      error_log("MAILPN: Cleaned up $removed_count problematic pending registrations");
+      foreach ($removed_reasons as $reason => $count) {
+        error_log("MAILPN: - $reason: $count");
+      }
+    }
+    
+    return [
+      'removed_count' => $removed_count,
+      'removed_reasons' => $removed_reasons,
+      'remaining_count' => count($cleaned_registrations)
+    ];
   }
 
   public function mailpn_init_hook() {

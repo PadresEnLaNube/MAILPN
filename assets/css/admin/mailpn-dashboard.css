@@ -1,0 +1,320 @@
+/* Dashboard Styles */
+.mailpn-dashboard {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Stats Grid */
+.mailpn-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Stat Cards */
+.mailpn-stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.mailpn-stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.mailpn-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mailpn-stat-card:hover::before {
+    opacity: 1;
+}
+
+.mailpn-stat-card:nth-child(2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.mailpn-stat-card:nth-child(3) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.mailpn-stat-card:nth-child(4) {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+/* Stat Card Content */
+.mailpn-stat-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.mailpn-stat-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.mailpn-stat-content {
+    flex: 1;
+}
+
+.mailpn-stat-content h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.mailpn-stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    line-height: 1;
+}
+
+.mailpn-stat-content p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+@keyframes popupSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.mailpn-popup-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mailpn-popup-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.mailpn-popup-close-wrapper {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.mailpn-popup-close-wrapper:hover {
+    opacity: 0.7;
+}
+
+.mailpn-popup-body {
+    padding: 25px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.mailpn-popup-overlay {
+    display: none;
+    position: fixed;
+    z-index: 9998;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+/* Table Styles */
+.mailpn-emails-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.mailpn-emails-table th {
+    background: #f8f9fa;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 14px;
+}
+
+.mailpn-emails-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+    vertical-align: top;
+}
+
+.mailpn-emails-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.mailpn-emails-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* No Data Message */
+.mailpn-no-data {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mailpn-stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .mailpn-stat-card {
+        padding: 20px;
+    }
+    
+    .mailpn-stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .mailpn-stat-number {
+        font-size: 28px;
+    }
+    
+    .mailpn-modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .mailpn-modal-header {
+        padding: 15px 20px;
+    }
+    
+    .mailpn-modal-header h2 {
+        font-size: 18px;
+    }
+    
+    .mailpn-modal-body {
+        padding: 20px;
+    }
+    
+    .mailpn-emails-table {
+        font-size: 12px;
+    }
+    
+    .mailpn-emails-table th,
+    .mailpn-emails-table td {
+        padding: 8px 6px;
+    }
+}
+
+/* Loading Animation */
+.mailpn-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.mailpn-loading::after {
+    content: '';
+    width: 30px;
+    height: 30px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Additional Utility Classes */
+.mailpn-text-center {
+    text-align: center;
+}
+
+.mailpn-mb-20 {
+    margin-bottom: 20px;
+}
+
+.mailpn-mt-20 {
+    margin-top: 20px;
+}
+
+/* Status Badges */
+.mailpn-status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.mailpn-status-sent {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.mailpn-status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.mailpn-status-error {
+    background-color: #f8d7da;
+    color: #721c24;
+} 

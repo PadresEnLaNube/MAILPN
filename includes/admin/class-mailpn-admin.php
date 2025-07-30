@@ -49,6 +49,11 @@ class MAILPN_Admin {
 	 */
 	public function mailpn_enqueue_styles() {
 		wp_enqueue_style($this->plugin_name . '-admin', MAILPN_URL . 'assets/css/admin/mailpn-admin.css', [], $this->version, 'all');
+		
+		// Load dashboard styles if on dashboard page
+		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_dashboard') {
+			wp_enqueue_style($this->plugin_name . '-dashboard', MAILPN_URL . 'assets/css/admin/mailpn-dashboard.css', [], $this->version, 'all');
+		}
 	}
 
 	/**
@@ -59,5 +64,26 @@ class MAILPN_Admin {
 	public function mailpn_enqueue_scripts() {
 		wp_enqueue_media();
 		wp_enqueue_script($this->plugin_name . '-admin', MAILPN_URL . 'assets/js/admin/mailpn-admin.js', ['jquery'], $this->version, false);
+		
+		// Load dashboard scripts if on dashboard page
+		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_dashboard') {
+			// Load popups script first (dependency)
+			wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false);
+			
+			// Load dashboard script
+			wp_enqueue_script($this->plugin_name . '-dashboard', MAILPN_URL . 'assets/js/admin/mailpn-dashboard.js', ['jquery', $this->plugin_name . '-popups'], $this->version, false);
+			
+			// Localize script for translations and data
+			wp_localize_script($this->plugin_name . '-dashboard', 'mailpn_dashboard', array(
+				'search_placeholder' => __('Search emails...', 'mailpn'),
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('mailpn_dashboard_nonce'),
+			));
+			
+			// Localize MAILPN_Data for loader access
+			wp_localize_script($this->plugin_name . '-dashboard', 'MAILPN_Data', array(
+				'mailpn_loader' => MAILPN_Data::mailpn_loader(true),
+			));
+		}
 	}
 }
