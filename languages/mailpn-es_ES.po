@@ -1789,3 +1789,43 @@ msgstr "Su nombre de usuario SMTP o dirección de correo electrónico."
 #: includes/class-mailpn-settings.php:363
 msgid "your@email.com"
 msgstr "tu@correo electrónico.com"
+
+#: includes/class-mailpn-mailing.php:748
+msgid "This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system."
+msgstr "Esto enviará un correo electrónico de prueba a tu dirección de correo electrónico actual usando la misma plantilla y contenido que esta campaña de correo, omitiendo todas las restricciones y el sistema de cola."
+
+#: includes/class-mailpn-ajax.php:147
+msgid "Test email sent successfully to"
+msgstr "Correo electrónico de prueba enviado exitosamente a"
+
+#: assets/js/admin/mailpn-admin.js:67
+msgid "Sending..."
+msgstr "Enviando..."
+
+#: assets/js/admin/mailpn-admin.js:75
+msgid "An error occurred while sending the test email."
+msgstr "Ocurrió un error al enviar el correo electrónico de prueba."
+
+#: assets/js/admin/mailpn-admin.js:82
+msgid "Network error occurred while sending the test email."
+msgstr "Error de red al enviar el correo electrónico de prueba."
+
+#: includes/class-mailpn-ajax.php:139
+msgid "User not found"
+msgstr "Usuario no encontrado"
+
+#: assets/js/admin/mailpn-admin.js:55
+msgid "AJAX functionality not available. Please refresh the page."
+msgstr "La funcionalidad AJAX no está disponible. Por favor, recarga la página."
+
+#: assets/js/admin/mailpn-admin.js:61
+msgid "AJAX configuration is incomplete. Please refresh the page."
+msgstr "La configuración AJAX está incompleta. Por favor, recarga la página."
+
+#: includes/class-mailpn-ajax.php:25
+msgid "Unknown AJAX type"
+msgstr "Tipo AJAX desconocido"
+
+#: includes/class-mailpn-ajax.php:32
+msgid "AJAX type not specified"
+msgstr "Tipo AJAX no especificado"

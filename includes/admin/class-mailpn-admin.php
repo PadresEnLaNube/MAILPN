@@ -63,7 +63,15 @@ class MAILPN_Admin {
 	 */
 	public function mailpn_enqueue_scripts() {
 		wp_enqueue_media();
+		
+		// Load admin script on admin pages
 		wp_enqueue_script($this->plugin_name . '-admin', MAILPN_URL . 'assets/js/admin/mailpn-admin.js', ['jquery'], $this->version, false);
+		
+		// Localize script for AJAX functionality
+		wp_localize_script($this->plugin_name . '-admin', 'mailpn_ajax', array(
+			'ajax_url' => admin_url('admin-ajax.php'),
+			'mailpn_ajax_nonce' => wp_create_nonce('mailpn-nonce'),
+		));
 		
 		// Load dashboard scripts if on dashboard page
 		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_dashboard') {

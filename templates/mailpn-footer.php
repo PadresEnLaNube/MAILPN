@@ -13,6 +13,14 @@
 
   if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
+  // Ensure the global variable exists
+  if (!isset($GLOBALS['mailpn_data'])) {
+    $GLOBALS['mailpn_data'] = array(
+      'user_id' => get_current_user_id(),
+      'post_id' => is_admin() ? (!empty($GLOBALS['_REQUEST']['post']) ? $GLOBALS['_REQUEST']['post'] : 0) : get_the_ID()
+    );
+  }
+  
   $mailpn_data = $GLOBALS['mailpn_data'];
 ?>
 

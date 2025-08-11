@@ -122,12 +122,64 @@ class MAILPN_Ajax {
           }
           
           break;
+        case 'mailpn_send_test_email_campaign':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
+            exit();
+          }
+          
+          $post_id = !empty($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+          $user_id = !empty($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+          
+          if (empty($post_id) || empty($user_id)) {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Missing required parameters', 'mailpn')]);
+            exit();
+          }
+          
+          // Obtener el email del usuario
+          $user_data = get_userdata($user_id);
+          if (!$user_data) {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('User not found', 'mailpn')]);
+            exit();
+          }
+          
+          $user_email = $user_data->user_email;
+          
+          // Obtener el contenido del post
+          $post = get_post($post_id);
+          if (!$post) {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Post not found', 'mailpn')]);
+            exit();
+          }
+          
+          $subject = get_the_title($post_id);
+          $content = $post->post_content;
+          
+          // Enviar el correo de prueba usando el shortcode mailpn-sender
+          $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $user_id . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
+
+          if ($result) {
+            echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully to', 'mailpn') . ' ' . $user_email]);exit();
+          } else {
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Failed to send test email', 'mailpn')]);exit();
+          }
+          
+          break;
       }
 
       echo wp_json_encode([
         'error_key' => 'mailpn_save_error', 
+        'error_content' => esc_html__('Unknown AJAX type', 'mailpn'),
       ]);
 
+      exit();
+    } else {
+      // No mailpn_ajax_type found
+      error_log('MAILPN AJAX Request - No mailpn_ajax_type found in POST data');
+      echo wp_json_encode([
+        'error_key' => 'mailpn_ajax_type_missing',
+        'error_content' => esc_html__('AJAX type not specified', 'mailpn'),
+      ]);
       exit();
     }
 	}

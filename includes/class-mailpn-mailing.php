@@ -730,8 +730,28 @@ class MAILPN_Mailing {
             <?php endif ?>
           </div>
 
-          <div class="mailpn-sent-to">
-            <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View latest submissions', 'mailpn'); ?></a>
+          <div class="mailpn-sent-to mailpn-display-table mailpn-width-100-percent">
+            <div class="mailpn-display-table-cell mailpn-width-50-percent mailpn-tablet-width-100-percent mailpn-text-align-center"> 
+              <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View latest submissions', 'mailpn'); ?></a>
+            </div>
+
+            <div class="mailpn-display-table-cell mailpn-width-50-percent mailpn-tablet-width-100-percent">
+              <?php 
+                // Solo mostrar el botón de prueba si hay un usuario logueado
+                if (is_user_logged_in()): 
+                  $current_user = wp_get_current_user();
+              ?>
+                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email mailpn-display-inline" 
+                  data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" 
+                  data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                  <?php esc_html_e('Send test email', 'mailpn'); ?>
+                </a>
+
+                <div class="mailpn-test-email-info mailpn-display-inline">
+                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+                </div>
+              <?php endif; ?>
+            </div>
           </div>
         <?php endif ?>
 

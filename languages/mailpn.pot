@@ -1668,3 +1668,43 @@ msgstr ""
 #: includes/class-mailpn-settings.php:363
 msgid "your@email.com"
 msgstr ""
+
+#: includes/class-mailpn-mailing.php:748
+msgid "This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system."
+msgstr ""
+
+#: includes/class-mailpn-ajax.php:147
+msgid "Test email sent successfully to"
+msgstr ""
+
+#: assets/js/admin/mailpn-admin.js:67
+msgid "Sending..."
+msgstr ""
+
+#: assets/js/admin/mailpn-admin.js:75
+msgid "An error occurred while sending the test email."
+msgstr ""
+
+#: assets/js/admin/mailpn-admin.js:82
+msgid "Network error occurred while sending the test email."
+msgstr ""
+
+#: includes/class-mailpn-ajax.php:139
+msgid "User not found"
+msgstr ""
+
+#: assets/js/admin/mailpn-admin.js:55
+msgid "AJAX functionality not available. Please refresh the page."
+msgstr ""
+
+#: assets/js/admin/mailpn-admin.js:61
+msgid "AJAX configuration is incomplete. Please refresh the page."
+msgstr ""
+
+#: includes/class-mailpn-ajax.php:25
+msgid "Unknown AJAX type"
+msgstr ""
+
+#: includes/class-mailpn-ajax.php:32
+msgid "AJAX type not specified"
+msgstr ""

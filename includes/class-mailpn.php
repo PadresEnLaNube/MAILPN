@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.1';
+			$this->mailpn_version = '1.0.2';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -246,8 +246,88 @@ class MAILPN {
 		$plugin_i18n = new MAILPN_i18n();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_i18n, 'mailpn_load_plugin_textdomain', 20);
 
+		// Initialize Polylang integration - use a single, consolidated approach
 		if (class_exists('Polylang')) {
-			$this->mailpn_loader->mailpn_add_filter('pll_get_post_types', $plugin_i18n, 'mailpn_pll_get_post_types', 10, 2);
+			// Try to integrate with Polylang at a late hook to ensure it's fully loaded
+			$this->mailpn_loader->mailpn_add_action('wp_loaded', $this, 'mailpn_attempt_polylang_integration', 20);
+		}
+	}
+
+	/**
+	 * Attempt to integrate with Polylang using a consolidated approach.
+	 *
+	 * @since    1.0.0
+	 */
+	public function mailpn_attempt_polylang_integration() {
+		// First, try the standard approach using global functions
+		if (function_exists('pll_get_post_types') && function_exists('pll_get_taxonomies')) {
+			$plugin_i18n = new MAILPN_i18n();
+			add_filter('pll_get_post_types', array($plugin_i18n, 'mailpn_pll_get_post_types'), 10, 2);
+			add_filter('pll_get_taxonomies', array($plugin_i18n, 'mailpn_pll_get_taxonomies'), 10, 2);
+			return;
+		}
+
+		// If standard functions are not available, try direct integration
+		$this->mailpn_register_post_types_directly_internal();
+	}
+
+	/**
+	 * Internal method to register post types directly with Polylang.
+	 *
+	 * @since    1.0.0
+	 */
+	private function mailpn_register_post_types_directly_internal() {
+		// Try to access Polylang's internal model
+		global $polylang;
+		
+		if (isset($polylang) && is_object($polylang)) {
+			// Check if we can access the model property
+			if (property_exists($polylang, 'model') && is_object($polylang->model)) {
+				// Try to directly manipulate Polylang's internal options
+				$options = get_option('polylang');
+				if ($options && is_array($options)) {
+					// Add our post types to Polylang's translatable post types
+					if (!isset($options['post_types'])) {
+						$options['post_types'] = array();
+					}
+					$options['post_types']['mailpn_mail'] = 'mailpn_mail';
+					
+					// Add our taxonomies to Polylang's translatable taxonomies
+					if (!isset($options['taxonomies'])) {
+						$options['taxonomies'] = array();
+					}
+					$options['taxonomies']['mailpn_mail_category'] = 'mailpn_mail_category';
+					
+					// Update the options
+					update_option('polylang', $options);
+				}
+			}
+		}
+		
+		// Also try using PLL() function if available
+		if (function_exists('PLL')) {
+			try {
+				$polylang_instance = PLL();
+				if ($polylang_instance && property_exists($polylang_instance, 'model')) {
+					// Similar direct manipulation approach
+					$options = get_option('polylang');
+					if ($options && is_array($options)) {
+						if (!isset($options['post_types'])) {
+							$options['post_types'] = array();
+						}
+						$options['post_types']['mailpn_mail'] = 'mailpn_mail';
+						
+						if (!isset($options['taxonomies'])) {
+							$options['taxonomies'] = array();
+						}
+						$options['taxonomies']['mailpn_mail_category'] = 'mailpn_mail_category';
+						
+						update_option('polylang', $options);
+					}
+				}
+			} catch (Exception $e) {
+				// Silently fail if PLL() throws an exception
+			}
 		}
 	}
 
@@ -341,25 +421,21 @@ class MAILPN {
 	private function mailpn_define_post_types() {
 		$plugin_post_type_mail = new MAILPN_Post_Type_Mail();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_mail, 'mailpn_register_post_type', 10);
-		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_mail, 'mailpn_add_meta_box');
-		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_mail', $plugin_post_type_mail, 'mailpn_save_post', 10, 3);
-		// Add new column hooks
-		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_mail_posts_columns', $plugin_post_type_mail, 'mailpn_mail_posts_columns');
-		$this->mailpn_loader->mailpn_add_action('manage_mailpn_mail_posts_custom_column', $plugin_post_type_mail, 'mailpn_mail_posts_custom_column', 10, 2);
-		$this->mailpn_loader->mailpn_add_filter('rest_authentication_errors', $plugin_post_type_mail, 'mailpn_mail_block_rest_api_access');
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_rec, 'mailpn_register_post_type', 10);
-		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_post_type_rec, 'mailpn_add_meta_box');
-		$this->mailpn_loader->mailpn_add_action('save_post_mailpn_rec', $plugin_post_type_rec, 'mailpn_save_post', 10, 3);
-		$this->mailpn_loader->mailpn_add_filter('rest_authentication_errors', $plugin_post_type_rec, 'mailpn_rec_block_rest_api_access');
-		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10);
-		$this->mailpn_loader->mailpn_add_filter('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
-		$this->mailpn_loader->mailpn_add_filter('manage_edit-mailpn_rec_sortable_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns', 10, 3);
 		
-		// Add new hooks for recipient filter
-		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_rec_filter_dropdown');
-		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_post_type_rec, 'mailpn_rec_filter_query');
+		// Add meta boxes and related hooks for mail post type
+		$this->mailpn_loader->mailpn_add_action('add_meta_boxes', $plugin_post_type_mail, 'mailpn_add_meta_box');
+		$this->mailpn_loader->mailpn_add_action('save_post', $plugin_post_type_mail, 'mailpn_save_post');
+		$this->mailpn_loader->mailpn_add_action('manage_mailpn_mail_posts_columns', $plugin_post_type_mail, 'mailpn_mail_posts_columns');
+		$this->mailpn_loader->mailpn_add_action('manage_mailpn_mail_posts_custom_column', $plugin_post_type_mail, 'mailpn_mail_posts_custom_column', 10, 2);
+		
+		// Add meta boxes and related hooks for rec post type
+		$this->mailpn_loader->mailpn_add_action('add_meta_boxes', $plugin_post_type_rec, 'mailpn_add_meta_box');
+		$this->mailpn_loader->mailpn_add_action('save_post', $plugin_post_type_rec, 'mailpn_save_post');
+		$this->mailpn_loader->mailpn_add_action('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns');
+		$this->mailpn_loader->mailpn_add_action('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
 	}
 
 	/**
@@ -388,7 +464,7 @@ class MAILPN {
 		if (is_admin()) {
 			$this->mailpn_loader->mailpn_add_action('init', $plugin_data, 'mailpn_load_plugin_data');
 		}else{
-			$this->mailpn_loader->mailpn_add_action('wp_footer', $plugin_data, 'mailpn_load_plugin_data');
+			$this->mailpn_loader->mailpn_add_action('wp_head', $plugin_data, 'mailpn_load_plugin_data');
 		}
 
 		$this->mailpn_loader->mailpn_add_action('wp_footer', $plugin_data, 'mailpn_flush_rewrite_rules');
