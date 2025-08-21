@@ -409,7 +409,14 @@ class MAILPN {
 
 		$plugin_user = new MAILPN_Functions_User();
 		$this->mailpn_loader->mailpn_add_action('wp_login', $plugin_user, 'mailpn_wp_login');
-		$this->mailpn_loader->mailpn_add_action('updated_user_meta', $plugin_user, 'mailpn_newsletter_activation_hook', 10, 4);
+		// Register newsletter activation hook only if method exists to avoid invalid callback fatals
+		if (method_exists($plugin_user, 'mailpn_newsletter_activation_hook')) {
+			$this->mailpn_loader->mailpn_add_action('updated_user_meta', $plugin_user, 'mailpn_newsletter_activation_hook', 10, 4);
+		} else {
+			if (function_exists('error_log')) {
+				error_log('[mailpn] MAILPN_Functions_User::mailpn_newsletter_activation_hook not found; hook not registered.');
+			}
+		}
 	}
 
 	/**

@@ -177,6 +177,12 @@ class MAILPN_Mailing {
         $mailpn_content = MAILPN_Click_Tracking::replace_links($mailpn_content, $mailpn_id, $mailpn_user_to);
     }
 
+    // Validation: Don't send email if content is empty or subject is default
+    if (empty(trim($mailpn_content)) || $mailpn_subject === esc_html(__('Mail subject', 'mailpn'))) {
+        error_log('[mailpn] Email not sent: empty content or default subject. Subject: "' . $mailpn_subject . '", Content length: ' . strlen($mailpn_content));
+        return false;
+    }
+
     $mailpn_attachments = [];
     $attachments = !empty($mailpn_id) ? get_post_meta($mailpn_id, 'mailpn_attachments', true) : [];
 
