@@ -80,15 +80,29 @@ class MAILPN_Notifications {
     if (get_option('userspn_newsletter_activation') !== 'on') {
       return;
     }
-    // Look for posts of type mailpn_mail with meta key/type 'newsletter_welcome'
+    
+    // Look for posts of type mailpn_mail with various welcome email types
     $args = array(
       'post_type'      => 'mailpn_mail',
       'post_status'    => 'publish',
       'posts_per_page' => 1,
       'meta_query'     => array(
+        'relation' => 'OR',
         array(
           'key'   => 'mailpn_type',
           'value' => 'newsletter_welcome',
+        ),
+        array(
+          'key'   => 'mailpn_type',
+          'value' => 'welcome',
+        ),
+        array(
+          'key'   => 'mailpn_type',
+          'value' => 'email_coded',
+        ),
+        array(
+          'key'   => 'mailpn_type',
+          'value' => 'email_plain',
         ),
       ),
     );

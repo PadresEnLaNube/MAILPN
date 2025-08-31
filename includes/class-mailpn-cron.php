@@ -72,16 +72,10 @@ class MAILPN_Cron {
     $settings_plugin->mailpn_cleanup_old_pending_registrations();
     
     // Clean up stuck pending registrations (older than 30 days)
-    $removed_count = $settings_plugin->mailpn_cleanup_stuck_pending_registrations();
-    if ($removed_count > 0) {
-      error_log("MAILPN: Daily cron cleaned up $removed_count stuck pending registrations");
-    }
+    $settings_plugin->mailpn_cleanup_stuck_pending_registrations();
     
     // Clean up problematic pending registrations
-    $problematic_result = $settings_plugin->mailpn_cleanup_problematic_pending_registrations();
-    if ($problematic_result['removed_count'] > 0) {
-      error_log("MAILPN: Daily cron cleaned up {$problematic_result['removed_count']} problematic pending registrations");
-    }
+    $settings_plugin->mailpn_cleanup_problematic_pending_registrations();
   }
 
   /**
@@ -112,10 +106,7 @@ class MAILPN_Cron {
 		$settings_plugin->mailpn_cleanup_processed_pending_registrations();
 		
 		// Clean up scheduled emails with unknown users weekly
-		$scheduled_cleanup_result = $this->mailpn_cleanup_scheduled_unknown_users();
-		if ($scheduled_cleanup_result['removed_count'] > 0) {
-			error_log("MAILPN: Weekly cron cleaned up {$scheduled_cleanup_result['removed_count']} scheduled emails with unknown users");
-		}
+		$this->mailpn_cleanup_scheduled_unknown_users();
 	}
   
   /**

@@ -54,6 +54,12 @@ class MAILPN_Admin {
 		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_dashboard') {
 			wp_enqueue_style($this->plugin_name . '-dashboard', MAILPN_URL . 'assets/css/admin/mailpn-dashboard.css', [], $this->version, 'all');
 		}
+		
+		// Load statistics styles if on mail records page
+		global $typenow;
+		if ($typenow === 'mailpn_rec') {
+			wp_enqueue_style($this->plugin_name . '-statistics', MAILPN_URL . 'assets/css/mailpn-statistics.css', [], $this->version, 'all');
+		}
 	}
 
 	/**
@@ -91,6 +97,37 @@ class MAILPN_Admin {
 			// Localize MAILPN_Data for loader access
 			wp_localize_script($this->plugin_name . '-dashboard', 'MAILPN_Data', array(
 				'mailpn_loader' => MAILPN_Data::mailpn_loader(true),
+			));
+		}
+		
+		// Load statistics scripts if on mail records page
+		global $typenow;
+		if ($typenow === 'mailpn_rec') {
+			// Load Chart.js for charts
+			wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.9.1', false);
+			
+			// Load popups script first (dependency)
+			wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false);
+			
+			// Load statistics script
+			wp_enqueue_script($this->plugin_name . '-statistics', MAILPN_URL . 'assets/js/mailpn-statistics.js', ['jquery', $this->plugin_name . '-popups', 'chartjs'], $this->version, false);
+			
+			// Localize script for translations and AJAX
+			wp_localize_script($this->plugin_name . '-statistics', 'mailpn_statistics_ajax', array(
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('mailpn_statistics_nonce'),
+				'i18n' => array(
+					'total_emails' => __('Total emails', 'mailpn'),
+					'opened_emails' => __('Opened emails', 'mailpn'),
+					'open_rate' => __('Open rate', 'mailpn'),
+					'total_clicks' => __('Total clicks', 'mailpn'),
+					'sent_vs_opened' => __('Sent vs Opened', 'mailpn'),
+					'clicks_by_url' => __('Clicks by URL', 'mailpn'),
+					'clicks_details' => __('Clicks Details', 'mailpn'),
+					'url' => __('URL', 'mailpn'),
+					'clicks' => __('Clicks', 'mailpn'),
+					'sent_emails' => __('Sent emails', 'mailpn'),
+				),
 			));
 		}
 	}

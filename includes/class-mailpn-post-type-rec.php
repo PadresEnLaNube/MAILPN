@@ -623,14 +623,44 @@ class MAILPN_Post_Type_Rec {
         </select>
         
       <?php
-        // Recipient Filter
+        // Recipient Filter - Only show users who have received emails
         $selected_recipient = isset($_GET['mailpn_recipient_filter']) ? sanitize_text_field($_GET['mailpn_recipient_filter']) : '';
         
-        $recipients = get_users([
-          'fields' => ['ID', 'user_email'],
-          'orderby' => 'ID',
-          'order' => 'ASC'
+        // Get unique user IDs from email records
+        $recipient_user_ids = get_posts([
+          'fields' => 'ids',
+          'post_type' => 'mailpn_rec',
+          'posts_per_page' => -1,
+          'meta_query' => [
+            [
+              'key' => 'mailpn_rec_to',
+              'compare' => 'EXISTS'
+            ]
+          ]
         ]);
+        
+        // Get unique user IDs from the meta values
+        $unique_user_ids = [];
+        foreach ($recipient_user_ids as $record_id) {
+          $user_id = get_post_meta($record_id, 'mailpn_rec_to', true);
+          if (!empty($user_id) && !in_array($user_id, $unique_user_ids)) {
+            $unique_user_ids[] = $user_id;
+          }
+        }
+        
+        // Sort user IDs
+        sort($unique_user_ids, SORT_NUMERIC);
+        
+        // Get user data for the unique recipients
+        $recipients = [];
+        if (!empty($unique_user_ids)) {
+          $recipients = get_users([
+            'include' => $unique_user_ids,
+            'fields' => ['ID', 'user_email'],
+            'orderby' => 'ID',
+            'order' => 'ASC'
+          ]);
+        }
       ?>
         <select name="mailpn_recipient_filter">
           <option value=""><?php echo esc_html__('All users', 'mailpn'); ?></option>
@@ -688,5 +718,171 @@ class MAILPN_Post_Type_Rec {
       // Debug output
       error_log('Meta Query: ' . print_r($meta_query, true));
     }
+  }
+
+  /**
+   * Add statistics button to the admin page
+   */
+  public function mailpn_add_statistics_button() {
+    global $typenow;
+    
+    if ($typenow == 'mailpn_rec') {
+      ?>
+      <div class="mailpn-statistics-button-wrapper" style="display: inline-block; margin-left: 10px; float: right;">
+        <button type="button" id="mailpn-statistics-button" class="button button-primary">
+          <i class="material-icons-outlined" style="vertical-align: middle; margin-right: 5px;">analytics</i>
+                      <?php esc_html_e('View Statistics', 'mailpn'); ?>
+        </button>
+      </div>
+      
+      <!-- Statistics Popup -->
+      <div id="mailpn-statistics-popup" class="mailpn-popup mailpn-popup-size-large">
+        <div class="mailpn-popup-content">
+          <div class="mailpn-p-30">
+            <h3><?php esc_html_e('Email Statistics', 'mailpn'); ?></h3>
+            
+            <div id="mailpn-statistics-content">
+              <div class="mailpn-loading">
+                <i class="material-icons-outlined mailpn-spin">refresh</i>
+                <?php esc_html_e('Loading statistics...', 'mailpn'); ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <?php
+    }
+  }
+
+  /**
+   * Get statistics data via AJAX
+   */
+  public function mailpn_get_statistics_data() {
+    // Debug log
+    error_log('MAILPN Statistics: AJAX request received');
+    error_log('MAILPN Statistics: POST data: ' . print_r($_POST, true));
+    
+    // Verify nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mailpn_statistics_nonce')) {
+      error_log('MAILPN Statistics: Nonce verification failed');
+      error_log('MAILPN Statistics: Received nonce: ' . $_POST['nonce']);
+      wp_die('Security check failed');
+    }
+    
+    error_log('MAILPN Statistics: Nonce verification passed');
+
+    // Get current filters
+    $filters = [
+      'recipient' => isset($_POST['recipient_filter']) ? sanitize_text_field($_POST['recipient_filter']) : '',
+      'type' => isset($_POST['type_filter']) ? sanitize_text_field($_POST['type_filter']) : '',
+      'template' => isset($_POST['template_filter']) ? sanitize_text_field($_POST['template_filter']) : '',
+    ];
+
+    // Build query args
+    $args = [
+      'post_type' => 'mailpn_rec',
+      'posts_per_page' => -1,
+      'post_status' => 'publish',
+    ];
+
+    $meta_query = [];
+    
+    if (!empty($filters['recipient'])) {
+      $meta_query[] = [
+        'key' => 'mailpn_rec_to',
+        'value' => $filters['recipient']
+      ];
+    }
+
+    if (!empty($filters['type'])) {
+      $meta_query[] = [
+        'key' => 'mailpn_rec_type',
+        'value' => $filters['type']
+      ];
+    }
+
+    if (!empty($filters['template'])) {
+      $meta_query[] = [
+        'key' => 'mailpn_rec_mail_id',
+        'value' => $filters['template'],
+        'compare' => '='
+      ];
+    }
+
+    if (!empty($meta_query)) {
+      $meta_query['relation'] = 'AND';
+      $args['meta_query'] = $meta_query;
+    }
+
+    $query = new WP_Query($args);
+    $records = $query->posts;
+    
+    error_log('MAILPN Statistics: Found ' . count($records) . ' records');
+
+    // Calculate statistics
+    $stats = [
+      'total_emails' => count($records),
+      'opened_emails' => 0,
+      'total_clicks' => 0,
+      'unique_urls' => [],
+      'clicks_by_url' => [],
+      'opened_by_date' => [],
+      'sent_by_date' => [],
+    ];
+
+    foreach ($records as $record) {
+      $opened = get_post_meta($record->ID, 'mailpn_rec_opened', true);
+      $opened_at = get_post_meta($record->ID, 'mailpn_rec_opened_at', true);
+      $clicks = get_post_meta($record->ID, 'mailpn_rec_clicks', true);
+      $sent_date = date('Y-m-d', strtotime($record->post_date));
+
+      // Count opened emails
+      if ($opened) {
+        $stats['opened_emails']++;
+        
+        if ($opened_at) {
+          $opened_date = date('Y-m-d', strtotime($opened_at));
+          if (!isset($stats['opened_by_date'][$opened_date])) {
+            $stats['opened_by_date'][$opened_date] = 0;
+          }
+          $stats['opened_by_date'][$opened_date]++;
+        }
+      }
+
+      // Count sent emails by date
+      if (!isset($stats['sent_by_date'][$sent_date])) {
+        $stats['sent_by_date'][$sent_date] = 0;
+      }
+      $stats['sent_by_date'][$sent_date]++;
+
+      // Process clicks
+      if (is_array($clicks) && !empty($clicks)) {
+        foreach ($clicks as $click) {
+          $stats['total_clicks']++;
+          $url = $click['url'];
+          
+          if (!in_array($url, $stats['unique_urls'])) {
+            $stats['unique_urls'][] = $url;
+          }
+          
+          if (!isset($stats['clicks_by_url'][$url])) {
+            $stats['clicks_by_url'][$url] = 0;
+          }
+          $stats['clicks_by_url'][$url]++;
+        }
+      }
+    }
+
+    // Calculate open rate
+    $stats['open_rate'] = $stats['total_emails'] > 0 ? round(($stats['opened_emails'] / $stats['total_emails']) * 100, 2) : 0;
+
+    // Sort data for charts
+    ksort($stats['opened_by_date']);
+    ksort($stats['sent_by_date']);
+    arsort($stats['clicks_by_url']);
+    
+    error_log('MAILPN Statistics: Sending response with data: ' . print_r($stats, true));
+
+    wp_send_json_success($stats);
   }
 }

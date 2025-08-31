@@ -443,6 +443,14 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_action('save_post', $plugin_post_type_rec, 'mailpn_save_post');
 		$this->mailpn_loader->mailpn_add_action('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns');
 		$this->mailpn_loader->mailpn_add_action('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
+		
+		// Add filter hooks for rec post type
+		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_rec_filter_dropdown');
+		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_post_type_rec, 'mailpn_rec_filter_query');
+		
+		// Add statistics button and AJAX hooks for rec post type
+		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_add_statistics_button');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_get_statistics', $plugin_post_type_rec, 'mailpn_get_statistics_data');
 	}
 
 	/**
@@ -502,9 +510,9 @@ class MAILPN {
 		$plugin_cron = new MAILPN_Cron();
 
 		$this->mailpn_loader->mailpn_add_action('wp', $plugin_cron, 'cron_schedule');
-		$this->mailpn_loader->mailpn_add_action('mailpn_cron_daily', $plugin_cron, 'cron_daily');
-		$this->mailpn_loader->mailpn_add_action('mailpn_cron_ten_minutes', $plugin_cron, 'cron_ten_minutes');
-		$this->mailpn_loader->mailpn_add_action('mailpn_cron_weekly', $plugin_cron, 'cron_weekly');
+		$this->mailpn_loader->mailpn_add_action('mailpn_cron_daily', $plugin_cron, 'mailpn_cron_daily');
+		$this->mailpn_loader->mailpn_add_action('mailpn_cron_ten_minutes', $plugin_cron, 'mailpn_cron_ten_minutes');
+		$this->mailpn_loader->mailpn_add_action('mailpn_cron_weekly', $plugin_cron, 'mailpn_cron_weekly');
 		$this->mailpn_loader->mailpn_add_filter('cron_schedules', $plugin_cron, 'cron_ten_minutes_schedule');
 	}
 

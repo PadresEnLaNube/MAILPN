@@ -1,0 +1,55 @@
+/* MAILPN Email Template Styles */
+
+/* Basic email template styles */
+.mailpn-email-template {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+}
+
+.mailpn-header {
+    background-color: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.mailpn-content {
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.mailpn-footer {
+    background-color: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #e9ecef;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.mailpn-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007cba;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.mailpn-button:hover {
+    background-color: #005a87;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .mailpn-email-template {
+        width: 100%;
+    }
+    
+    .mailpn-content {
+        padding: 15px;
+    }
+}

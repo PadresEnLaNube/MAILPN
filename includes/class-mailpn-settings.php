@@ -97,6 +97,7 @@ class MAILPN_Settings {
         'type' => 'number',
         'label' => __('Emails sent every day', 'mailpn'),
         'description' => __('You can limit the number of emails sent everyday. Check your mail server settings and the system will automatically be adjusted to this number. Default emails sent will be 500.', 'mailpn'),
+        'default' => '500',
       ];
       $mailpn_options['mailpn_new_user_notifications'] = [
         'id' => 'mailpn_new_user_notifications',
@@ -463,6 +464,16 @@ class MAILPN_Settings {
       [$this, 'mailpn_welcome_management_page']
     );
 
+    // Add submenu for email queue management
+    add_submenu_page(
+      'mailpn_options',
+      esc_html__('Email Queue', 'mailpn'),
+      esc_html__('Email Queue', 'mailpn'),
+      'manage_options',
+      'mailpn-email-queue',
+      [$this, 'mailpn_email_queue_page']
+    );
+
     global $menu;
     if (!empty($menu)) {
       foreach ($menu as $menu_index => $menu_item) {
@@ -534,9 +545,13 @@ class MAILPN_Settings {
 				$scheduled_email = $scheduled_emails[$index];
 				$mailing = new MAILPN_Mailing();
 				
+				// Add to queue
 				$result = $mailing->mailpn_queue_add($scheduled_email['email_id'], $scheduled_email['user_id']);
 				
 				if ($result) {
+					// Process queue immediately
+					$mailing->mailpn_queue_process();
+					
 					// Remove from scheduled list
 					unset($scheduled_emails[$index]);
 					$scheduled_emails = array_values($scheduled_emails);
@@ -921,14 +936,18 @@ class MAILPN_Settings {
   public function mailpn_is_email_excepted($user_id) {
     $user = get_userdata($user_id);
     if (!$user) {
+      error_log("MAILPN: User $user_id doesn't exist, cannot check email exceptions");
       return false;
     }
     
     $user_email = $user->user_email;
+    error_log("MAILPN: Checking email exceptions for user $user_id with email: $user_email");
     
     $mailpn_exception_emails = get_option('mailpn_exception_emails');
     $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
     $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
+
+    error_log("MAILPN: Exception settings - Emails: $mailpn_exception_emails, Domains: $mailpn_exception_emails_domains, Addresses: $mailpn_exception_emails_addresses");
 
     // Exception domains and emails check
     if ($mailpn_exception_emails == 'on') {
@@ -936,23 +955,36 @@ class MAILPN_Settings {
         $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
 
         if (!empty($mailpn_exception_emails_domain)) {
+          error_log("MAILPN: Checking against domain exceptions: " . implode(', ', $mailpn_exception_emails_domain));
           foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
             if (strpos($user_email, $mailpn_exception_email_domain) !== false) {
+              error_log("MAILPN: User $user_id email $user_email matches domain exception: $mailpn_exception_email_domain");
               return true;
             }
           }
+        } else {
+          error_log("MAILPN: Domain exceptions enabled but no domains configured");
         }
       }
 
       if ($mailpn_exception_emails_addresses == 'on') {
         $mailpn_exception_emails_address = get_option('mailpn_exception_emails_address');
 
-        if (!empty($mailpn_exception_emails_address) && in_array($user_email, $mailpn_exception_emails_address)) {
-          return true;
+        if (!empty($mailpn_exception_emails_address)) {
+          error_log("MAILPN: Checking against email exceptions: " . implode(', ', $mailpn_exception_emails_address));
+          if (in_array($user_email, $mailpn_exception_emails_address)) {
+            error_log("MAILPN: User $user_id email $user_email matches email exception");
+            return true;
+          }
+        } else {
+          error_log("MAILPN: Email exceptions enabled but no emails configured");
         }
       }
+    } else {
+      error_log("MAILPN: Email exceptions are disabled");
     }
 
+    error_log("MAILPN: User $user_id email $user_email is not in exception list");
     return false;
   }
 
@@ -1227,27 +1259,38 @@ class MAILPN_Settings {
    * @param int $user_id The user ID
    */
   public function mailpn_schedule_delayed_welcome_email($email_id, $user_id) {
+    error_log("MAILPN: Scheduling delayed welcome email - Email ID: $email_id, User ID: $user_id");
+    
     // Check if user's email is in the exception lists
     if ($this->mailpn_is_email_excepted($user_id)) {
+      error_log("MAILPN: User $user_id email is in exception list, skipping delayed email scheduling");
       return;
     }
     
     $delay_value = get_post_meta($email_id, 'mailpn_welcome_delay_value', true);
     $delay_unit = get_post_meta($email_id, 'mailpn_welcome_delay_unit', true);
     
+    error_log("MAILPN: Delay settings - Value: $delay_value, Unit: $delay_unit");
+    
     if (empty($delay_value) || empty($delay_unit)) {
+      error_log("MAILPN: Delay settings are empty, skipping delayed email scheduling");
       return;
     }
     
     // Calculate the delay in seconds
     $delay_seconds = $this->mailpn_calculate_delay_seconds($delay_value, $delay_unit);
     
+    error_log("MAILPN: Calculated delay: $delay_seconds seconds");
+    
     if ($delay_seconds <= 0) {
+      error_log("MAILPN: Invalid delay calculated, skipping delayed email scheduling");
       return;
     }
     
     // Calculate the scheduled time
     $scheduled_time = time() + $delay_seconds;
+    
+    error_log("MAILPN: Scheduled time: " . date('Y-m-d H:i:s', $scheduled_time));
     
     // Get existing scheduled emails
     $scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
@@ -1265,7 +1308,8 @@ class MAILPN_Settings {
       'created_time' => time()
     ];
     
-    update_option('mailpn_scheduled_welcome_emails', $scheduled_emails);
+    $result = update_option('mailpn_scheduled_welcome_emails', $scheduled_emails);
+    error_log("MAILPN: Updated scheduled emails option - Result: " . ($result ? 'success' : 'failed') . ", Total scheduled: " . count($scheduled_emails));
   }
   
   /**
@@ -1634,5 +1678,193 @@ class MAILPN_Settings {
       array_unshift($links, $settings_link);
       
       return $links;
+  }
+
+  /**
+   * Email Queue Management Page
+   *
+   * @since    1.0.0
+   */
+  public function mailpn_email_queue_page() {
+    // Handle manual processing of queue
+    if (isset($_POST['mailpn_process_queue']) && wp_verify_nonce($_POST['mailpn_process_queue_nonce'], 'mailpn_process_queue')) {
+      $mailing = new MAILPN_Mailing();
+      $mailing->mailpn_queue_process();
+      echo '<div class="notice notice-success"><p>' . esc_html__('Email queue processed successfully.', 'mailpn') . '</p></div>';
+    }
+
+    // Handle clearing queue
+    if (isset($_POST['mailpn_clear_queue']) && wp_verify_nonce($_POST['mailpn_clear_queue_nonce'], 'mailpn_clear_queue')) {
+      update_option('mailpn_queue', []);
+      echo '<div class="notice notice-success"><p>' . esc_html__('Email queue cleared successfully.', 'mailpn') . '</p></div>';
+    }
+
+    // Handle removing specific email from queue
+    if (isset($_POST['mailpn_remove_from_queue']) && wp_verify_nonce($_POST['mailpn_remove_from_queue_nonce'], 'mailpn_remove_from_queue')) {
+      $mail_id = intval($_POST['mailpn_mail_id']);
+      $user_id = intval($_POST['mailpn_user_id']);
+      
+      $mailpn_queue = get_option('mailpn_queue', []);
+      
+      if (isset($mailpn_queue[$mail_id]) && in_array($user_id, $mailpn_queue[$mail_id])) {
+        $mailpn_queue[$mail_id] = array_diff($mailpn_queue[$mail_id], [$user_id]);
+        
+        // Remove empty mail entries
+        if (empty($mailpn_queue[$mail_id])) {
+          unset($mailpn_queue[$mail_id]);
+        }
+        
+        update_option('mailpn_queue', $mailpn_queue);
+        echo '<div class="notice notice-success"><p>' . esc_html__('Email removed from queue successfully.', 'mailpn') . '</p></div>';
+      }
+    }
+
+    ?>
+    <div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
+      <div class="mailpn-display-table mailpn-width-100-percent">
+        <div class="mailpn-display-inline-table mailpn-width-70-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+          <h1 class="mailpn-mb-30"><?php esc_html_e('Email Queue Management', 'mailpn'); ?></h1>
+        </div>
+        <div class="mailpn-display-inline-table mailpn-width-30-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-text-align-center">
+          <form method="post" style="display: inline;">
+            <?php wp_nonce_field('mailpn_process_queue', 'mailpn_process_queue_nonce'); ?>
+            <input type="submit" name="mailpn_process_queue" class="button button-primary" value="<?php esc_attr_e('Process Queue Now', 'mailpn'); ?>">
+          </form>
+          <form method="post" style="display: inline; margin-left: 10px;">
+            <?php wp_nonce_field('mailpn_clear_queue', 'mailpn_clear_queue_nonce'); ?>
+            <input type="submit" name="mailpn_clear_queue" class="button button-secondary" value="<?php esc_attr_e('Clear Queue', 'mailpn'); ?>" onclick="return confirm('<?php esc_attr_e('Are you sure you want to clear the entire email queue?', 'mailpn'); ?>')">
+          </form>
+        </div>
+      </div>
+
+      <!-- EMAIL QUEUE SECTION -->
+      <div class="mailpn-email-queue mailpn-mb-30">
+        <h2><?php esc_html_e('Pending Email Queue', 'mailpn'); ?></h2>
+        <p><?php esc_html_e('These are emails waiting to be sent. They will be processed automatically every 10 minutes or you can process them manually.', 'mailpn'); ?></p>
+        
+        <?php
+        $mailpn_queue = get_option('mailpn_queue', []);
+        
+        // Filter out templates with no pending emails
+        $pending_templates = [];
+        foreach ($mailpn_queue as $mail_id => $user_ids) {
+          if (!empty($user_ids)) {
+            $pending_templates[$mail_id] = $user_ids;
+          }
+        }
+        
+        if (empty($pending_templates)) {
+          echo '<p>' . esc_html__('No emails in queue.', 'mailpn') . '</p>';
+        } else {
+          $total_emails = 0;
+          foreach ($pending_templates as $mail_id => $user_ids) {
+            $total_emails += count($user_ids);
+          }
+          
+          echo '<p><strong>' . sprintf(esc_html__('Total emails in queue: %d', 'mailpn'), $total_emails) . '</strong></p>';
+          ?>
+          <table class="wp-list-table widefat fixed striped">
+            <thead>
+              <tr>
+                <th><?php esc_html_e('Email Template', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Recipients', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Queue Count', 'mailpn'); ?></th>
+                <th><?php esc_html_e('Actions', 'mailpn'); ?></th>
+              </tr>
+            </thead>
+            <tbody>
+          <?php
+
+          foreach ($pending_templates as $mail_id => $user_ids) {
+            $email_post = get_post($mail_id);
+            $email_title = $email_post ? $email_post->post_title : esc_html__('Unknown Template', 'mailpn');
+            $email_type = $email_post ? get_post_meta($mail_id, 'mailpn_type', true) : '';
+            
+            // Get user details in mailpn_rec format
+            $user_details = [];
+            foreach ($user_ids as $user_id) {
+              $user = get_userdata($user_id);
+              if ($user) {
+                // Format: display_name-user_id (email)
+                $user_display = $user->display_name . '-' . $user_id . ' (' . $user->user_email . ')';
+                $user_details[] = $user_display;
+              }
+            }
+            
+            ?>
+            <tr>
+              <td>
+                <strong><?php echo esc_html($email_title); ?></strong><br>
+                <small>ID: <?php echo esc_html($mail_id); ?></small><br>
+                <small>Type: <?php echo esc_html($email_type); ?></small>
+              </td>
+              <td>
+                <?php if (!empty($user_details)): ?>
+                  <div style="max-height: 200px; overflow-y: auto;">
+                    <?php foreach ($user_details as $user_detail): ?>
+                      <div style="margin-bottom: 5px;">
+                        <?php echo esc_html($user_detail); ?>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+                <?php else: ?>
+                  <em><?php esc_html_e('No valid recipients', 'mailpn'); ?></em>
+                <?php endif; ?>
+              </td>
+              <td>
+                <strong><?php echo esc_html(count($user_ids)); ?></strong> <?php esc_html_e('emails', 'mailpn'); ?>
+              </td>
+              <td>
+                <form method="post" style="display: inline;">
+                  <?php wp_nonce_field('mailpn_remove_from_queue', 'mailpn_remove_from_queue_nonce'); ?>
+                  <input type="hidden" name="mailpn_mail_id" value="<?php echo esc_attr($mail_id); ?>">
+                  <input type="hidden" name="mailpn_user_id" value="<?php echo esc_attr(implode(',', $user_ids)); ?>">
+                  <input type="submit" name="mailpn_remove_from_queue" class="button button-small button-secondary" value="<?php esc_attr_e('Remove All', 'mailpn'); ?>" onclick="return confirm('<?php esc_attr_e('Are you sure you want to remove all emails for this template from the queue?', 'mailpn'); ?>')">
+                </form>
+              </td>
+            </tr>
+            <?php
+          }
+          ?>
+            </tbody>
+          </table>
+          <?php
+        }
+        ?>
+      </div>
+
+      <!-- QUEUE STATISTICS -->
+      <div class="mailpn-queue-statistics mailpn-mb-30">
+        <h2><?php esc_html_e('Queue Statistics', 'mailpn'); ?></h2>
+        <?php
+        $queue_paused = get_option('mailpn_queue_paused', false);
+        $emails_sent_today = get_option('mailpn_emails_sent_today', 0);
+        $daily_limit = get_option('mailpn_sent_every_day', 500);
+        $emails_per_batch = get_option('mailpn_sent_every_ten_minutes', 5);
+        
+        ?>
+        <table class="wp-list-table widefat fixed striped">
+          <tbody>
+            <tr>
+              <td><strong><?php esc_html_e('Queue Status', 'mailpn'); ?></strong></td>
+              <td><?php echo $queue_paused ? '<span style="color: red;">' . esc_html__('PAUSED', 'mailpn') . '</span>' : '<span style="color: green;">' . esc_html__('ACTIVE', 'mailpn') . '</span>'; ?></td>
+            </tr>
+            <tr>
+              <td><strong><?php esc_html_e('Emails Sent Today', 'mailpn'); ?></strong></td>
+              <td><?php echo esc_html($emails_sent_today); ?> / <?php echo esc_html($daily_limit); ?></td>
+            </tr>
+            <tr>
+              <td><strong><?php esc_html_e('Emails Per Batch', 'mailpn'); ?></strong></td>
+              <td><?php echo esc_html($emails_per_batch); ?></td>
+            </tr>
+            <tr>
+              <td><strong><?php esc_html_e('Next Processing', 'mailpn'); ?></strong></td>
+              <td><?php esc_html_e('Every 10 minutes via cron job', 'mailpn'); ?></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <?php
   }
 }

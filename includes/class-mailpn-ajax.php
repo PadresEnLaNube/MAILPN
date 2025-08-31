@@ -101,7 +101,7 @@ class MAILPN_Ajax {
             exit();
           }
       
-          $admin_email = get_current_user_id();
+          $admin_user_id = get_current_user_id();
           $subject = esc_html__('Test email from MAILPN', 'mailpn');
 
           ob_start();
@@ -113,7 +113,7 @@ class MAILPN_Ajax {
           $content = ob_get_contents(); 
           ob_end_clean(); 
           
-          $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $admin_email . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
+          $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $admin_user_id . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
 
           if ($result) {
             echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully', 'mailpn')]);exit();
