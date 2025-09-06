@@ -70,6 +70,23 @@ class MAILPN_Data {
 
   public static function mailpn_mail_types() {
 		// MAILPN_Data::mail_types();
-		return apply_filters('mailpn_mail_types', ['email_one_time' => __('One time email', 'mailpn'), 'email_periodic' => __('Periodic time email', 'mailpn'), 'email_published_content' => __('Published content email', 'mailpn'), 'email_welcome' => __('Welcome email', 'mailpn'), 'newsletter_welcome' => __('Newsletter welcome email', 'mailpn'), 'email_verify_code' => __('Account verification code', 'mailpn'), 'email_coded' => __('Email sent from code', 'mailpn'), 'email_password_reset' => __('Password reset email', 'mailpn'), ]);
+		$mail_types = [
+			'email_one_time' => __('One time email', 'mailpn'), 
+			'email_periodic' => __('Periodic time email', 'mailpn'), 
+			'email_published_content' => __('Published content email', 'mailpn'), 
+			'email_welcome' => __('Welcome email', 'mailpn'), 
+			'newsletter_welcome' => __('Newsletter welcome email', 'mailpn'), 
+			'email_verify_code' => __('Account verification code', 'mailpn'), 
+			'email_coded' => __('Email sent from code', 'mailpn'), 
+			'email_password_reset' => __('Password reset email', 'mailpn')
+		];
+		
+		// Add WooCommerce email types if WooCommerce is active
+		if (class_exists('WooCommerce')) {
+			$mail_types['email_woocommerce_purchase'] = __('Email after purchase', 'mailpn');
+			$mail_types['email_woocommerce_abandoned_cart'] = __('Abandoned cart email', 'mailpn');
+		}
+		
+		return apply_filters('mailpn_mail_types', $mail_types);
 	}
 }

@@ -284,11 +284,22 @@ class MAILPN_Mailing {
         $error_details[] = 'Server Information:';
         $error_details[] = '- PHP Version: ' . PHP_VERSION;
         $error_details[] = '- WordPress Version: ' . get_bloginfo('version');
-        $error_details[] = '- Server Software: ' . $_SERVER['SERVER_SOFTWARE'];
+        $error_details[] = '- Server Software: ' . ($_SERVER['SERVER_SOFTWARE'] ?? 'Unknown');
       } else {
         $error_message = 'PHPMailer object not available';
         $error_details[] = 'PHPMailer Error: ' . $error_message;
       }
+      
+      // Store detailed error information for AJAX responses
+      $GLOBALS['mailpn_last_error'] = [
+        'message' => $error_message,
+        'details' => $error_details,
+        'timestamp' => current_time('mysql'),
+        'phpmailer_error' => isset($GLOBALS['phpmailer']) && is_object($GLOBALS['phpmailer']) ? $GLOBALS['phpmailer']->ErrorInfo : '',
+        'smtp_enabled' => get_option('mailpn_smtp_enabled'),
+        'smtp_host' => get_option('mailpn_smtp_host'),
+        'smtp_port' => get_option('mailpn_smtp_port')
+      ];
 
       // Log the error
       error_log('MAILPN Mail Sending Error: ' . implode("\n", $error_details));

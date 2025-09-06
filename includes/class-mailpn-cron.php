@@ -93,6 +93,11 @@ class MAILPN_Cron {
     // Process pending welcome registrations
     $settings_plugin = new MAILPN_Settings();
     $settings_plugin->mailpn_process_pending_welcome_registrations();
+    
+    // Process WooCommerce automated emails
+    if (class_exists('WooCommerce')) {
+      $this->mailpn_process_woocommerce_automated_emails();
+    }
   }
 
 	/**
@@ -261,5 +266,243 @@ class MAILPN_Cron {
       'removed_count' => $removed_count,
       'removed_user_ids' => $removed_user_ids
     ];
+  }
+  
+  /**
+   * Process WooCommerce automated emails
+   *
+   * @since       1.0.0
+   */
+  public function mailpn_process_woocommerce_automated_emails() {
+    $current_time = time();
+    $mailing_plugin = new MAILPN_Mailing();
+    
+    // Get all WooCommerce email templates
+    $woocommerce_email_types = ['email_woocommerce_purchase', 'email_woocommerce_abandoned_cart'];
+    
+    foreach ($woocommerce_email_types as $email_type) {
+      $this->mailpn_process_woocommerce_email_type($email_type, $current_time, $mailing_plugin);
+    }
+  }
+  
+  /**
+   * Process specific WooCommerce email type
+   *
+   * @param string $email_type Email type
+   * @param int $current_time Current timestamp
+   * @param MAILPN_Mailing $mailing_plugin Mailing plugin instance
+   * @since       1.0.0
+   */
+  private function mailpn_process_woocommerce_email_type($email_type, $current_time, $mailing_plugin) {
+    // Get all email templates of this type
+    $email_templates = get_posts([
+      'post_type' => 'mailpn_mail',
+      'post_status' => 'publish',
+      'numberposts' => -1,
+      'meta_query' => [
+        [
+          'key' => 'mailpn_type',
+          'value' => $email_type,
+          'compare' => '='
+        ]
+      ]
+    ]);
+    
+    foreach ($email_templates as $email_template) {
+      // Remove 'email_' prefix from email_type for meta key construction
+      $meta_suffix = str_replace('email_', '', $email_type);
+      $delay_value = get_post_meta($email_template->ID, 'mailpn_' . $meta_suffix . '_delay_value', true);
+      $delay_unit = get_post_meta($email_template->ID, 'mailpn_' . $meta_suffix . '_delay_unit', true);
+      
+      if (empty($delay_value) || empty($delay_unit)) {
+        continue;
+      }
+      
+      // Convert delay to seconds
+      $delay_seconds = $this->mailpn_convert_delay_to_seconds($delay_value, $delay_unit);
+      
+      if ($delay_seconds === false) {
+        continue;
+      }
+      
+      // Process based on email type
+      switch ($email_type) {
+        case 'email_woocommerce_purchase':
+          $this->mailpn_process_purchase_emails($email_template->ID, $delay_seconds, $current_time, $mailing_plugin);
+          break;
+          
+        case 'email_woocommerce_abandoned_cart':
+          $this->mailpn_process_abandoned_cart_emails($email_template->ID, $delay_seconds, $current_time, $mailing_plugin);
+          break;
+      }
+    }
+  }
+  
+  /**
+   * Process purchase emails
+   *
+   * @param int $email_id Email template ID
+   * @param int $delay_seconds Delay in seconds
+   * @param int $current_time Current timestamp
+   * @param MAILPN_Mailing $mailing_plugin Mailing plugin instance
+   * @since       1.0.0
+   */
+  private function mailpn_process_purchase_emails($email_id, $delay_seconds, $current_time, $mailing_plugin) {
+    // Get all users with purchase timestamps
+    $users = get_users([
+      'meta_key' => 'mailpn_woocommerce_purchase_timestamp',
+      'fields' => 'ids'
+    ]);
+    
+    foreach ($users as $user_id) {
+      // Check if user still exists
+      if (!get_userdata($user_id)) {
+        MAILPN_WooCommerce::remove_purchase_meta($user_id);
+        continue;
+      }
+      
+      // Check if order still exists
+      if (!MAILPN_WooCommerce::user_order_still_exists($user_id)) {
+        MAILPN_WooCommerce::remove_purchase_meta($user_id);
+        continue;
+      }
+      
+      $purchase_timestamp = MAILPN_WooCommerce::get_purchase_timestamp($user_id);
+      
+      if (!$purchase_timestamp) {
+        continue;
+      }
+      
+      // Check if enough time has passed
+      if (($purchase_timestamp + $delay_seconds) <= $current_time) {
+        // Check if user has already received this email
+        if (!$this->user_has_received_email($email_id, $user_id)) {
+          // Add to queue
+          $mailing_plugin->mailpn_queue_add($email_id, $user_id);
+          
+          // Mark user as having received this email
+          $this->mark_user_received_email($email_id, $user_id);
+        }
+        
+        // Remove meta to prevent duplicate sending
+        MAILPN_WooCommerce::remove_purchase_meta($user_id);
+      }
+    }
+  }
+  
+  /**
+   * Process abandoned cart emails
+   *
+   * @param int $email_id Email template ID
+   * @param int $delay_seconds Delay in seconds
+   * @param int $current_time Current timestamp
+   * @param MAILPN_Mailing $mailing_plugin Mailing plugin instance
+   * @since       1.0.0
+   */
+  private function mailpn_process_abandoned_cart_emails($email_id, $delay_seconds, $current_time, $mailing_plugin) {
+    // Get all users with cart timestamps
+    $users = get_users([
+      'meta_key' => 'mailpn_woocommerce_cart_timestamp',
+      'fields' => 'ids'
+    ]);
+    
+    foreach ($users as $user_id) {
+      // Check if user still exists
+      if (!get_userdata($user_id)) {
+        MAILPN_WooCommerce::remove_cart_abandonment_meta($user_id);
+        continue;
+      }
+      
+      // Check if user still has cart items (use saved cart data)
+      $saved_cart_items = get_user_meta($user_id, 'mailpn_woocommerce_cart_items', true);
+      if (empty($saved_cart_items) || !is_array($saved_cart_items)) {
+        MAILPN_WooCommerce::remove_cart_abandonment_meta($user_id);
+        continue;
+      }
+      
+      $cart_timestamp = MAILPN_WooCommerce::get_cart_abandonment_timestamp($user_id);
+      
+      if (!$cart_timestamp) {
+        continue;
+      }
+      
+      // Check if enough time has passed
+      if (($cart_timestamp + $delay_seconds) <= $current_time) {
+        // Check if user has already received this email
+        if (!$this->user_has_received_email($email_id, $user_id)) {
+          // Add to queue
+          $mailing_plugin->mailpn_queue_add($email_id, $user_id);
+          
+          // Mark user as having received this email
+          $this->mark_user_received_email($email_id, $user_id);
+        }
+        
+        // Remove meta to prevent duplicate sending
+        MAILPN_WooCommerce::remove_cart_abandonment_meta($user_id);
+      }
+    }
+  }
+  
+  /**
+   * Check if user has already received a specific email
+   *
+   * @param int $email_id Email template ID
+   * @param int $user_id User ID
+   * @return bool
+   * @since       1.0.0
+   */
+  private function user_has_received_email($email_id, $user_id) {
+    $sent_to_users = get_post_meta($email_id, 'mailpn_sent_to_users', true);
+    
+    if (empty($sent_to_users) || !is_array($sent_to_users)) {
+      return false;
+    }
+    
+    return in_array($user_id, $sent_to_users);
+  }
+  
+  /**
+   * Mark user as having received a specific email
+   *
+   * @param int $email_id Email template ID
+   * @param int $user_id User ID
+   * @since       1.0.0
+   */
+  private function mark_user_received_email($email_id, $user_id) {
+    $sent_to_users = get_post_meta($email_id, 'mailpn_sent_to_users', true);
+    
+    if (empty($sent_to_users) || !is_array($sent_to_users)) {
+      $sent_to_users = [];
+    }
+    
+    if (!in_array($user_id, $sent_to_users)) {
+      $sent_to_users[] = $user_id;
+      update_post_meta($email_id, 'mailpn_sent_to_users', $sent_to_users);
+    }
+  }
+  
+  /**
+   * Convert delay value and unit to seconds
+   *
+   * @param int $value Delay value
+   * @param string $unit Delay unit (minutes, hours, days)
+   * @return int|false Delay in seconds or false if invalid
+   * @since       1.0.0
+   */
+  private function mailpn_convert_delay_to_seconds($value, $unit) {
+    if (!is_numeric($value) || $value <= 0) {
+      return false;
+    }
+    
+    switch ($unit) {
+      case 'minutes':
+        return $value * 60;
+      case 'hours':
+        return $value * 3600;
+      case 'days':
+        return $value * 86400;
+      default:
+        return false;
+    }
   }
 }

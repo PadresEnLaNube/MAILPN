@@ -1,6 +1,27 @@
 (function($) {
   'use strict';
 
+  // Define mailpn_form_update function
+  window.mailpn_form_update = function (){
+    $('.mailpn-field[data-mailpn-parent-option]').closest('.mailpn-input-wrapper').addClass('mailpn-display-none');
+
+    $('.mailpn-field[data-mailpn-parent~="this"]').each(function(index_parent, element_parent) {
+      var parent_this = $(this);
+
+      $('.mailpn-field[data-mailpn-parent~=' + parent_this.attr('id') + ']').each(function(index, element) {
+        if (parent_this.hasClass('mailpn-checkbox')) {
+          if (parent_this.is(':checked') && $(this).attr('data-mailpn-parent-option') == 'on') {
+            $(this).closest('.mailpn-input-wrapper').removeClass('mailpn-display-none');
+          }
+        }else{
+          if (parent_this.val() == $(this).attr('data-mailpn-parent-option')) {
+            $(this).closest('.mailpn-input-wrapper').removeClass('mailpn-display-none');
+          }
+        }
+      });
+    });
+  }
+
   $(document).ready(function() {
     if ($('.mailpn-password-checker').length) {
       var pass_view_state = false;

@@ -52,12 +52,14 @@ class MAILPN_Admin {
 		
 		// Load dashboard styles if on dashboard page
 		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_dashboard') {
+			wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');
 			wp_enqueue_style($this->plugin_name . '-dashboard', MAILPN_URL . 'assets/css/admin/mailpn-dashboard.css', [], $this->version, 'all');
 		}
 		
 		// Load statistics styles if on mail records page
 		global $typenow;
 		if ($typenow === 'mailpn_rec') {
+			wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');
 			wp_enqueue_style($this->plugin_name . '-statistics', MAILPN_URL . 'assets/css/mailpn-statistics.css', [], $this->version, 'all');
 		}
 	}

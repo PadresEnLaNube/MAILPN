@@ -58,4 +58,76 @@ class MAILPN_Shortcodes {
 
   public function mailpn_test($atts) {
   }
+  
+  /**
+   * Debug cart abandonment shortcode
+   *
+   * @param array $atts Shortcode attributes
+   * @return string Debug output
+   * @since    1.0.0
+   */
+  public function mailpn_debug_cart_shortcode($atts) {
+    if (!current_user_can('administrator')) {
+      return '<p>Access denied. Administrator privileges required.</p>';
+    }
+    
+    $debug_info = MAILPN_Debug::debug_cart_abandonment();
+    
+    ob_start();
+    ?>
+    <div style="background: #f1f1f1; padding: 20px; margin: 20px 0; border: 1px solid #ccc;">
+      <h3>MailPN Cart Abandonment Debug</h3>
+      <pre><?php echo esc_html(print_r($debug_info, true)); ?></pre>
+    </div>
+    <?php
+    return ob_get_clean();
+  }
+  
+  /**
+   * Debug purchase emails shortcode
+   *
+   * @param array $atts Shortcode attributes
+   * @return string Debug output
+   * @since    1.0.0
+   */
+  public function mailpn_debug_purchase_shortcode($atts) {
+    if (!current_user_can('administrator')) {
+      return '<p>Access denied. Administrator privileges required.</p>';
+    }
+    
+    $debug_info = MAILPN_Debug::debug_purchase_emails();
+    
+    ob_start();
+    ?>
+    <div style="background: #f1f1f1; padding: 20px; margin: 20px 0; border: 1px solid #ccc;">
+      <h3>MailPN Purchase Email Debug</h3>
+      <pre><?php echo esc_html(print_r($debug_info, true)); ?></pre>
+    </div>
+    <?php
+    return ob_get_clean();
+  }
+  
+  /**
+   * Test cart abandonment processing shortcode
+   *
+   * @param array $atts Shortcode attributes
+   * @return string Debug output
+   * @since    1.0.0
+   */
+  public function mailpn_test_cart_processing_shortcode($atts) {
+    if (!current_user_can('administrator')) {
+      return '<p>Access denied. Administrator privileges required.</p>';
+    }
+    
+    $results = MAILPN_Debug::test_cart_abandonment_processing();
+    
+    ob_start();
+    ?>
+    <div style="background: #f1f1f1; padding: 20px; margin: 20px 0; border: 1px solid #ccc;">
+      <h3>MailPN Cart Abandonment Processing Test</h3>
+      <pre><?php echo esc_html(print_r($results, true)); ?></pre>
+    </div>
+    <?php
+    return ob_get_clean();
+  }
 }

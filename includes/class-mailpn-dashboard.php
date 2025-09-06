@@ -197,7 +197,7 @@ class MAILPN_Dashboard {
 
 			<!-- Recent Sent Emails Popup -->
 			<div id="recent-sent-emails-popup" class="mailpn-popup mailpn-popup-size-large">
-				<div class="mailpn-popup-content">
+				<div class="mailpn-popup-content mailpn-pt-0">
 					<div class="mailpn-popup-header">
 						<h3><?php esc_html_e('Recent Sent Emails - Last 7 Days', 'mailpn'); ?></h3>
 					</div>
@@ -211,7 +211,7 @@ class MAILPN_Dashboard {
 
 			<!-- Pending Scheduled Emails Popup -->
 			<div id="pending-scheduled-emails-popup" class="mailpn-popup mailpn-popup-size-large">
-				<div class="mailpn-popup-content">
+				<div class="mailpn-popup-content mailpn-pt-0">
 					<div class="mailpn-popup-header">
 						<h3><?php esc_html_e('Pending Scheduled Emails', 'mailpn'); ?></h3>
 					</div>

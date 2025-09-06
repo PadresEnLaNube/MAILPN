@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.2';
+			$this->mailpn_version = '1.0.3';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -231,6 +231,16 @@ class MAILPN {
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-click-tracking.php';
 
+		/**
+		 * The class responsible for WooCommerce integration.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-woocommerce.php';
+
+		/**
+		 * The class responsible for debugging functionality.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-debug.php';
+
 		$this->mailpn_loader = new MAILPN_Loader();
 	}
 
@@ -351,6 +361,12 @@ class MAILPN {
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
 		$this->mailpn_loader->mailpn_add_action('mailpn_form_save', $plugin_post_type_rec, 'mailpn_form_save', 4, 999);
+		
+		// Add AJAX hooks for rec post type
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_get_statistics', $plugin_post_type_rec, 'mailpn_get_statistics_data');
+		
+		// Add statistics button for rec post type
+		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_add_statistics_button');
 
 		// Add click tracking endpoint
 		add_action('init', function() {
@@ -382,6 +398,11 @@ class MAILPN {
 				}
 			}
 		});
+		
+		// Initialize WooCommerce integration
+		if (class_exists('WooCommerce')) {
+			new MAILPN_WooCommerce();
+		}
 	}
 
 	/**
@@ -447,10 +468,6 @@ class MAILPN {
 		// Add filter hooks for rec post type
 		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_rec_filter_dropdown');
 		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_post_type_rec, 'mailpn_rec_filter_query');
-		
-		// Add statistics button and AJAX hooks for rec post type
-		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_add_statistics_button');
-		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_get_statistics', $plugin_post_type_rec, 'mailpn_get_statistics_data');
 	}
 
 	/**
@@ -544,6 +561,8 @@ class MAILPN {
 		$plugin_settings = new MAILPN_Settings();
 		$this->mailpn_loader->mailpn_add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
 		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'mailpn_activated_plugin');
+		$this->mailpn_loader->mailpn_add_action('admin_init', $plugin_settings, 'mailpn_admin_init');
+		$this->mailpn_loader->mailpn_add_action('admin_notices', $plugin_settings, 'mailpn_admin_notices');
 		$this->mailpn_loader->mailpn_add_action('user_register', $plugin_settings, 'mailpn_user_register', 11, 1);
 		$this->mailpn_loader->mailpn_add_action('set_user_role', $plugin_settings, 'mailpn_process_pending_welcome_registrations', 20, 3);
 		$this->mailpn_loader->mailpn_add_action('profile_update', $plugin_settings, 'mailpn_process_pending_welcome_registrations', 20, 2);
@@ -563,6 +582,8 @@ class MAILPN {
 	private function mailpn_load_ajax() {
 		$plugin_ajax = new MAILPN_Ajax();
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax', $plugin_ajax, 'mailpn_ajax_server');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_update_cart_timestamp', $plugin_ajax, 'mailpn_update_cart_timestamp');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_nopriv_mailpn_update_cart_timestamp', $plugin_ajax, 'mailpn_update_cart_timestamp');
 	}
 
 	/**
@@ -587,6 +608,9 @@ class MAILPN {
 		$plugin_shortcodes = new MAILPN_Shortcodes();
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-mail', $plugin_shortcodes, 'mailpn_mail');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-call-to-action', $plugin_shortcodes, 'mailpn_call_to_action');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-debug-cart', $plugin_shortcodes, 'mailpn_debug_cart_shortcode');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-debug-purchase', $plugin_shortcodes, 'mailpn_debug_purchase_shortcode');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-test-cart-processing', $plugin_shortcodes, 'mailpn_test_cart_processing_shortcode');
 		
 		$plugin_mailing = new MAILPN_Mailing();
 		if (get_option('mailpn_password_new') == 'on') {

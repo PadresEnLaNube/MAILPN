@@ -793,6 +793,35 @@ input:checked + .mailpn-slider:before{
 .mailpn-slider.mailpn-round:before{
   border-radius:50%;
 }
+
+/* MailPN Message Types */
+.mailpn-main-message.mailpn-message-success {
+  background-color: #4caf50 !important;
+}
+
+.mailpn-main-message.mailpn-message-error {
+  background-color: #f44336 !important;
+}
+
+.mailpn-main-message.mailpn-message-warning {
+  background-color: #ff9800 !important;
+}
+
+.mailpn-main-message.mailpn-message-error #mailpn-main-message-span {
+  font-weight: 500;
+}
+
+.mailpn-main-message.mailpn-message-error .mailpn-close-icon {
+  color: #ffcdd2 !important;
+}
+
+.mailpn-main-message.mailpn-message-success .mailpn-close-icon {
+  color: #c8e6c9 !important;
+}
+
+.mailpn-main-message.mailpn-message-warning .mailpn-close-icon {
+  color: #ffe0b2 !important;
+}
 .mailpn-btn{
   background-color:var(--mailpn-color-main);
   color:#fff;

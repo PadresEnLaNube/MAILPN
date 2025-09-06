@@ -10,15 +10,17 @@
  * @subpackage MAILPN/includes
  * @author     Padres en la Nube <info@padresenlanube.com>
  */
-class MAILPN_Post_Type_Rec {
-  public function mailpn_get_fields_meta() {
+class MAILPN_Post_Type_Rec
+{
+  public function mailpn_get_fields_meta()
+  {
     $mailpn_user_options = [];
-    foreach (get_users(['fields' => 'ids', 'number' => -1, 'orderby' => 'display_name', 'order' => 'ASC', ]) as $user_id) {
+    foreach (get_users(['fields' => 'ids', 'number' => -1, 'orderby' => 'display_name', 'order' => 'ASC',]) as $user_id) {
       $mailpn_user_options[$user_id] = get_user_by('id', $user_id)->user_email . ' (ID#' . $user_id . ') ' . get_user_meta($user_id, 'first_name', true) . ' ' . get_user_meta($user_id, 'last_name', true);
     }
 
     $mailpn_attachments_options = [];
-    foreach (get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'attachment', 'orderby' => 'display_name', 'order' => 'ASC', ]) as $attachment_id) {
+    foreach (get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'attachment', 'orderby' => 'display_name', 'order' => 'ASC',]) as $attachment_id) {
       $mailpn_attachments_options[$attachment_id] = get_the_title($attachment_id) . ' (ID#' . get_post($attachment_id)->ID . ')';
     }
 
@@ -161,42 +163,43 @@ class MAILPN_Post_Type_Rec {
    *
    * @since    1.0.0
    */
-  public function mailpn_register_post_type() {
+  public function mailpn_register_post_type()
+  {
     $labels = [
-      'name'                => _x('Mail records', 'Post Type general name', 'mailpn'),
-      'singular_name'       => _x('Mail record', 'Post Type singular name', 'mailpn'),
-      'menu_name'           => esc_html(__('Mail records', 'mailpn')),
-      'parent_item_colon'   => esc_html(__('Parent Mail record', 'mailpn')),
-      'all_items'           => esc_html(__('All Mail records', 'mailpn')),
-      'view_item'           => esc_html(__('View Mail record', 'mailpn')),
-      'add_new_item'        => esc_html(__('Add new Mail record', 'mailpn')),
-      'add_new'             => esc_html(__('Add new Mail record', 'mailpn')),
-      'edit_item'           => esc_html(__('Edit Mail record', 'mailpn')),
-      'update_item'         => esc_html(__('Update Mail record', 'mailpn')),
-      'search_items'        => esc_html(__('Search Mail records', 'mailpn')),
-      'not_found'           => esc_html(__('Not Mail record found', 'mailpn')),
-      'not_found_in_trash'  => esc_html(__('Not Mail record found in Trash', 'mailpn')),
+      'name' => _x('Mail records', 'Post Type general name', 'mailpn'),
+      'singular_name' => _x('Mail record', 'Post Type singular name', 'mailpn'),
+      'menu_name' => esc_html(__('Mail records', 'mailpn')),
+      'parent_item_colon' => esc_html(__('Parent Mail record', 'mailpn')),
+      'all_items' => esc_html(__('All Mail records', 'mailpn')),
+      'view_item' => esc_html(__('View Mail record', 'mailpn')),
+      'add_new_item' => esc_html(__('Add new Mail record', 'mailpn')),
+      'add_new' => esc_html(__('Add new Mail record', 'mailpn')),
+      'edit_item' => esc_html(__('Edit Mail record', 'mailpn')),
+      'update_item' => esc_html(__('Update Mail record', 'mailpn')),
+      'search_items' => esc_html(__('Search Mail records', 'mailpn')),
+      'not_found' => esc_html(__('Not Mail record found', 'mailpn')),
+      'not_found_in_trash' => esc_html(__('Not Mail record found in Trash', 'mailpn')),
     ];
 
     $args = [
-      'labels'              => $labels,
-      'rewrite'             => ['slug' => 'mail-record', 'with_front' => false],
-      'label'               => esc_html(__('Mail record', 'mailpn')),
-      'description'         => esc_html(__('Mail record description', 'mailpn')),
-      'supports'            => ['title', 'editor', 'author', 'thumbnail', 'revisions', ],
-      'hierarchical'        => false,
-      'public'              => false,
-      'show_ui'             => true,
-      'show_in_menu'        => false,
-      'show_in_nav_menus'   => false,
-      'show_in_admin_bar'   => false,
-      'can_export'          => false,
-      'has_archive'         => false,
+      'labels' => $labels,
+      'rewrite' => ['slug' => 'mail-record', 'with_front' => false],
+      'label' => esc_html(__('Mail record', 'mailpn')),
+      'description' => esc_html(__('Mail record description', 'mailpn')),
+      'supports' => ['title', 'editor', 'author', 'thumbnail', 'revisions',],
+      'hierarchical' => false,
+      'public' => false,
+      'show_ui' => true,
+      'show_in_menu' => false,
+      'show_in_nav_menus' => false,
+      'show_in_admin_bar' => false,
+      'can_export' => false,
+      'has_archive' => false,
       'exclude_from_search' => true,
-      'publicly_queryable'  => false,
-      'capability_type'     => 'page',
-      'taxonomies'          => ['mailpn_rec_category'],
-      'show_in_rest'        => true,
+      'publicly_queryable' => false,
+      'capability_type' => 'page',
+      'taxonomies' => ['mailpn_rec_category'],
+      'show_in_rest' => true,
     ];
 
     register_post_type('mailpn_rec', $args);
@@ -209,17 +212,18 @@ class MAILPN_Post_Type_Rec {
    * @param WP_Error|null|bool $errors WP_Error if authentication error, null if authentication method wasn't used, true if authentication succeeded.
    * @return WP_Error|null|bool
    */
-  public function mailpn_rec_block_rest_api_access($errors) {
+  public function mailpn_rec_block_rest_api_access($errors)
+  {
     // Get the current REST route
     $current_route = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
-    
+
     // Check if this is a request to the mailpn_rec endpoint
     if (strpos($current_route, '/wp-json/wp/v2/mailpn_rec') !== false) {
       // Allow all POST/PUT/DELETE requests (needed for saving/updating posts)
       if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         return $errors;
       }
-      
+
       // For GET requests, only allow access for authenticated users in admin context
       if (!is_user_logged_in() || !is_admin()) {
         return new WP_Error(
@@ -229,7 +233,7 @@ class MAILPN_Post_Type_Rec {
         );
       }
     }
-    
+
     return $errors;
   }
 
@@ -238,7 +242,8 @@ class MAILPN_Post_Type_Rec {
    *
    * @since    1.0.0
    */
-  public function mailpn_add_meta_box() {
+  public function mailpn_add_meta_box()
+  {
     add_meta_box('mailpn_meta_box', esc_html(__('Mail details', 'mailpn')), [$this, 'mailpn_meta_box_function'], 'mailpn_rec', 'normal', 'high', ['__block_editor_compatible_meta_box' => true,]);
   }
 
@@ -247,7 +252,8 @@ class MAILPN_Post_Type_Rec {
    *
    * @since    1.0.0
    */
-  public function mailpn_meta_box_function($post) {
+  public function mailpn_meta_box_function($post)
+  {
     foreach ($this->mailpn_get_fields_meta() as $mailpn_field) {
       MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_field, 'post', $post->ID);
     }
@@ -259,34 +265,35 @@ class MAILPN_Post_Type_Rec {
    *
    * @param int $post_id The post ID
    */
-  public function mailpn_save_post($post_id) {
+  public function mailpn_save_post($post_id)
+  {
     // If this is an autosave, our form has not been submitted
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
+      return;
     }
 
     // Check if this is a mailpn_rec post type
     if (get_post_type($post_id) !== 'mailpn_rec') {
-        return;
+      return;
     }
 
     // Check if we have the required fields
     if (!array_key_exists('mailpn_rec_type', $_POST)) {
-        return;
+      return;
     }
 
     // Always require nonce verification
     if (!array_key_exists('mailpn_ajax_nonce', $_POST)) {
-        return;
+      return;
     }
 
     if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mailpn_ajax_nonce'])), 'mailpn-nonce')) {
-        return;
+      return;
     }
 
     // Check the user's permissions
     if (!current_user_can('edit_post', $post_id)) {
-        return;
+      return;
     }
 
     // Now safe to save data
@@ -303,10 +310,10 @@ class MAILPN_Post_Type_Rec {
                 if (array_key_exists('type', $mailpn_field) && $mailpn_field['type'] == 'checkbox') {
                   if (isset($_POST[$mailpn_field['id']])) {
                     update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
-                  }else{
+                  } else {
                     update_post_meta($post_id, $mailpn_field['id'], '');
                   }
-                }else{
+                } else {
                   update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
                 }
 
@@ -321,10 +328,10 @@ class MAILPN_Post_Type_Rec {
                   }
 
                   update_post_meta($post_id, $mailpn_field['id'], $multi_array);
-                }else{
+                } else {
                   update_post_meta($post_id, $mailpn_field['id'], $mailpn_value);
                 }
-                
+
                 break;
               case 'html_multi':
                 foreach ($mailpn_field['html_multi_fields'] as $mailpn_multi_field) {
@@ -342,7 +349,7 @@ class MAILPN_Post_Type_Rec {
 
                     if (!$empty) {
                       update_post_meta($post_id, $mailpn_multi_field['id'], $multi_array);
-                    }else{
+                    } else {
                       update_post_meta($post_id, $mailpn_field['id'], '');
                     }
                   }
@@ -354,14 +361,15 @@ class MAILPN_Post_Type_Rec {
                 break;
             }
           }
-        }else{
+        } else {
           update_post_meta($post_id, $mailpn_field['id'], '');
         }
       }
     }
   }
 
-  public function mailpn_form_save($element_id, $key_value, $mailpn_form_type, $mailpn_form_subtype) {
+  public function mailpn_form_save($element_id, $key_value, $mailpn_form_type, $mailpn_form_subtype)
+  {
     $post_type = !empty(get_post_type($element_id)) ? get_post_type($element_id) : 'mailpn_rec';
 
     if ($post_type == 'mailpn_rec') {
@@ -427,7 +435,8 @@ class MAILPN_Post_Type_Rec {
     }
   }
 
-  public function mailpn_rec_posts_columns($columns) {
+  public function mailpn_rec_posts_columns($columns)
+  {
     unset($columns['author']);
     unset($columns['date']);
 
@@ -440,18 +449,26 @@ class MAILPN_Post_Type_Rec {
     return $columns;
   }
 
-  public function mailpn_rec_posts_custom_column($column_slug, $post_id) {
+  public function mailpn_rec_posts_custom_column($column_slug, $post_id)
+  {
     switch ($column_slug) {
       case 'mailpn_rec_mail_template':
         $mail_id = get_post_meta($post_id, 'mailpn_rec_mail_id', true);
         $mail_type = get_post_meta($post_id, 'mailpn_rec_type', true);
 
         ?>
-          <?php if ($mail_type): ?>
-            <p><a href="<?php echo esc_url(admin_url('post.php?post=' . $mail_id . '&action=edit')); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i> #<?php echo esc_html($mail_id) ?> <?php echo isset(MAILPN_Data::mailpn_mail_types()[$mail_type]) ? esc_html(MAILPN_Data::mailpn_mail_types()[$mail_type]) : esc_html($mail_type); ?></a></p>
-          <?php else: ?>
-            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">mark_email_read</i> <?php esc_html_e('Unset email type.', 'mailpn'); ?></p>
-          <?php endif ?>
+        <?php if ($mail_type): ?>
+          <p><a href="<?php echo esc_url(admin_url('post.php?post=' . $mail_id . '&action=edit')); ?>"
+              class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i
+                class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-mr-10">mark_email_read</i>
+              #<?php echo esc_html($mail_id) ?>
+              <?php echo isset(MAILPN_Data::mailpn_mail_types()[$mail_type]) ? esc_html(MAILPN_Data::mailpn_mail_types()[$mail_type]) : esc_html($mail_type); ?></a>
+          </p>
+        <?php else: ?>
+          <p><i
+              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">mark_email_read</i>
+            <?php esc_html_e('Unset email type.', 'mailpn'); ?></p>
+        <?php endif ?>
         <?php
         break;
       case 'mailpn_rec_to':
@@ -460,33 +477,51 @@ class MAILPN_Post_Type_Rec {
         if (get_userdata($user_id) !== false) {
           $user_info = get_userdata($user_id);
           ?>
-            <p><a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $user_id)); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i> #<?php echo esc_html($user_id); ?> <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?></a> (<a href="mailto:<?php echo esc_html($user_info->user_email); ?>" target="_blank"><?php echo esc_html($user_info->user_email); ?></a>)</p>
+          <p><a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $user_id)); ?>"
+              class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i
+                class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i>
+              #<?php echo esc_html($user_id); ?>
+              <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?></a> (<a
+              href="mailto:<?php echo esc_html($user_info->user_email); ?>"
+              target="_blank"><?php echo esc_html($user_info->user_email); ?></a>)</p>
           <?php
-        }else{
+        } else {
           ?>
-            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">person_off</i> <?php esc_html_e('User removed or email sent by email address.', 'mailpn'); ?></p>
+          <p><i
+              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">person_off</i>
+            <?php esc_html_e('User removed or email sent by email address.', 'mailpn'); ?></p>
           <?php
         }
         break;
       case 'mailpn_rec_date_sent':
         $date_sent = strtotime(get_post($post_id)->post_date);
         ?>
-          <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0 mailpn-mr-10">calendar_today</i> <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $date_sent)); ?></p>
+        <p><i
+            class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0 mailpn-mr-10">calendar_today</i>
+          <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $date_sent)); ?></p>
         <?php
         break;
       case 'mailpn_rec_mail_result':
         $mailpn_rec_mail_result = get_post_meta($post_id, 'mailpn_rec_mail_result', true);
         $mailpn_rec_post_id = get_post_meta($post_id, 'mailpn_rec_post_id', true);
         ?>
-          <?php if ($mailpn_rec_mail_result): ?>
-            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-green mailpn-mr-10">check</i> <?php esc_html_e('Successfully sent.', 'mailpn'); ?></p>
-            
-            <?php if (!empty($mailpn_rec_post_id) && get_post($mailpn_rec_post_id)): ?>
-              <small><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0 mailpn-mr-10">article</i> <?php esc_html_e('Sent from:', 'mailpn'); ?> <a href="<?php echo esc_url(get_edit_post_link($mailpn_rec_post_id)); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold" target="_blank">#<?php echo esc_html($mailpn_rec_post_id); ?> <?php echo esc_html(get_the_title($mailpn_rec_post_id)); ?></a></small>
-            <?php endif ?>
-          <?php else: ?>
-            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">block</i> <?php esc_html_e('Email not sent. Errors have been found.', 'mailpn'); ?></p>
+        <?php if ($mailpn_rec_mail_result): ?>
+          <p><i
+              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-green mailpn-mr-10">check</i>
+            <?php esc_html_e('Successfully sent.', 'mailpn'); ?></p>
+
+          <?php if (!empty($mailpn_rec_post_id) && get_post($mailpn_rec_post_id)): ?>
+            <small><i
+                class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0 mailpn-mr-10">article</i>
+              <?php esc_html_e('Sent from:', 'mailpn'); ?> <a href="<?php echo esc_url(get_edit_post_link($mailpn_rec_post_id)); ?>"
+                class="mailpn-color-main-0 mailpn-font-weight-bold" target="_blank">#<?php echo esc_html($mailpn_rec_post_id); ?>
+                <?php echo esc_html(get_the_title($mailpn_rec_post_id)); ?></a></small>
           <?php endif ?>
+        <?php else: ?>
+          <p><i
+              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">block</i>
+            <?php esc_html_e('Email not sent. Errors have been found.', 'mailpn'); ?></p>
+        <?php endif ?>
         <?php
         break;
       case 'mailpn_rec_opened':
@@ -495,192 +530,199 @@ class MAILPN_Post_Type_Rec {
         $clicks = get_post_meta($post_id, 'mailpn_rec_clicks', true);
         $mail_id = get_post_meta($post_id, 'mailpn_rec_mail_id', true);
         ?>
-          <?php if ($opened): ?>
-            <p>
-              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-green mailpn-mr-10">visibility</i>
-              <?php esc_html_e('Opened', 'mailpn'); ?>
-              <?php if ($opened_at): ?>
-                <br>
-                <small>
-                  <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($opened_at))); ?>
-                </small>
-              <?php endif; ?>
-            </p>
+        <?php if ($opened): ?>
+          <p>
+            <i
+              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-green mailpn-mr-10">visibility</i>
+            <?php esc_html_e('Opened', 'mailpn'); ?>
+            <?php if ($opened_at): ?>
+              <br>
+              <small>
+                <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($opened_at))); ?>
+              </small>
+            <?php endif; ?>
+          </p>
 
-            <?php if (is_array($clicks) && !empty($clicks)): ?>
-              <a href="#" class="mailpn-popup-open" data-mailpn-popup-id="mailpn-click-stats-<?php echo esc_attr($post_id); ?>">
-                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-mr-5">link</i>
-                  <?php 
-                    $total_clicks = count($clicks);
-                    
-                    printf(
-                      _n('%d click', '%d clicks', $total_clicks, 'mailpn'),
-                      $total_clicks
-                    ); 
-                  ?>
-              </a>
-              
-              <div class="mailpn-popup mailpn-popup-size-medium" id="mailpn-click-stats-<?php echo esc_attr($post_id); ?>">
-                <div class="mailpn-popup-content">
-                  <div class="mailpn-p-30">
-                    <h3><?php esc_html_e('Click Statistics', 'mailpn'); ?></h3>
-                  
-                    <div class="mailpn-click-stats-data">
-                      <?php
-                        $unique_urls = [];
-                        $clicks_by_url = [];
-                        foreach ($clicks as $click) {
-                          $url = $click['url'];
-                          if (!isset($clicks_by_url[$url])) {
-                            $clicks_by_url[$url] = 0;
-                            $unique_urls[] = $url;
-                          }
-                          $clicks_by_url[$url]++;
-                        }
-                      ?>
+          <?php if (is_array($clicks) && !empty($clicks)): ?>
+            <a href="#" class="mailpn-popup-open" data-mailpn-popup-id="mailpn-click-stats-<?php echo esc_attr($post_id); ?>">
+              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-mr-5">link</i>
+              <?php
+              $total_clicks = count($clicks);
 
-                      <p><strong><?php esc_html_e('Total Clicks:', 'mailpn'); ?></strong> <?php echo esc_html($total_clicks); ?></p>
-                      <p><strong><?php esc_html_e('Unique URLs:', 'mailpn'); ?></strong> <?php echo esc_html(count($unique_urls)); ?></p>
-                      
-                      <?php if (!empty($clicks_by_url)): ?>
-                        <table class="widefat">
-                          <thead>
+              printf(
+                _n('%d click', '%d clicks', $total_clicks, 'mailpn'),
+                $total_clicks
+              );
+              ?>
+            </a>
+
+            <div class="mailpn-popup mailpn-popup-size-medium" id="mailpn-click-stats-<?php echo esc_attr($post_id); ?>">
+              <div class="mailpn-popup-content">
+                <div class="mailpn-p-30">
+                  <h3><?php esc_html_e('Click Statistics', 'mailpn'); ?></h3>
+
+                  <div class="mailpn-click-stats-data">
+                    <?php
+                    $unique_urls = [];
+                    $clicks_by_url = [];
+                    foreach ($clicks as $click) {
+                      $url = $click['url'];
+                      if (!isset($clicks_by_url[$url])) {
+                        $clicks_by_url[$url] = 0;
+                        $unique_urls[] = $url;
+                      }
+                      $clicks_by_url[$url]++;
+                    }
+                    ?>
+
+                    <p><strong><?php esc_html_e('Total Clicks:', 'mailpn'); ?></strong> <?php echo esc_html($total_clicks); ?></p>
+                    <p><strong><?php esc_html_e('Unique URLs:', 'mailpn'); ?></strong> <?php echo esc_html(count($unique_urls)); ?>
+                    </p>
+
+                    <?php if (!empty($clicks_by_url)): ?>
+                      <table class="widefat">
+                        <thead>
+                          <tr>
+                            <th><?php esc_html_e('URL', 'mailpn'); ?></th>
+                            <th><?php esc_html_e('Clicks', 'mailpn'); ?></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <?php foreach ($clicks_by_url as $url => $count): ?>
                             <tr>
-                              <th><?php esc_html_e('URL', 'mailpn'); ?></th>
-                              <th><?php esc_html_e('Clicks', 'mailpn'); ?></th>
+                              <td><?php echo esc_html($url); ?></td>
+                              <td><?php echo esc_html($count); ?></td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            <?php foreach ($clicks_by_url as $url => $count): ?>
-                              <tr>
-                                <td><?php echo esc_html($url); ?></td>
-                                <td><?php echo esc_html($count); ?></td>
-                              </tr>
-                            <?php endforeach; ?>
-                          </tbody>
-                        </table>
-                      <?php endif; ?>
-                    </div>
+                          <?php endforeach; ?>
+                        </tbody>
+                      </table>
+                    <?php endif; ?>
                   </div>
                 </div>
               </div>
-            <?php endif; ?>
-          <?php else: ?>
-            <p><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">visibility_off</i> <?php esc_html_e('Not opened', 'mailpn'); ?></p>
+            </div>
           <?php endif; ?>
+        <?php else: ?>
+          <p><i
+              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">visibility_off</i>
+            <?php esc_html_e('Not opened', 'mailpn'); ?></p>
+        <?php endif; ?>
         <?php
         break;
     }
   }
 
-  public function mailpn_rec_filter_dropdown() {
+  public function mailpn_rec_filter_dropdown()
+  {
     global $typenow;
     if ($typenow == 'mailpn_rec') {
       // Mail Type Filter
       $selected_type = isset($_GET['mailpn_type_filter']) ? sanitize_text_field($_GET['mailpn_type_filter']) : '';
       ?>
-        <select name="mailpn_type_filter">
-          <option value=""><?php echo esc_html__('All mail types', 'mailpn'); ?></option>
-          <?php foreach (MAILPN_Data::mailpn_mail_types() as $type_key => $type_label): ?>
-            <option value="<?php echo esc_attr($type_key); ?>" <?php echo selected((string)$selected_type, (string)$type_key, false); ?>>
-              <?php echo esc_html($type_label); ?>
+      <select name="mailpn_type_filter">
+        <option value=""><?php echo esc_html__('All mail types', 'mailpn'); ?></option>
+        <?php foreach (MAILPN_Data::mailpn_mail_types() as $type_key => $type_label): ?>
+          <option value="<?php echo esc_attr($type_key); ?>" <?php echo selected((string) $selected_type, (string) $type_key, false); ?>>
+            <?php echo esc_html($type_label); ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+
+      <?php
+      // Mail Template Filter
+      $selected_template = isset($_GET['mailpn_template_filter']) ? sanitize_text_field($_GET['mailpn_template_filter']) : '';
+
+      $args = [
+        'fields' => 'ids',
+        'post_type' => 'mailpn_mail',
+        'posts_per_page' => -1,
+        'orderby' => 'ID',
+        'order' => 'ASC',
+        'post_status' => 'publish',
+      ];
+
+      if (class_exists('Polylang')) {
+        $args['lang'] = pll_current_language('slug');
+      }
+
+      $templates = get_posts($args);
+      ?>
+      <select name="mailpn_template_filter">
+        <option value=""><?php echo esc_html__('All mail templates', 'mailpn'); ?></option>
+
+        <?php if (!empty($templates)) { ?>
+          <?php foreach ($templates as $template): ?>
+            <?php $template = get_post($template); ?>
+            <option value="<?php echo esc_attr($template->ID); ?>" <?php selected((string) $selected_template, (string) $template->ID, false); ?>>
+              #<?php echo esc_html($template->ID); ?>           <?php echo esc_html($template->post_title); ?>
             </option>
           <?php endforeach; ?>
-        </select>
-        
-      <?php
-        // Mail Template Filter
-        $selected_template = isset($_GET['mailpn_template_filter']) ? sanitize_text_field($_GET['mailpn_template_filter']) : '';
-        
-        $args = [
-          'fields' => 'ids',
-          'post_type' => 'mailpn_mail',
-          'posts_per_page' => -1,
-          'orderby' => 'ID',
-          'order' => 'ASC',
-          'post_status' => 'publish',
-        ];
+        <?php } else { ?>
+          <?php error_log('No mail templates found'); ?>
+        <?php } ?>
+      </select>
 
-        if (class_exists('Polylang')) {
-          $args['lang'] = pll_current_language('slug');
-        }
-        
-        $templates = get_posts($args);
-      ?>
-        <select name="mailpn_template_filter">
-          <option value=""><?php echo esc_html__('All mail templates', 'mailpn'); ?></option>
-          
-          <?php if (!empty($templates)) { ?>
-            <?php foreach ($templates as $template): ?>
-              <?php $template = get_post($template); ?>
-              <option value="<?php echo esc_attr($template->ID); ?>" <?php selected((string)$selected_template, (string)$template->ID, false); ?>>
-                #<?php echo esc_html($template->ID); ?> <?php echo esc_html($template->post_title); ?>
-              </option>
-            <?php endforeach; ?>
-          <?php } else { ?> 
-            <?php error_log('No mail templates found'); ?>
-          <?php } ?>
-        </select>
-        
       <?php
-        // Recipient Filter - Only show users who have received emails
-        $selected_recipient = isset($_GET['mailpn_recipient_filter']) ? sanitize_text_field($_GET['mailpn_recipient_filter']) : '';
-        
-        // Get unique user IDs from email records
-        $recipient_user_ids = get_posts([
-          'fields' => 'ids',
-          'post_type' => 'mailpn_rec',
-          'posts_per_page' => -1,
-          'meta_query' => [
-            [
-              'key' => 'mailpn_rec_to',
-              'compare' => 'EXISTS'
-            ]
+      // Recipient Filter - Only show users who have received emails
+      $selected_recipient = isset($_GET['mailpn_recipient_filter']) ? sanitize_text_field($_GET['mailpn_recipient_filter']) : '';
+
+      // Get unique user IDs from email records
+      $recipient_user_ids = get_posts([
+        'fields' => 'ids',
+        'post_type' => 'mailpn_rec',
+        'posts_per_page' => -1,
+        'meta_query' => [
+          [
+            'key' => 'mailpn_rec_to',
+            'compare' => 'EXISTS'
           ]
-        ]);
-        
-        // Get unique user IDs from the meta values
-        $unique_user_ids = [];
-        foreach ($recipient_user_ids as $record_id) {
-          $user_id = get_post_meta($record_id, 'mailpn_rec_to', true);
-          if (!empty($user_id) && !in_array($user_id, $unique_user_ids)) {
-            $unique_user_ids[] = $user_id;
-          }
-        }
-        
-        // Sort user IDs
-        sort($unique_user_ids, SORT_NUMERIC);
-        
-        // Get user data for the unique recipients
-        $recipients = [];
-        if (!empty($unique_user_ids)) {
-          $recipients = get_users([
-            'include' => $unique_user_ids,
-            'fields' => ['ID', 'user_email'],
-            'orderby' => 'ID',
-            'order' => 'ASC'
-          ]);
-        }
-      ?>
-        <select name="mailpn_recipient_filter">
-          <option value=""><?php echo esc_html__('All users', 'mailpn'); ?></option>
+        ]
+      ]);
 
-          <?php foreach ($recipients as $recipient): 
-            $first_name = get_user_meta($recipient->ID, 'first_name', true);
-            $last_name = get_user_meta($recipient->ID, 'last_name', true);
+      // Get unique user IDs from the meta values
+      $unique_user_ids = [];
+      foreach ($recipient_user_ids as $record_id) {
+        $user_id = get_post_meta($record_id, 'mailpn_rec_to', true);
+        if (!empty($user_id) && !in_array($user_id, $unique_user_ids)) {
+          $unique_user_ids[] = $user_id;
+        }
+      }
+
+      // Sort user IDs
+      sort($unique_user_ids, SORT_NUMERIC);
+
+      // Get user data for the unique recipients
+      $recipients = [];
+      if (!empty($unique_user_ids)) {
+        $recipients = get_users([
+          'include' => $unique_user_ids,
+          'fields' => ['ID', 'user_email'],
+          'orderby' => 'ID',
+          'order' => 'ASC'
+        ]);
+      }
+      ?>
+      <select name="mailpn_recipient_filter">
+        <option value=""><?php echo esc_html__('All users', 'mailpn'); ?></option>
+
+        <?php foreach ($recipients as $recipient):
+          $first_name = get_user_meta($recipient->ID, 'first_name', true);
+          $last_name = get_user_meta($recipient->ID, 'last_name', true);
           ?>
-            <option value="<?php echo esc_attr($recipient->ID); ?>" <?php echo selected((string)$selected_recipient, (string)$recipient->ID, false); ?>>
-              #<?php echo esc_html($recipient->ID); ?> <?php echo esc_html($first_name); ?> <?php echo esc_html($last_name); ?> (<?php echo esc_html($recipient->user_email); ?>)
-            </option>
-          <?php endforeach; ?>
-        </select>
+          <option value="<?php echo esc_attr($recipient->ID); ?>" <?php echo selected((string) $selected_recipient, (string) $recipient->ID, false); ?>>
+            #<?php echo esc_html($recipient->ID); ?>         <?php echo esc_html($first_name); ?>         <?php echo esc_html($last_name); ?>
+            (<?php echo esc_html($recipient->user_email); ?>)
+          </option>
+        <?php endforeach; ?>
+      </select>
       <?php
     }
   }
 
-  public function mailpn_rec_filter_query($query) {
+  public function mailpn_rec_filter_query($query)
+  {
     global $pagenow, $typenow;
-    
+
     if (is_admin() && $pagenow == 'edit.php' && $typenow == 'mailpn_rec') {
       $meta_query = [];
 
@@ -721,54 +763,21 @@ class MAILPN_Post_Type_Rec {
   }
 
   /**
-   * Add statistics button to the admin page
-   */
-  public function mailpn_add_statistics_button() {
-    global $typenow;
-    
-    if ($typenow == 'mailpn_rec') {
-      ?>
-      <div class="mailpn-statistics-button-wrapper" style="display: inline-block; margin-left: 10px; float: right;">
-        <button type="button" id="mailpn-statistics-button" class="button button-primary">
-          <i class="material-icons-outlined" style="vertical-align: middle; margin-right: 5px;">analytics</i>
-                      <?php esc_html_e('View Statistics', 'mailpn'); ?>
-        </button>
-      </div>
-      
-      <!-- Statistics Popup -->
-      <div id="mailpn-statistics-popup" class="mailpn-popup mailpn-popup-size-large">
-        <div class="mailpn-popup-content">
-          <div class="mailpn-p-30">
-            <h3><?php esc_html_e('Email Statistics', 'mailpn'); ?></h3>
-            
-            <div id="mailpn-statistics-content">
-              <div class="mailpn-loading">
-                <i class="material-icons-outlined mailpn-spin">refresh</i>
-                <?php esc_html_e('Loading statistics...', 'mailpn'); ?>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <?php
-    }
-  }
-
-  /**
    * Get statistics data via AJAX
    */
-  public function mailpn_get_statistics_data() {
+  public function mailpn_get_statistics_data()
+  {
     // Debug log
     error_log('MAILPN Statistics: AJAX request received');
     error_log('MAILPN Statistics: POST data: ' . print_r($_POST, true));
-    
+
     // Verify nonce
     if (!wp_verify_nonce($_POST['nonce'], 'mailpn_statistics_nonce')) {
       error_log('MAILPN Statistics: Nonce verification failed');
       error_log('MAILPN Statistics: Received nonce: ' . $_POST['nonce']);
       wp_die('Security check failed');
     }
-    
+
     error_log('MAILPN Statistics: Nonce verification passed');
 
     // Get current filters
@@ -786,7 +795,7 @@ class MAILPN_Post_Type_Rec {
     ];
 
     $meta_query = [];
-    
+
     if (!empty($filters['recipient'])) {
       $meta_query[] = [
         'key' => 'mailpn_rec_to',
@@ -816,7 +825,7 @@ class MAILPN_Post_Type_Rec {
 
     $query = new WP_Query($args);
     $records = $query->posts;
-    
+
     error_log('MAILPN Statistics: Found ' . count($records) . ' records');
 
     // Calculate statistics
@@ -839,7 +848,7 @@ class MAILPN_Post_Type_Rec {
       // Count opened emails
       if ($opened) {
         $stats['opened_emails']++;
-        
+
         if ($opened_at) {
           $opened_date = date('Y-m-d', strtotime($opened_at));
           if (!isset($stats['opened_by_date'][$opened_date])) {
@@ -860,11 +869,11 @@ class MAILPN_Post_Type_Rec {
         foreach ($clicks as $click) {
           $stats['total_clicks']++;
           $url = $click['url'];
-          
+
           if (!in_array($url, $stats['unique_urls'])) {
             $stats['unique_urls'][] = $url;
           }
-          
+
           if (!isset($stats['clicks_by_url'][$url])) {
             $stats['clicks_by_url'][$url] = 0;
           }
@@ -880,9 +889,44 @@ class MAILPN_Post_Type_Rec {
     ksort($stats['opened_by_date']);
     ksort($stats['sent_by_date']);
     arsort($stats['clicks_by_url']);
-    
+
     error_log('MAILPN Statistics: Sending response with data: ' . print_r($stats, true));
 
     wp_send_json_success($stats);
+  }
+
+  /**
+   * Add statistics button to the admin page
+   */
+  public function mailpn_add_statistics_button()
+  {
+    global $typenow;
+
+    if ($typenow == 'mailpn_rec') {
+      ?>
+      <div class="mailpn-statistics-button-wrapper" style="display: inline-block; margin-left: 10px; float: right;">
+        <button type="button" id="mailpn-statistics-button" class="button">
+          <i class="material-icons-outlined" style="vertical-align: middle; margin-right: 5px;">analytics</i>
+          <?php esc_html_e('View Statistics', 'mailpn'); ?>
+        </button>
+      </div>
+
+      <!-- Statistics Popup -->
+      <div id="mailpn-statistics-popup" class="mailpn-popup mailpn-popup-size-large">
+        <div class="mailpn-popup-content">
+          <div class="mailpn-p-30">
+            <h3><?php esc_html_e('Email Statistics', 'mailpn'); ?></h3>
+
+            <div id="mailpn-statistics-content">
+              <div class="mailpn-loading">
+                <i class="material-icons-outlined mailpn-spin">refresh</i>
+                <?php esc_html_e('Loading statistics...', 'mailpn'); ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <?php
+    }
   }
 }

@@ -155,13 +155,136 @@ class MAILPN_Ajax {
           $subject = get_the_title($post_id);
           $content = $post->post_content;
           
-          // Enviar el correo de prueba usando el shortcode mailpn-sender
-          $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $user_id . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
-
+          // Limpiar errores anteriores
+          $GLOBALS['mailpn_last_error'] = null;
+          
+          // Verificar configuración básica antes de intentar enviar
+          $config_errors = [];
+          
+          // Verificar configuración SMTP si está habilitado
+          if (get_option('mailpn_smtp_enabled') === 'on') {
+            $smtp_host = get_option('mailpn_smtp_host');
+            $smtp_port = get_option('mailpn_smtp_port');
+            $smtp_auth = get_option('mailpn_smtp_auth');
+            $smtp_username = get_option('mailpn_smtp_username');
+            $smtp_password = get_option('mailpn_smtp_password');
+            
+            if (empty($smtp_host)) {
+              $config_errors[] = 'SMTP Host is empty';
+            }
+            if (empty($smtp_port)) {
+              $config_errors[] = 'SMTP Port is empty';
+            }
+            if ($smtp_auth === 'on') {
+              if (empty($smtp_username)) {
+                $config_errors[] = 'SMTP Username is empty';
+              }
+              if (empty($smtp_password)) {
+                $config_errors[] = 'SMTP Password is empty';
+              }
+            }
+          } else {
+            // Verificar configuración del servidor para envío sin SMTP
+            if (!ini_get('sendmail_path') && !function_exists('mail')) {
+              $config_errors[] = 'No mail server configured (sendmail_path or mail() function)';
+            }
+          }
+          
+          // Si hay errores de configuración, mostrarlos inmediatamente
+          if (!empty($config_errors)) {
+            $error_message = esc_html__('Email configuration error', 'mailpn') . ': ' . implode('; ', $config_errors);
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => $error_message]);exit();
+          }
+          
+          // Habilitar captura de errores de PHPMailer
+          $phpmailer_error = '';
+          $original_error_handler = set_error_handler(function($severity, $message, $file, $line) use (&$phpmailer_error) {
+            if (strpos($message, 'PHPMailer') !== false || strpos($message, 'SMTP') !== false || strpos($message, 'mail') !== false) {
+              $phpmailer_error = $message;
+            }
+            return false; // Let PHP handle the error normally
+          });
+          
+          // Intentar envío directo primero para obtener errores más específicos
+          $test_result = false;
+          $test_error = '';
+          
+          // Configurar PHPMailer para SMTP si está habilitado
+          if (get_option('mailpn_smtp_enabled') === 'on') {
+            add_action('phpmailer_init', function($phpmailer) {
+              $phpmailer->isSMTP();
+              $phpmailer->Host = get_option('mailpn_smtp_host');
+              $phpmailer->Port = get_option('mailpn_smtp_port');
+              $phpmailer->SMTPSecure = get_option('mailpn_smtp_secure');
+              $phpmailer->SMTPAuth = get_option('mailpn_smtp_auth') === 'on';
+              if ($phpmailer->SMTPAuth) {
+                $phpmailer->Username = get_option('mailpn_smtp_username');
+                $phpmailer->Password = get_option('mailpn_smtp_password');
+              }
+              $phpmailer->Timeout = 10; // Timeout corto para pruebas
+            });
+          }
+          
+          // Intentar envío directo con wp_mail
+          $test_result = wp_mail($user_email, 'Test: ' . $subject, 'This is a test email from MAILPN plugin.');
+          
+          // Si el envío directo falla, capturar el error
+          if (!$test_result) {
+            if (isset($GLOBALS['phpmailer']) && is_object($GLOBALS['phpmailer'])) {
+              $test_error = $GLOBALS['phpmailer']->ErrorInfo;
+            }
+          }
+          
+          // Si el envío directo funciona, usar el shortcode completo
+          if ($test_result) {
+            $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $user_id . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
+          } else {
+            $result = false;
+          }
+          
+          // Restaurar el manejador de errores original
+          if ($original_error_handler) {
+            set_error_handler($original_error_handler);
+          }
+          
           if ($result) {
             echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully to', 'mailpn') . ' ' . $user_email]);exit();
           } else {
-            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Failed to send test email', 'mailpn')]);exit();
+            // Construir mensaje de error detallado
+            $error_message = esc_html__('Failed to send test email', 'mailpn');
+            
+            // Usar el error del test directo si está disponible
+            if (!empty($test_error)) {
+              $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $test_error;
+            } else {
+              // Verificar si hay errores capturados por el error handler
+              if (!empty($phpmailer_error)) {
+                $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $phpmailer_error;
+              } else {
+                // Verificar información de error almacenada globalmente
+                if (isset($GLOBALS['mailpn_last_error']) && is_array($GLOBALS['mailpn_last_error'])) {
+                  $last_error = $GLOBALS['mailpn_last_error'];
+                  if (!empty($last_error['message'])) {
+                    $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $last_error['message'];
+                  }
+                } else {
+                  // Verificar errores de PHPMailer directamente
+                  if (isset($GLOBALS['phpmailer']) && is_object($GLOBALS['phpmailer'])) {
+                    $phpmailer_error_info = $GLOBALS['phpmailer']->ErrorInfo;
+                    if (!empty($phpmailer_error_info)) {
+                      $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $phpmailer_error_info;
+                    }
+                  }
+                }
+              }
+            }
+            
+            // Si no hay error específico, agregar información de diagnóstico
+            if ($error_message === esc_html__('Failed to send test email', 'mailpn')) {
+              $error_message = esc_html__('Email sending failed', 'mailpn') . ': Check SMTP settings or server mail configuration';
+            }
+            
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => $error_message]);exit();
           }
           
           break;
@@ -182,5 +305,40 @@ class MAILPN_Ajax {
       ]);
       exit();
     }
-	}
+  }
+  
+  /**
+   * Handle cart timestamp update AJAX request
+   *
+   * @since    1.0.0
+   */
+  public function mailpn_update_cart_timestamp() {
+    // Check if user is logged in
+    if (!is_user_logged_in()) {
+      wp_die();
+    }
+    
+    // Verify nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mailpn-nonce')) {
+      wp_die();
+    }
+    
+    $user_id = get_current_user_id();
+    
+    // Get current cart items
+    if (class_exists('WooCommerce')) {
+      $cart_items = WC()->cart->get_cart();
+      
+      if (!empty($cart_items)) {
+        update_user_meta($user_id, 'mailpn_woocommerce_cart_timestamp', time());
+        update_user_meta($user_id, 'mailpn_woocommerce_cart_items', $cart_items);
+      } else {
+        // Cart is empty, remove cart meta
+        delete_user_meta($user_id, 'mailpn_woocommerce_cart_timestamp');
+        delete_user_meta($user_id, 'mailpn_woocommerce_cart_items');
+      }
+    }
+    
+    wp_die();
+  }
 }

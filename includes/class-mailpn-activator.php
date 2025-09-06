@@ -49,5 +49,8 @@ class MAILPN_Activator {
     }
 
     update_option('mailpn_options_changed', true);
+    
+    // Set transient for redirect (expires in 30 seconds)
+    set_transient('mailpn_activation_redirect', true, 30);
   }
 }

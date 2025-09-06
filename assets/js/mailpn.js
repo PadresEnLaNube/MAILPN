@@ -159,12 +159,25 @@
     }, 6000);
   }
 
-	window.mailpn_get_main_message = function (mailpn_main_message_new_content){
+	window.mailpn_get_main_message = function (mailpn_main_message_new_content, mailpn_message_type){
 		var mailpn_main_message_timeout;
 
 		mailpn_main_message_animate();
 		clearTimeout(mailpn_main_message_timeout);
     var mailpn_main_message = $('#mailpn-main-message');
+    
+    // Limpiar clases de tipo anterior
+    mailpn_main_message.removeClass('mailpn-message-success mailpn-message-error mailpn-message-warning');
+    
+    // Agregar clase según el tipo de mensaje
+    if (mailpn_message_type === 'error') {
+      mailpn_main_message.addClass('mailpn-message-error');
+    } else if (mailpn_message_type === 'success') {
+      mailpn_main_message.addClass('mailpn-message-success');
+    } else if (mailpn_message_type === 'warning') {
+      mailpn_main_message.addClass('mailpn-message-warning');
+    }
+    
     mailpn_main_message.find('#mailpn-main-message-span').html(mailpn_main_message_new_content);
     mailpn_main_message.css('right', '-500px');
     mailpn_main_message.css('display', 'block');
@@ -173,11 +186,19 @@
       'right': 0,
     }, 1000);
 
+    // Ajustar tiempo de visualización según el tipo de mensaje
+    var display_time = 5000; // Default
+    if (mailpn_message_type === 'error') {
+      display_time = 8000; // Mostrar errores por más tiempo
+    } else if (mailpn_message_type === 'success') {
+      display_time = 4000; // Mostrar éxitos por menos tiempo
+    }
+
     mailpn_main_message_timeout = setTimeout(function(){
     	if (mailpn_main_message.is(":visible")) {
       	mailpn_main_message.fadeOut('slow');
     	}
-    }, 5000);
+    }, display_time);
   }
 
   window.mailpn_form_update = function (){
@@ -372,6 +393,45 @@
           }
         });
       }
-    }
+	}
+	
+	// WooCommerce cart tracking
+	if (typeof wc_add_to_cart_params !== 'undefined') {
+		$(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
+			mailpn_update_cart_timestamp();
+		});
+		
+		$(document.body).on('removed_from_cart', function(event, fragments, cart_hash, $button) {
+			mailpn_update_cart_timestamp();
+		});
+		
+		$(document.body).on('cart_item_quantity_updated', function(event, fragments, cart_hash, $button) {
+			mailpn_update_cart_timestamp();
+		});
+	}
+	
+	// Function to update cart timestamp
+	function mailpn_update_cart_timestamp() {
+		if (typeof ajaxurl !== 'undefined') {
+			$.ajax({
+				url: ajaxurl,
+				type: 'POST',
+				data: {
+					action: 'mailpn_update_cart_timestamp',
+					nonce: mailpn_ajax.nonce
+				},
+				success: function(response) {
+					// Cart timestamp updated
+				}
+			});
+		}
+	}
+	
+	// Update cart timestamp on page load if user is logged in
+	$(document).ready(function() {
+		if (typeof wc_cart_fragments_params !== 'undefined' && wc_cart_fragments_params.is_user_logged_in) {
+			mailpn_update_cart_timestamp();
+		}
+	});
   });
 })(jQuery);

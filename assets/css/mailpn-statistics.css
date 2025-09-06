@@ -16,6 +16,11 @@
     max-width: 90vw;
     max-height: 90vh;
     overflow-y: auto;
+    display: none; /* Hidden by default */
+}
+
+.mailpn-statistics-popup.mailpn-popup-active {
+    display: block !important;
 }
 
 .mailpn-statistics-grid {

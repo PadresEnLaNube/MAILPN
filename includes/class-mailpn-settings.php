@@ -877,7 +877,46 @@ class MAILPN_Settings {
 
   public function mailpn_activated_plugin($plugin) {
     if($plugin == 'mailpn/mailpn.php') {
-      wp_safe_redirect(esc_url(admin_url('admin.php?page=mailpn_options')));exit;
+      // Check if this is a fresh activation using transient
+      if (get_transient('mailpn_activation_redirect')) {
+        // Clear the transient
+        delete_transient('mailpn_activation_redirect');
+        // Redirect to settings page
+        wp_safe_redirect(esc_url(admin_url('admin.php?page=mailpn_options')));
+        exit;
+      }
+    }
+  }
+
+  /**
+   * Check for activation redirect on admin init
+   */
+  public function mailpn_admin_init() {
+    // Check if this is a fresh activation using transient
+    if (get_transient('mailpn_activation_redirect')) {
+      // Clear the transient
+      delete_transient('mailpn_activation_redirect');
+      // Redirect to settings page
+      wp_safe_redirect(esc_url(admin_url('admin.php?page=mailpn_options')));
+      exit;
+    }
+  }
+
+  /**
+   * Add admin notice and redirect script for fresh activations (fallback)
+   */
+  public function mailpn_admin_notices() {
+    // Check if this is a fresh activation using transient
+    if (get_transient('mailpn_activation_redirect')) {
+      // Clear the transient immediately to prevent multiple redirects
+      delete_transient('mailpn_activation_redirect');
+      
+      // Add JavaScript redirect
+      ?>
+      <script type="text/javascript">
+        window.location.href = '<?php echo esc_url(admin_url('admin.php?page=mailpn_options')); ?>';
+      </script>
+      <?php
     }
   }
 
