@@ -102,6 +102,10 @@ class MAILPN_Ajax {
           }
       
           $admin_user_id = get_current_user_id();
+          
+          // Enable notifications for the user performing the test
+          update_user_meta($admin_user_id, 'userspn_notifications', 'on');
+          
           $subject = esc_html__('Test email from MAILPN', 'mailpn');
 
           ob_start();
@@ -145,7 +149,10 @@ class MAILPN_Ajax {
           
           $user_email = $user_data->user_email;
           
-          // Obtener el contenido del post
+          // Enable notifications for the user performing the test
+          update_user_meta($user_id, 'userspn_notifications', 'on');
+          
+          // Get the post content
           $post = get_post($post_id);
           if (!$post) {
             echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Post not found', 'mailpn')]);

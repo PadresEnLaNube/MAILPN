@@ -529,11 +529,28 @@ class MAILPN_Settings {
 	 * @since    1.0.0
 	 */
 	public function mailpn_welcome_management_page() {
+		// Auto-activate cron when accessing admin page
+		$cron = new MAILPN_Cron();
+		$cron->cron_schedule();
+		
 		// Handle manual processing for scheduled emails
 		if (isset($_POST['mailpn_process_scheduled']) && wp_verify_nonce($_POST['mailpn_process_scheduled_nonce'], 'mailpn_process_scheduled')) {
 			$cron = new MAILPN_Cron();
 			$cron->mailpn_process_scheduled_welcome_emails();
 			echo '<div class="notice notice-success"><p>' . esc_html__('Scheduled emails processed successfully.', 'mailpn') . '</p></div>';
+		}
+		
+		// Handle manual cron activation
+		if (isset($_POST['mailpn_activate_cron']) && wp_verify_nonce($_POST['mailpn_activate_cron_nonce'], 'mailpn_activate_cron')) {
+			$cron = new MAILPN_Cron();
+			$cron->cron_schedule();
+			echo '<div class="notice notice-success"><p>' . esc_html__('Cron jobs activated successfully.', 'mailpn') . '</p></div>';
+		}
+		
+		// Handle debug log clearing
+		if (isset($_POST['mailpn_clear_debug_log']) && wp_verify_nonce($_POST['mailpn_clear_debug_log_nonce'], 'mailpn_clear_debug_log')) {
+			update_option('mailpn_cron_debug_log', []);
+			echo '<div class="notice notice-success"><p>' . esc_html__('Debug log cleared successfully.', 'mailpn') . '</p></div>';
 		}
 		
 		// Handle manual actions for scheduled emails
@@ -670,6 +687,87 @@ class MAILPN_Settings {
 			<!-- SCHEDULED WELCOME EMAILS SECTION -->
 			<div class="mailpn-scheduled-emails mailpn-mb-30">
 				<h2><?php esc_html_e('Scheduled Welcome Emails', 'mailpn'); ?></h2>
+				
+				<!-- Cron Status Information -->
+				<div class="mailpn-cron-status mailpn-mb-20" style="background: #f9f9f9; padding: 15px; border-left: 4px solid #0073aa; border-radius: 4px;">
+					<h4 style="margin-top: 0;"><?php esc_html_e('Cron Status Information', 'mailpn'); ?></h4>
+					<?php
+					$next_cron = wp_next_scheduled('mailpn_cron_ten_minutes');
+					$current_time = time();
+					$last_cron_run = get_option('mailpn_last_cron_run', 0);
+					?>
+					<p><strong><?php esc_html_e('Next Cron Execution:', 'mailpn'); ?></strong> 
+						<?php if ($next_cron): ?>
+							<?php echo esc_html(date('Y-m-d H:i:s', $next_cron)); ?> 
+							(<?php echo esc_html(human_time_diff($next_cron, $current_time)); ?> <?php esc_html_e('from now', 'mailpn'); ?>)
+						<?php else: ?>
+							<span style="color: #d63638;"><?php esc_html_e('Not scheduled', 'mailpn'); ?></span>
+						<?php endif; ?>
+					</p>
+					<p><strong><?php esc_html_e('Current Time:', 'mailpn'); ?></strong> <?php echo esc_html(date('Y-m-d H:i:s', $current_time)); ?></p>
+					<?php if ($last_cron_run > 0): ?>
+					<p><strong><?php esc_html_e('Last Cron Run:', 'mailpn'); ?></strong> 
+						<?php echo esc_html(date('Y-m-d H:i:s', $last_cron_run)); ?> 
+						(<?php echo esc_html(human_time_diff($last_cron_run, $current_time)); ?> <?php esc_html_e('ago', 'mailpn'); ?>)
+					</p>
+					<?php endif; ?>
+					<p><strong><?php esc_html_e('Cron Status:', 'mailpn'); ?></strong> 
+						<?php if ($next_cron): ?>
+							<span style="color: #00a32a;"><?php esc_html_e('Active', 'mailpn'); ?></span>
+						<?php else: ?>
+							<span style="color: #d63638;"><?php esc_html_e('Inactive or needs attention', 'mailpn'); ?></span>
+						<?php endif; ?>
+					</p>
+					<p><em><?php esc_html_e('Note: Emails are automatically processed every 10 minutes via WordPress cron. If cron is inactive, you can process them manually using the "Process Scheduled Emails" button below.', 'mailpn'); ?></em></p>
+				</div>
+				
+				<!-- Manual Processing Buttons -->
+				<div class="mailpn-manual-processing mailpn-mb-20">
+					<form method="post" style="display: inline;">
+						<?php wp_nonce_field('mailpn_process_scheduled', 'mailpn_process_scheduled_nonce'); ?>
+						<input type="submit" name="mailpn_process_scheduled" class="button button-primary" value="<?php esc_attr_e('Process Scheduled Emails Now', 'mailpn'); ?>">
+					</form>
+					<form method="post" style="display: inline; margin-left: 10px;">
+						<?php wp_nonce_field('mailpn_activate_cron', 'mailpn_activate_cron_nonce'); ?>
+						<input type="submit" name="mailpn_activate_cron" class="button button-secondary" value="<?php esc_attr_e('Activate Cron Jobs', 'mailpn'); ?>">
+					</form>
+					<form method="post" style="display: inline; margin-left: 10px;">
+						<?php wp_nonce_field('mailpn_clear_debug_log', 'mailpn_clear_debug_log_nonce'); ?>
+						<input type="submit" name="mailpn_clear_debug_log" class="button button-secondary" value="<?php esc_attr_e('Clear Debug Log', 'mailpn'); ?>">
+					</form>
+				</div>
+				
+				<!-- Debug Log Section -->
+				<div class="mailpn-debug-log mailpn-mb-20" style="background: #f0f0f0; padding: 15px; border-radius: 4px;">
+					<h4 style="margin-top: 0;"><?php esc_html_e('Cron Debug Log', 'mailpn'); ?></h4>
+					<?php
+					$debug_log = get_option('mailpn_cron_debug_log', []);
+					if (empty($debug_log)) {
+						echo '<p><em>' . esc_html__('No debug logs available yet.', 'mailpn') . '</em></p>';
+					} else {
+						// Show only the last 20 entries
+						$recent_logs = array_slice($debug_log, -20);
+						echo '<div style="max-height: 300px; overflow-y: auto; background: white; padding: 10px; border: 1px solid #ddd;">';
+						foreach (array_reverse($recent_logs) as $log_entry) {
+							echo '<div style="margin-bottom: 5px; font-family: monospace; font-size: 12px;">';
+							echo '<strong>' . esc_html($log_entry['date']) . '</strong> - ';
+							echo esc_html($log_entry['action']);
+							if (isset($log_entry['count'])) {
+								echo ' (Count: ' . esc_html($log_entry['count']) . ')';
+							}
+							if (isset($log_entry['should_send'])) {
+								echo ' (Should send: ' . ($log_entry['should_send'] ? 'YES' : 'NO') . ')';
+							}
+							if (isset($log_entry['queue_result'])) {
+								echo ' (Queue result: ' . ($log_entry['queue_result'] ? 'SUCCESS' : 'FAILED') . ')';
+							}
+							echo '</div>';
+						}
+						echo '</div>';
+					}
+					?>
+				</div>
+				
 				<?php
 				$scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
 				
@@ -681,6 +779,10 @@ class MAILPN_Settings {
 				if (empty($scheduled_emails)) {
 					echo '<p>' . esc_html__('No pending scheduled welcome emails.', 'mailpn') . '</p>';
 				} else {
+					// Sort scheduled emails by scheduled time (closest first)
+					usort($scheduled_emails, function($a, $b) {
+						return $a['scheduled_time'] - $b['scheduled_time'];
+					});
           ?>
 					<table class="wp-list-table widefat fixed striped">
             <thead>
@@ -1659,7 +1761,27 @@ class MAILPN_Settings {
 
     switch (sanitize_text_field($_GET['mailpn_action'])) {
         case 'popup_open':
-          if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'mailpn_action')) {
+          if (!isset($_GET['_wpnonce'])) {
+              wp_die(esc_html__('Security check failed: invalid nonce', 'mailpn'));
+          }
+          
+          $nonce = sanitize_text_field(wp_unslash($_GET['_wpnonce']));
+          $nonce_valid = false;
+          
+          // Try the general nonce first (for backward compatibility)
+          if (wp_verify_nonce($nonce, 'mailpn_action')) {
+              $nonce_valid = true;
+          } else {
+              // Try user-specific nonces - check if it's a user-specific nonce format
+              if (isset($_GET['user_id'])) {
+                  $user_id = absint($_GET['user_id']);
+                  if ($user_id && wp_verify_nonce($nonce, 'mailpn_action_' . $user_id)) {
+                      $nonce_valid = true;
+                  }
+              }
+          }
+          
+          if (!$nonce_valid) {
               wp_die(esc_html__('Security check failed: invalid nonce', 'mailpn'));
           }
           

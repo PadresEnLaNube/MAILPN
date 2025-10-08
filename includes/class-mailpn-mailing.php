@@ -509,7 +509,7 @@ class MAILPN_Mailing {
                         <table align="center">
                           <tr>
                             <td align="center">
-                              <a href="<?php echo esc_url(add_query_arg(['mailpn_action' => 'popup_open', 'mailpn_popup' => 'userspn-profile-popup', 'mailpn_tab' => 'notifications', '_wpnonce' => wp_create_nonce('mailpn_action')], home_url())); ?>"><small><?php esc_html_e('Manage subscription', 'mailpn'); ?></small></a>
+                              <a href="<?php echo esc_url(add_query_arg(['mailpn_action' => 'popup_open', 'mailpn_popup' => 'userspn-profile-popup', 'mailpn_tab' => 'notifications', 'user_id' => $mailpn_user_to, '_wpnonce' => wp_create_nonce('mailpn_action_' . $mailpn_user_to)], home_url())); ?>"><small><?php esc_html_e('Manage subscription', 'mailpn'); ?></small></a>
                             </td>
                             
                             <td></td>
