@@ -348,4 +348,93 @@ class MAILPN_Ajax {
     
     wp_die();
   }
+
+  /**
+   * Mark notification as read
+   *
+   * @since    1.0.0
+   */
+  public function mailpn_mark_notification_read() {
+    // Check if user is logged in
+    if (!is_user_logged_in()) {
+      wp_send_json_error('User not logged in');
+    }
+
+    // Verify nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mailpn_notification_nonce')) {
+      wp_send_json_error('Invalid nonce');
+    }
+
+    $notification_id = intval($_POST['notification_id']);
+    $notifications_manager = new MAILPN_Notifications_Manager();
+    
+    $success = $notifications_manager->mark_notification_read($notification_id);
+    
+    if ($success) {
+      wp_send_json_success('Notification marked as read');
+    } else {
+      wp_send_json_error('Unauthorized access');
+    }
+  }
+
+  /**
+   * Mark notification as unread
+   *
+   * @since    1.0.0
+   */
+  public function mailpn_mark_notification_unread() {
+    // Check if user is logged in
+    if (!is_user_logged_in()) {
+      wp_send_json_error('User not logged in');
+    }
+
+    // Verify nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mailpn_notification_nonce')) {
+      wp_send_json_error('Invalid nonce');
+    }
+
+    $notification_id = intval($_POST['notification_id']);
+    $notifications_manager = new MAILPN_Notifications_Manager();
+    
+    $success = $notifications_manager->mark_notification_unread($notification_id);
+    
+    if ($success) {
+      wp_send_json_success('Notification marked as unread');
+    } else {
+      wp_send_json_error('Unauthorized access');
+    }
+  }
+
+  /**
+   * Mark all notifications as read for a user
+   *
+   * @since    1.0.0
+   */
+  public function mailpn_mark_all_notifications_read() {
+    // Check if user is logged in
+    if (!is_user_logged_in()) {
+      wp_send_json_error('User not logged in');
+    }
+
+    // Verify nonce
+    if (!wp_verify_nonce($_POST['nonce'], 'mailpn_notification_nonce')) {
+      wp_send_json_error('Invalid nonce');
+    }
+
+    $user_id = intval($_POST['user_id']);
+    $current_user_id = get_current_user_id();
+
+    // Verify the user is marking their own notifications
+    if ($user_id != $current_user_id) {
+      wp_send_json_error('Unauthorized access');
+    }
+
+    $notifications_manager = new MAILPN_Notifications_Manager();
+    $marked_count = $notifications_manager->mark_all_notifications_read($user_id);
+
+    wp_send_json_success(array(
+      'message' => 'All notifications marked as read',
+      'count' => $marked_count
+    ));
+  }
 }

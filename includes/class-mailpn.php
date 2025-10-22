@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.3';
+			$this->mailpn_version = '1.0.4';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -241,6 +241,11 @@ class MAILPN {
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-debug.php';
 
+		/**
+		 * The class responsible for notifications management.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-notifications-manager.php';
+
 		$this->mailpn_loader = new MAILPN_Loader();
 	}
 
@@ -403,6 +408,11 @@ class MAILPN {
 		if (class_exists('WooCommerce')) {
 			new MAILPN_WooCommerce();
 		}
+
+		// Add filter for notifications before form
+		$notifications_manager = new MAILPN_Notifications_Manager();
+		$this->mailpn_loader->mailpn_add_filter('userspn_notifications_before_form', $notifications_manager, 'mailpn_render_notifications_before_form', 10, 2);
+		$this->mailpn_loader->mailpn_add_filter('userspn_profile_content', $notifications_manager, 'add_notifications_icon_to_profile', 10, 2);
 	}
 
 	/**
@@ -584,6 +594,9 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax', $plugin_ajax, 'mailpn_ajax_server');
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_update_cart_timestamp', $plugin_ajax, 'mailpn_update_cart_timestamp');
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_nopriv_mailpn_update_cart_timestamp', $plugin_ajax, 'mailpn_update_cart_timestamp');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_mark_notification_read', $plugin_ajax, 'mailpn_mark_notification_read');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_mark_notification_unread', $plugin_ajax, 'mailpn_mark_notification_unread');
+		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_mark_all_notifications_read', $plugin_ajax, 'mailpn_mark_all_notifications_read');
 	}
 
 	/**
@@ -611,6 +624,8 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-debug-cart', $plugin_shortcodes, 'mailpn_debug_cart_shortcode');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-debug-purchase', $plugin_shortcodes, 'mailpn_debug_purchase_shortcode');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-test-cart-processing', $plugin_shortcodes, 'mailpn_test_cart_processing_shortcode');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-notifications', $plugin_shortcodes, 'mailpn_notifications');
+		$this->mailpn_loader->mailpn_add_shortcode('mailpn-notifications-counter', $plugin_shortcodes, 'mailpn_notifications_counter');
 		
 		$plugin_mailing = new MAILPN_Mailing();
 		if (get_option('mailpn_password_new') == 'on') {

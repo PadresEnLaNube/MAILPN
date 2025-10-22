@@ -130,4 +130,28 @@ class MAILPN_Shortcodes {
     <?php
     return ob_get_clean();
   }
+
+  /**
+   * Display email notifications for the current user
+   *
+   * @param array $atts Shortcode attributes
+   * @return string HTML output
+   * @since    1.0.0
+   */
+  public function mailpn_notifications($atts) {
+    $notifications_manager = new MAILPN_Notifications_Manager();
+    return $notifications_manager->display_notifications($atts);
+  }
+
+  /**
+   * Display unread notifications counter
+   *
+   * @param array $atts Shortcode attributes
+   * @return string HTML output
+   * @since    1.0.0
+   */
+  public function mailpn_notifications_counter($atts) {
+    $notifications_manager = new MAILPN_Notifications_Manager();
+    return $notifications_manager->display_notifications_counter($atts);
+  }
 }
