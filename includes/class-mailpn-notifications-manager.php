@@ -99,16 +99,7 @@ class MAILPN_Notifications_Manager {
 
         ob_start();
         ?>
-        <div class="mailpn-notifications-container <?php echo esc_attr($atts['class']); ?>">
-            <div class="mailpn-notifications-header">
-                <h3><?php _e('Email Notifications', 'mailpn'); ?></h3>
-                <div class="mailpn-notifications-actions">
-                    <button type="button" class="mailpn-btn mailpn-btn-small mailpn-mark-all-read" data-user-id="<?php echo esc_attr($current_user_id); ?>">
-                        <?php _e('Mark all as read', 'mailpn'); ?>
-                    </button>
-                </div>
-            </div>
-            
+        <div class="mailpn-notifications-container <?php echo esc_attr($atts['class']); ?>">             
             <div class="mailpn-notifications-list">
                 <?php while ($query->have_posts()) : $query->the_post(); ?>
                     <?php
@@ -663,9 +654,19 @@ class MAILPN_Notifications_Manager {
         ?>
         <div class="mailpn-notifications-after-form">
             <div class="mailpn-notifications-summary">
-                <h4><?php _e('Email Notifications', 'mailpn'); ?></h4>
-                <p><?php printf(_n('You have %d unread email notification', 'You have %d unread email notifications', $unread_count, 'mailpn'), $unread_count); ?></p>
-                <div class="mailpn-notifications-actions">
+                <div class="mailpn-notifications-summary-header">
+                    <h4><?php _e('Email Notifications', 'mailpn'); ?></h4>
+                    <div class="mailpn-notifications-actions">
+                        <div class="mailpn-tooltip">
+                            <button type="button" class="mailpn-notification-icon-btn mark-all-read" data-user-id="<?php echo esc_attr($current_user_id); ?>" title="<?php _e('Mark all as read', 'mailpn'); ?>">
+                                <i class="material-icons-outlined">mark_email_read</i>
+                            </button>
+                            <span class="mailpn-tooltiptext"><?php _e('Mark all as read', 'mailpn'); ?></span>
+                        </div>
+                    </div>
+                </div>
+                <p class="mailpn-notifications-summary-text"><?php printf(_n('You have %d unread email notification', 'You have %d unread email notifications', $unread_count, 'mailpn'), $unread_count); ?></p>
+                <div class="mailpn-notifications-list">
                     <?php echo do_shortcode('[mailpn-notifications limit="5" show_read="false"]'); ?>
                 </div>
             </div>

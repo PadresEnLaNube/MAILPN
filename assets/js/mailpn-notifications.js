@@ -103,12 +103,13 @@ jQuery(document).ready(function($) {
     });
     
     // Mark all notifications as read
-    $('.mailpn-mark-all-read').on('click', function() {
+    $('.mailpn-notification-icon-btn.mark-all-read').on('click', function() {
         var userId = $(this).data('user-id');
         var $button = $(this);
-        var originalText = $button.text();
+        var $icon = $button.find('i');
+        var originalIcon = $icon.text();
         
-        $button.text(mailpn_notifications_ajax.processing_text).prop('disabled', true);
+        $icon.text('hourglass_empty').prop('disabled', true);
         
         $.ajax({
             url: mailpn_notifications_ajax.ajax_url,
@@ -126,10 +127,10 @@ jQuery(document).ready(function($) {
                         $(this).replaceWith('<div class="mailpn-tooltip"><button type="button" class="mailpn-notification-icon-btn mark-unread" data-notification-id="' + notificationId + '" title="' + mailpn_notifications_ajax.mark_unread_text + '"><i class="material-icons-outlined">mark_email_unread</i></button><span class="mailpn-tooltiptext">' + mailpn_notifications_ajax.mark_unread_text + '</span></div>');
                     });
                 }
-                $button.text(originalText).prop('disabled', false);
+                $icon.text(originalIcon).prop('disabled', false);
             },
             error: function() {
-                $button.text(originalText).prop('disabled', false);
+                $icon.text(originalIcon).prop('disabled', false);
             }
         });
     });

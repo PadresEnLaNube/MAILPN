@@ -1862,12 +1862,13 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 }
 
 .mailpn-notifications-actions {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .mailpn-notifications-list {
   max-height: 600px;
-  overflow-y: auto;
 }
 
 .mailpn-notification {
@@ -2063,13 +2064,22 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   padding: 8px;
   border-radius: 50%;
   transition: all 0.3s ease;
-  display: inline-block;
-  margin: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 2px;
+  min-width: 32px;
+  min-height: 32px;
 }
 
 .mailpn-notification-icon-btn:hover {
   background: rgba(0, 0, 0, 0.1);
   transform: scale(1.1);
+}
+
+.mailpn-notification-icon-btn i {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .mailpn-notification-icon-btn.mark-read {
@@ -2082,6 +2092,10 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 
 .mailpn-notification-icon-btn.expand-content {
   color: var(--mailpn-color-main);
+}
+
+.mailpn-notification-icon-btn.mark-all-read {
+  color: #4caf50;
 }
 
 /* Tooltip styles */
@@ -2242,6 +2256,21 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
     flex-direction: column;
     gap: 8px;
   }
+  
+  .mailpn-notifications-actions {
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+  
+  .mailpn-notification-icon-btn {
+    margin: 0 3px;
+    min-width: 28px;
+    min-height: 28px;
+  }
+  
+  .mailpn-notification-icon-btn i {
+    font-size: 16px;
+  }
 }
 
 /* Loading Animation */
@@ -2271,8 +2300,15 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   border-left: 4px solid var(--mailpn-color-main);
 }
 
+.mailpn-notifications-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .mailpn-notifications-summary h4 {
-  margin: 0 0 10px 0;
+  margin: 0;
   color: var(--mailpn-color-main);
   font-size: 1.2em;
   font-weight: 600;
@@ -2281,7 +2317,7 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 .mailpn-notifications-summary p {
   margin: 0 0 15px 0;
   color: #666;
-  font-size: 0.95em;
+  font-size: var(--wp--preset--font-size--small);
 }
 
 .mailpn-notifications-after-form .mailpn-notifications-container {
