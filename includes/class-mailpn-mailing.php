@@ -106,9 +106,7 @@ class MAILPN_Mailing {
       try {
         add_action('phpmailer_init', [$this, 'mailpn_configure_smtp']);
       } catch (Exception $e) {
-        // Log the error and continue with default mail settings
-        error_log('MAILPN SMTP Configuration Error: ' . $e->getMessage());
-        // Don't remove the action - let it try with default settings
+        // Continue with default mail settings silently
       }
     }
 
@@ -179,7 +177,6 @@ class MAILPN_Mailing {
 
     // Validation: Don't send email if content is empty or subject is default
     if (empty(trim($mailpn_content)) || $mailpn_subject === esc_html(__('Mail subject', 'mailpn'))) {
-        error_log('[mailpn] Email not sent: empty content or default subject. Subject: "' . $mailpn_subject . '", Content length: ' . strlen($mailpn_content));
         return false;
     }
 
@@ -301,8 +298,7 @@ class MAILPN_Mailing {
         'smtp_port' => get_option('mailpn_smtp_port')
       ];
 
-      // Log the error
-      error_log('MAILPN Mail Sending Error: ' . implode("\n", $error_details));
+      // Error logging removed
 
       $post_functions->mailpn_insert_post($mailpn_subject, $mailpn_message, '', esc_url($mailpn_subject), 'mailpn_rec', 'publish', 1, 0, [], [], [
         'mailpn_rec_content' => $mailpn_message,
@@ -411,18 +407,12 @@ class MAILPN_Mailing {
       }
 
       // Enable debug output if WP_DEBUG is enabled
-      if (defined('WP_DEBUG') && WP_DEBUG) {
-        $phpmailer->SMTPDebug = 2; // Enable verbose debug output
-        $phpmailer->Debugoutput = function($str, $level) {
-          error_log("PHPMailer Debug: $str");
-        };
-      }
+      // SMTP verbose debug output removed
 
       // Set timeout
       $phpmailer->Timeout = 30; // 30 seconds timeout
 
     } catch (Exception $e) {
-      error_log('MAILPN SMTP Configuration Error: ' . $e->getMessage());
       throw $e; // Re-throw to be caught by the calling function
     }
   }

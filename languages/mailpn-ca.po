@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Filkers WooCommerce Marketing\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-31 14:21+0000\n"
-"PO-Revision-Date: 2025-09-16 15:46+0000\n"
+"PO-Revision-Date: 2025-10-31 09:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: Catalan\n"
 "Language: ca\n"
@@ -21,6 +21,36 @@ msgid_plural "%d clicks"
 msgstr[0] "%d clic"
 msgstr[1] "%d clics"
 
+#: includes/class-mailpn-notifications-manager.php:560
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "Fa %d dia"
+msgstr[1] "Fa %d dies"
+
+#: includes/class-mailpn-notifications-manager.php:557
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "Fa %d hora"
+msgstr[1] "Fa %d hores"
+
+#: includes/class-mailpn-notifications-manager.php:554
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "Fa %d minut"
+msgstr[1] "Fa %d minuts"
+
+#: includes/class-mailpn-notifications-manager.php:281
+#: includes/class-mailpn-notifications-manager.php:712
+#: includes/class-mailpn-notifications-manager.php:715
+msgid "%d unread notification"
+msgid_plural "%d unread notifications"
+msgstr[0] "%d notificació no llegida"
+msgstr[1] "%d notificacions no llegides"
+
+#: includes/class-mailpn-notifications-manager.php:530
+msgid "Abandoned Cart"
+msgstr "Carret abandonat"
+
 #: includes/class-mailpn-data.php:87
 msgid "Abandoned cart email"
 msgstr "Correu electrònic del carretó abandonat"
@@ -30,7 +60,7 @@ msgid "Account verification code"
 msgstr "Codi de verificació del compte"
 
 #: includes/class-mailpn-settings.php:795
-#: includes/class-mailpn-settings.php:1913
+#: includes/class-mailpn-settings.php:1902
 msgid "Actions"
 msgstr "Accions"
 
@@ -38,7 +68,7 @@ msgstr "Accions"
 msgid "Activate Cron Jobs"
 msgstr "Activa les tasques Cron"
 
-#: includes/class-mailpn-settings.php:1991
+#: includes/class-mailpn-settings.php:1980
 msgid "ACTIVE"
 msgstr "ACTIU"
 
@@ -105,7 +135,7 @@ msgstr "Afegeix vídeos"
 msgid "ago"
 msgstr "fa"
 
-#: includes/class-mailpn-ajax.php:304
+#: includes/class-mailpn-ajax.php:310
 msgid "AJAX type not specified"
 msgstr "Tipus AJAX no especificat"
 
@@ -138,15 +168,15 @@ msgstr "Totes les plantilles de correu"
 msgid "All mail types"
 msgstr "Tots els tipus de correu"
 
-#: includes/class-mailpn-mailing.php:500
+#: includes/class-mailpn-mailing.php:490
 msgid "All rights reserved"
 msgstr "Tots els drets reservats"
 
-#: includes/class-mailpn-post-type-rec.php:706
+#: includes/class-mailpn-post-type-rec.php:704
 msgid "All users"
 msgstr "Tots els usuaris"
 
-#: includes/class-mailpn-mailing.php:797
+#: includes/class-mailpn-mailing.php:787
 msgid ""
 "Also there are new contents to be published in the future and sent by email."
 msgstr ""
@@ -167,17 +197,17 @@ msgstr "S'ha produït un error en revisar el correu."
 msgid "An error occurred while resending the errors."
 msgstr "S'ha produït un error en tornar a enviar els errors."
 
-#: includes/class-mailpn-mailing.php:794
+#: includes/class-mailpn-mailing.php:784
 msgid "Any content you publish in the post type selected will be sent."
 msgstr ""
 "S'enviarà qualsevol contingut que publiquis al tipus de publicació "
 "seleccionat."
 
-#: includes/class-mailpn-settings.php:1876
+#: includes/class-mailpn-settings.php:1865
 msgid "Are you sure you want to clear the entire email queue?"
 msgstr "Esteu segur que voleu esborrar tota la cua de correu electrònic?"
 
-#: includes/class-mailpn-settings.php:1963
+#: includes/class-mailpn-settings.php:1952
 msgid ""
 "Are you sure you want to remove all emails for this template from the queue?"
 msgstr ""
@@ -204,7 +234,7 @@ msgstr "Esperant lliurament"
 msgid "Clear Debug Log"
 msgstr "Esborra el registre de depuració"
 
-#: includes/class-mailpn-settings.php:1876
+#: includes/class-mailpn-settings.php:1865
 msgid "Clear Queue"
 msgstr "Esborra la cua"
 
@@ -234,7 +264,7 @@ msgid "Configure your SMTP server settings for sending emails."
 msgstr ""
 "Configura els paràmetres del servidor SMTP per enviar correus electrònics."
 
-#: includes/class-mailpn-mailing.php:1090
+#: includes/class-mailpn-mailing.php:1080
 msgid "Create new password"
 msgstr "Crea una contrasenya nova"
 
@@ -269,6 +299,10 @@ msgstr "Hora actual"
 #: includes/class-mailpn-settings.php:707
 msgid "Current Time:"
 msgstr "Hora actual:"
+
+#: includes/class-mailpn-notifications-manager.php:531
+msgid "Custom Email"
+msgstr "Correu electrònic personalitzat"
 
 #: includes/class-mailpn-settings.php:151
 #: includes/class-mailpn-settings.php:152
@@ -359,27 +393,27 @@ msgstr "Cada setmana"
 msgid "Each year"
 msgstr "Cada any"
 
-#: includes/class-mailpn-forms.php:326 includes/class-mailpn-common.php:155
+#: includes/class-mailpn-common.php:155 includes/class-mailpn-forms.php:326
 msgid "Edit audio"
 msgstr "Edita l'àudio"
 
-#: includes/class-mailpn-forms.php:326 includes/class-mailpn-common.php:156
+#: includes/class-mailpn-common.php:156 includes/class-mailpn-forms.php:326
 msgid "Edit audios"
 msgstr "Edita àudios"
 
-#: includes/class-mailpn-forms.php:347 includes/class-mailpn-common.php:159
+#: includes/class-mailpn-common.php:159 includes/class-mailpn-forms.php:347
 msgid "Edit file"
 msgstr "Edita el fitxer"
 
-#: includes/class-mailpn-forms.php:347 includes/class-mailpn-common.php:160
+#: includes/class-mailpn-common.php:160 includes/class-mailpn-forms.php:347
 msgid "Edit files"
 msgstr "Edita fitxers"
 
-#: includes/class-mailpn-forms.php:284 includes/class-mailpn-common.php:147
+#: includes/class-mailpn-common.php:147 includes/class-mailpn-forms.php:284
 msgid "Edit image"
 msgstr "Edita la imatge"
 
-#: includes/class-mailpn-forms.php:284 includes/class-mailpn-common.php:148
+#: includes/class-mailpn-common.php:148 includes/class-mailpn-forms.php:284
 msgid "Edit images"
 msgstr "Edita imatges"
 
@@ -400,11 +434,11 @@ msgstr "Edita la categoria de registre de correu"
 msgid "Edit Mail template"
 msgstr "Edita la plantilla de correu"
 
-#: includes/class-mailpn-forms.php:305 includes/class-mailpn-common.php:151
+#: includes/class-mailpn-common.php:151 includes/class-mailpn-forms.php:305
 msgid "Edit video"
 msgstr "Edita el vídeo"
 
-#: includes/class-mailpn-forms.php:305 includes/class-mailpn-common.php:152
+#: includes/class-mailpn-common.php:152 includes/class-mailpn-forms.php:305
 msgid "Edit videos"
 msgstr "Edita vídeos"
 
@@ -419,8 +453,8 @@ msgstr ""
 "envieu i feu el seguiment dels correus electrònics directament des del "
 "vostre tauler per atraure el vostre públic com mai abans."
 
+#: includes/class-mailpn-mailing.php:1076
 #: includes/class-mailpn-settings.php:642
-#: includes/class-mailpn-mailing.php:1086
 msgid "Email"
 msgstr "Correu electrònic"
 
@@ -428,7 +462,7 @@ msgstr "Correu electrònic"
 msgid "Email after purchase"
 msgstr "Correu electrònic després de la compra"
 
-#: includes/class-mailpn-ajax.php:195
+#: includes/class-mailpn-ajax.php:202
 msgid "Email configuration error"
 msgstr "Error de configuració del correu electrònic"
 
@@ -501,6 +535,10 @@ msgstr "Mecànica de correu electrònic"
 msgid "Email not sent. Errors have been found."
 msgstr "Correu electrònic no enviat. S'han trobat errors."
 
+#: includes/class-mailpn-notifications-manager.php:654
+msgid "Email Notifications"
+msgstr "Notificacions per correu electrònic"
+
 #: includes/class-mailpn-post-type-rec.php:65
 msgid "Email plain text content"
 msgstr "Contingut de text sense format per correu electrònic"
@@ -510,25 +548,25 @@ msgstr "Contingut de text sense format per correu electrònic"
 msgid "Email Queue"
 msgstr "Cua de correu electrònic"
 
-#: includes/class-mailpn-settings.php:1840
+#: includes/class-mailpn-settings.php:1829
 msgid "Email queue cleared successfully."
 msgstr "La cua de correu electrònic s'ha buidat correctament."
 
-#: includes/class-mailpn-settings.php:1867
+#: includes/class-mailpn-settings.php:1856
 msgid "Email Queue Management"
 msgstr "Gestió de cues de correu electrònic"
 
-#: includes/class-mailpn-settings.php:1834
+#: includes/class-mailpn-settings.php:1823
 msgid "Email queue processed successfully."
 msgstr "La cua de correu electrònic s'ha processat correctament."
 
-#: includes/class-mailpn-settings.php:1859
+#: includes/class-mailpn-settings.php:1848
 msgid "Email removed from queue successfully."
 msgstr "El correu electrònic s'ha eliminat correctament de la cua."
 
-#: includes/class-mailpn-ajax.php:258 includes/class-mailpn-ajax.php:262
-#: includes/class-mailpn-ajax.php:268 includes/class-mailpn-ajax.php:275
-#: includes/class-mailpn-ajax.php:284
+#: includes/class-mailpn-ajax.php:265 includes/class-mailpn-ajax.php:269
+#: includes/class-mailpn-ajax.php:275 includes/class-mailpn-ajax.php:282
+#: includes/class-mailpn-ajax.php:291
 msgid "Email sending failed"
 msgstr "L'enviament del correu electrònic ha fallat"
 
@@ -547,7 +585,7 @@ msgstr ""
 msgid "Email Settings"
 msgstr "Configuració del correu electrònic"
 
-#: includes/class-mailpn-post-type-rec.php:918
+#: includes/class-mailpn-post-type-rec.php:911
 msgid "Email Statistics"
 msgstr "Estadístiques de correu electrònic"
 
@@ -563,7 +601,7 @@ msgstr "Assumpte del correu electrònic"
 
 #: includes/class-mailpn-settings.php:790
 #: includes/class-mailpn-settings.php:875
-#: includes/class-mailpn-settings.php:1910
+#: includes/class-mailpn-settings.php:1899
 msgid "Email Template"
 msgstr "Plantilla de correu electrònic"
 
@@ -577,22 +615,22 @@ msgstr "Plantilles de correu electrònic"
 msgid "Email Text Content"
 msgstr "Contingut de text del correu electrònic"
 
-#: includes/class-mailpn-post-type-mail.php:53
-#: includes/class-mailpn-post-type-mail.php:54
 #: includes/class-mailpn-post-type-rec.php:35
 #: includes/class-mailpn-post-type-rec.php:36
+#: includes/class-mailpn-post-type-mail.php:53
+#: includes/class-mailpn-post-type-mail.php:54
 msgid "Email type"
 msgstr "Tipus de correu electrònic"
 
-#: includes/class-mailpn-settings.php:1956
+#: includes/class-mailpn-settings.php:1945
 msgid "emails"
 msgstr "correus electrònics"
 
-#: includes/class-mailpn-mailing.php:738
+#: includes/class-mailpn-mailing.php:728
 msgid "emails every ten minutes"
 msgstr "correus electrònics cada deu minuts"
 
-#: includes/class-mailpn-settings.php:1998
+#: includes/class-mailpn-settings.php:1987
 msgid "Emails Per Batch"
 msgstr "Correus electrònics per lot"
 
@@ -601,7 +639,7 @@ msgstr "Correus electrònics per lot"
 msgid "Emails sent"
 msgstr "Correus electrònics enviats"
 
-#: includes/class-mailpn-mailing.php:734
+#: includes/class-mailpn-mailing.php:724
 msgid "emails sent"
 msgstr "correus electrònics enviats"
 
@@ -613,7 +651,7 @@ msgstr "Correus electrònics enviats cada dia"
 msgid "Emails sent every ten minutes"
 msgstr "Correus electrònics enviats cada deu minuts"
 
-#: includes/class-mailpn-settings.php:1994
+#: includes/class-mailpn-settings.php:1983
 msgid "Emails Sent Today"
 msgstr "Correus electrònics enviats avui"
 
@@ -666,7 +704,7 @@ msgstr "S'ha produït un error en desar el formulari."
 msgid "Every 10 minutes"
 msgstr "Cada 10 minuts"
 
-#: includes/class-mailpn-settings.php:2003
+#: includes/class-mailpn-settings.php:1992
 msgid "Every 10 minutes via cron job"
 msgstr "Cada 10 minuts mitjançant una tasca cron"
 
@@ -699,22 +737,26 @@ msgstr "Dominis de correus electrònics d'excepció"
 msgid "Exception emails domains list"
 msgstr "Llista de dominis de correus electrònics d'excepció"
 
+#: includes/class-mailpn-notifications-manager.php:170
+msgid "Failed to send"
+msgstr "No s'ha pogut enviar"
+
 #: includes/class-mailpn-settings.php:579
 msgid "Failed to send email."
 msgstr "No s'ha pogut enviar el correu electrònic."
 
-#: includes/class-mailpn-ajax.php:121 includes/class-mailpn-ajax.php:254
-#: includes/class-mailpn-ajax.php:283
+#: includes/class-mailpn-ajax.php:125 includes/class-mailpn-ajax.php:261
+#: includes/class-mailpn-ajax.php:290
 msgid "Failed to send test email"
 msgstr "No s'ha pogut enviar el correu electrònic de prova"
 
-#: includes/class-mailpn-mailing.php:1081
+#: includes/class-mailpn-mailing.php:1071
 msgid "First of all, access the url below and use any of these credentials:"
 msgstr ""
 "En primer lloc, accediu a l'url següent i utilitzeu qualsevol d'aquestes "
 "credencials:"
 
-#: includes/class-mailpn-mailing.php:469
+#: includes/class-mailpn-mailing.php:459
 msgid "Follow us to keep in touch."
 msgstr "Segueix-nos per mantenir-te en contacte."
 
@@ -738,8 +780,8 @@ msgstr "De tant en tant"
 msgid "Go to MailPN templates"
 msgstr "Ves a les plantilles de MailPN"
 
-#: includes/class-mailpn-mailing.php:1043
-#: includes/class-mailpn-mailing.php:1078 includes/class-mailpn-ajax.php:110
+#: includes/class-mailpn-mailing.php:1033
+#: includes/class-mailpn-mailing.php:1068 includes/class-mailpn-ajax.php:114
 msgid "Hello"
 msgstr "hola"
 
@@ -808,7 +850,7 @@ msgstr ""
 "la contrasenya del correu electrònic es personalitzarà amb la vostra "
 "informació."
 
-#: includes/class-mailpn-mailing.php:1055
+#: includes/class-mailpn-mailing.php:1045
 msgid "If you didn't make this request, ignore this email or"
 msgstr "Si no heu fet aquesta sol·licitud, ignoreu aquest correu electrònic o"
 
@@ -883,6 +925,10 @@ msgstr ""
 "Sembla que l'enllaç seguit ha caducat. Si us plau, configureu les vostres "
 "preferències de notificació."
 
+#: includes/class-mailpn-notifications-manager.php:552
+msgid "Just now"
+msgstr "Ara mateix"
+
 #: includes/class-mailpn-dashboard.php:180
 msgid "Last 7 days"
 msgstr "Últims 7 dies"
@@ -895,7 +941,7 @@ msgstr "Darrera execució de Cron:"
 msgid "Legal name"
 msgstr "Nom legal"
 
-#: includes/class-mailpn-post-type-rec.php:923
+#: includes/class-mailpn-post-type-rec.php:916
 msgid "Loading statistics..."
 msgstr "S'estan carregant les estadístiques..."
 
@@ -912,10 +958,10 @@ msgstr "Minúscules i majúscules"
 msgid "Mail addressee"
 msgstr "Destinatari del correu"
 
-#: includes/class-mailpn-post-type-mail.php:308
-#: includes/class-mailpn-post-type-mail.php:309
 #: includes/class-mailpn-post-type-rec.php:141
 #: includes/class-mailpn-post-type-rec.php:142
+#: includes/class-mailpn-post-type-mail.php:308
+#: includes/class-mailpn-post-type-mail.php:309
 msgid "Mail attachments"
 msgstr "Adjunts de correu"
 
@@ -968,7 +1014,7 @@ msgstr "Data d'inici de l'enviament del correu"
 msgid "Mail sending start time"
 msgstr "Hora d'inici de l'enviament del correu"
 
-#: includes/class-mailpn-mailing.php:155 includes/class-mailpn-mailing.php:181
+#: includes/class-mailpn-mailing.php:153 includes/class-mailpn-mailing.php:179
 msgid "Mail subject"
 msgstr "Assumpte del correu"
 
@@ -1013,13 +1059,30 @@ msgstr "Gestor de correu - Configuració de MAILPN"
 msgid "Mailing Manager - PN"
 msgstr "Gestor de correu - PN"
 
-#: includes/class-mailpn-ajax.php:109
+#: includes/class-mailpn-ajax.php:113
 msgid "MAILPN Test email"
 msgstr "Correu electrònic de prova MAILPN"
 
-#: includes/class-mailpn-mailing.php:512
+#: includes/class-mailpn-mailing.php:502
 msgid "Manage subscription"
 msgstr "Gestionar la subscripció"
+
+#: includes/class-mailpn-notifications-manager.php:657
+#: includes/class-mailpn-notifications-manager.php:660
+msgid "Mark all as read"
+msgstr "Marca-ho tot com a llegit"
+
+#: includes/class-mailpn-notifications-manager.php:141
+#: includes/class-mailpn-notifications-manager.php:144
+#: includes/class-mailpn-notifications-manager.php:223
+msgid "Mark as read"
+msgstr "Marca com a llegit"
+
+#: includes/class-mailpn-notifications-manager.php:148
+#: includes/class-mailpn-notifications-manager.php:151
+#: includes/class-mailpn-notifications-manager.php:224
+msgid "Mark as unread"
+msgstr "Marca com a no llegit"
 
 #: includes/class-mailpn-post-type-mail.php:179
 #: includes/class-mailpn-post-type-mail.php:209
@@ -1030,7 +1093,7 @@ msgstr "Minuts"
 msgid "minutes"
 msgstr "minuts"
 
-#: includes/class-mailpn-ajax.php:135
+#: includes/class-mailpn-ajax.php:139
 msgid "Missing required parameters"
 msgstr "Falten paràmetres obligatoris"
 
@@ -1051,8 +1114,8 @@ msgstr "Nova categoria de correu"
 msgid "New Mail Record category"
 msgstr "Nova categoria de registre de correu"
 
-#: includes/class-mailpn-mailing.php:1107
-#: includes/class-mailpn-mailing.php:1109
+#: includes/class-mailpn-mailing.php:1097
+#: includes/class-mailpn-mailing.php:1099
 msgid "New user"
 msgstr "Usuari nou"
 
@@ -1063,6 +1126,10 @@ msgstr "Correu electrònic de benvinguda per a la creació de nous usuaris"
 #: includes/class-mailpn-settings.php:107
 msgid "New users active notifications"
 msgstr "Notificacions actives dels nous usuaris"
+
+#: includes/class-mailpn-notifications-manager.php:526
+msgid "Newsletter"
+msgstr "Butlletí informatiu"
 
 #: includes/class-mailpn-data.php:78
 msgid "Newsletter welcome email"
@@ -1076,15 +1143,19 @@ msgstr "Cron de 10 minuts següents"
 msgid "Next Cron Execution:"
 msgstr "Pròxima execució de cron:"
 
-#: includes/class-mailpn-settings.php:2002
+#: includes/class-mailpn-settings.php:1991
 msgid "Next Processing"
 msgstr "Processament següent"
+
+#: includes/class-mailpn-notifications-manager.php:204
+msgid "No content available"
+msgstr "No hi ha contingut disponible"
 
 #: includes/class-mailpn-settings.php:746
 msgid "No debug logs available yet."
 msgstr "Encara no hi ha registres de depuració disponibles."
 
-#: includes/class-mailpn-settings.php:1898
+#: includes/class-mailpn-settings.php:1887
 msgid "No emails in queue."
 msgstr "No hi ha correus electrònics a la cua."
 
@@ -1103,6 +1174,14 @@ msgid ""
 msgstr ""
 "No hi ha cap correu electrònic de benvinguda del butlletí configurat a "
 "MailPN. Si us plau, creeu-ne un perquè el butlletí funcioni correctament."
+
+#: includes/class-mailpn-notifications-manager.php:96
+msgid "No notifications found."
+msgstr "No s'han trobat notificacions."
+
+#: includes/class-mailpn-notifications-manager.php:730
+msgid "No notifications section found on this page."
+msgstr "No s'ha trobat cap secció de notificacions en aquesta pàgina."
 
 #: includes/class-mailpn-dashboard.php:288
 msgid "No pending scheduled emails."
@@ -1125,7 +1204,11 @@ msgstr ""
 msgid "No roles"
 msgstr "Sense rols"
 
-#: includes/class-mailpn-settings.php:1952
+#: includes/class-mailpn-notifications-manager.php:279
+msgid "No unread notifications"
+msgstr "Sense notificacions no llegides"
+
+#: includes/class-mailpn-settings.php:1941
 msgid "No valid recipients"
 msgstr "No hi ha destinataris vàlids"
 
@@ -1177,11 +1260,11 @@ msgstr "Notificacions"
 msgid "Number (0-9)"
 msgstr "Número (0-9)"
 
-#: includes/class-mailpn-mailing.php:734
+#: includes/class-mailpn-mailing.php:724
 msgid "of"
 msgstr "de"
 
-#: includes/class-mailpn-mailing.php:734
+#: includes/class-mailpn-mailing.php:724
 msgid "of total job"
 msgstr "de la feina total"
 
@@ -1207,6 +1290,7 @@ msgstr "Taxa d'obertura"
 
 #: includes/class-mailpn-post-type-rec.php:447
 #: includes/class-mailpn-post-type-rec.php:537
+#: includes/class-mailpn-notifications-manager.php:177
 msgid "Opened"
 msgstr "Obert"
 
@@ -1217,6 +1301,14 @@ msgstr "Correus electrònics oberts"
 #: includes/class-mailpn-notifications.php:44
 msgid "Oppps! We are not able to unsubscribe your account."
 msgstr "Opps! No podem cancel·lar la subscripció del vostre compte."
+
+#: includes/class-mailpn-notifications-manager.php:529
+msgid "Order Complete"
+msgstr "Comanda completada"
+
+#: includes/class-mailpn-notifications-manager.php:528
+msgid "Order Confirmation"
+msgstr "Confirmació de la comanda"
 
 #: includes/class-mailpn-forms.php:395 includes/class-mailpn-forms.php:411
 msgid "Order element"
@@ -1256,7 +1348,11 @@ msgstr "Categoria del registre del correu dels pares:"
 msgid "Parent Mail template"
 msgstr "Plantilla de correu dels pares"
 
-#: includes/class-mailpn-mailing.php:1063
+#: includes/class-mailpn-notifications-manager.php:527
+msgid "Password Reset"
+msgstr "Restabliment de contrasenya"
+
+#: includes/class-mailpn-mailing.php:1053
 msgid "Password reset"
 msgstr "Restableix la contrasenya"
 
@@ -1268,7 +1364,7 @@ msgstr "Correu electrònic de restabliment de contrasenya"
 msgid "Password strength checker"
 msgstr "Verificador de seguretat de la contrasenya"
 
-#: includes/class-mailpn-settings.php:1991
+#: includes/class-mailpn-settings.php:1980
 msgid "PAUSED"
 msgstr "EN PAUSA"
 
@@ -1276,7 +1372,7 @@ msgstr "EN PAUSA"
 msgid "Pending"
 msgstr "Pendent"
 
-#: includes/class-mailpn-settings.php:1883
+#: includes/class-mailpn-settings.php:1872
 msgid "Pending Email Queue"
 msgstr "Cua de correus electrònics pendents"
 
@@ -1301,7 +1397,7 @@ msgstr "Correu electrònic de temps periòdic"
 msgid "Please create a new user or login to save the information."
 msgstr "Creeu un usuari nou o inicieu sessió per desar la informació."
 
-#: includes/class-mailpn-mailing.php:1055
+#: includes/class-mailpn-mailing.php:1045
 msgid "please report it"
 msgstr "si us plau, denuncieu-ho"
 
@@ -1321,7 +1417,7 @@ msgstr ""
 "La creació de la publicació ha fallat, no s'ha pogut trobar la publicació "
 "original:"
 
-#: includes/class-mailpn-ajax.php:151
+#: includes/class-mailpn-ajax.php:158
 msgid "Post not found"
 msgstr "Publicació no trobada"
 
@@ -1349,7 +1445,7 @@ msgstr "Plantilla de correu"
 msgid "Process Pending Registrations"
 msgstr "Processar els registres pendents"
 
-#: includes/class-mailpn-settings.php:1872
+#: includes/class-mailpn-settings.php:1861
 msgid "Process Queue Now"
 msgstr "Processa la cua ara"
 
@@ -1365,7 +1461,11 @@ msgstr "Processa els correus electrònics programats ara"
 msgid "Processed"
 msgstr "Processat"
 
-#: includes/class-mailpn-mailing.php:742
+#: includes/class-mailpn-notifications-manager.php:225
+msgid "Processing..."
+msgstr "Processant..."
+
+#: includes/class-mailpn-mailing.php:732
 msgid "Publish or update to begin sending."
 msgstr "Publica o actualitza per començar a enviar."
 
@@ -1373,15 +1473,15 @@ msgstr "Publica o actualitza per començar a enviar."
 msgid "Published content email"
 msgstr "Correu electrònic de contingut publicat"
 
-#: includes/class-mailpn-settings.php:1912
+#: includes/class-mailpn-settings.php:1901
 msgid "Queue Count"
 msgstr "Nombre de cues"
 
-#: includes/class-mailpn-settings.php:1979
+#: includes/class-mailpn-settings.php:1968
 msgid "Queue Statistics"
 msgstr "Estadístiques de cua"
 
-#: includes/class-mailpn-settings.php:1990
+#: includes/class-mailpn-settings.php:1979
 msgid "Queue Status"
 msgstr "Estat de la cua"
 
@@ -1415,7 +1515,7 @@ msgstr "Correu electrònic del destinatari"
 msgid "Recipient email address"
 msgstr "Adreça electrònica del destinatari"
 
-#: includes/class-mailpn-settings.php:1911
+#: includes/class-mailpn-settings.php:1900
 msgid "Recipients"
 msgstr "Destinataris"
 
@@ -1427,7 +1527,7 @@ msgstr "Hora de registre"
 msgid "Remove"
 msgstr "Elimina"
 
-#: includes/class-mailpn-settings.php:1963
+#: includes/class-mailpn-settings.php:1952
 msgid "Remove All"
 msgstr "Elimina-ho tot"
 
@@ -1439,11 +1539,11 @@ msgstr "Elimina l'element"
 msgid "Required field"
 msgstr "Camp obligatori"
 
-#: includes/class-mailpn-mailing.php:716
+#: includes/class-mailpn-mailing.php:706
 msgid "Resend emails"
 msgstr "Reenviar correus electrònics"
 
-#: includes/class-mailpn-mailing.php:1049
+#: includes/class-mailpn-mailing.php:1039
 msgid "Reset your password"
 msgstr "Restableix la teva contrasenya"
 
@@ -1510,7 +1610,8 @@ msgstr "Cerca registres de correu"
 msgid "Search Mail templates"
 msgstr "Cerca plantilles de correu"
 
-#: includes/class-mailpn-settings.php:1765
+#: includes/class-mailpn-settings.php:1734
+#: includes/class-mailpn-settings.php:1754
 msgid "Security check failed: invalid nonce"
 msgstr "Comprovació de seguretat fallida: noce no vàlid"
 
@@ -1593,11 +1694,11 @@ msgstr "Envia errors al compte d'administrador"
 msgid "Send Now"
 msgstr "Envia ara"
 
-#: includes/class-mailpn-mailing.php:764 includes/class-mailpn-mailing.php:1123
+#: includes/class-mailpn-mailing.php:754 includes/class-mailpn-mailing.php:1113
 msgid "Send test email"
 msgstr "Enviar correu electrònic de prova"
 
-#: includes/class-mailpn-mailing.php:738
+#: includes/class-mailpn-mailing.php:728
 msgid "Sending"
 msgstr "Enviament"
 
@@ -1617,6 +1718,10 @@ msgstr "Correus electrònics enviats"
 #: includes/class-mailpn-post-type-rec.php:516
 msgid "Sent from:"
 msgstr "Enviat des de:"
+
+#: includes/class-mailpn-notifications-manager.php:167
+msgid "Sent successfully"
+msgstr "Enviat correctament"
 
 #: includes/class-mailpn-settings.php:878
 msgid "Sent Time"
@@ -1666,7 +1771,7 @@ msgstr ""
 msgid "Set the way in which the emails will be sent."
 msgstr "Estableix la manera com s'enviaran els correus electrònics."
 
-#: includes/class-mailpn-settings.php:1818
+#: includes/class-mailpn-settings.php:1807
 msgid "Settings"
 msgstr "Configuració"
 
@@ -1698,7 +1803,7 @@ msgstr "Seguretat SMTP"
 msgid "SMTP Username"
 msgstr "Nom d'usuari SMTP"
 
-#: includes/class-mailpn-mailing.php:702
+#: includes/class-mailpn-mailing.php:692
 msgid ""
 "Some errors have occurred. Please check if contacts have their notifications "
 "enabled."
@@ -1706,8 +1811,8 @@ msgstr ""
 "S'han produït alguns errors. Comproveu si els contactes tenen les "
 "notificacions activades."
 
-#: includes/class-mailpn-post-type-mail.php:392
 #: includes/class-mailpn-post-type-rec.php:231
+#: includes/class-mailpn-post-type-mail.php:392
 msgid "Sorry, you are not allowed to access this endpoint."
 msgstr "Ho sentim, no teniu permís per accedir a aquest punt final."
 
@@ -1770,20 +1875,20 @@ msgstr "Correu electrònic de prova"
 msgid "Test email content"
 msgstr "Prova el contingut del correu electrònic"
 
-#: includes/class-mailpn-ajax.php:105
+#: includes/class-mailpn-ajax.php:109
 msgid "Test email from MAILPN"
 msgstr "Correu electrònic de prova de MAILPN"
 
-#: includes/class-mailpn-ajax.php:119
+#: includes/class-mailpn-ajax.php:123
 msgid "Test email sent successfully"
 msgstr "Correu electrònic de prova enviat correctament"
 
-#: includes/class-mailpn-ajax.php:251
+#: includes/class-mailpn-ajax.php:258
 msgid "Test email sent successfully to"
 msgstr "Correu electrònic de prova enviat correctament a"
 
-#: includes/class-mailpn-mailing.php:1057
-#: includes/class-mailpn-mailing.php:1096
+#: includes/class-mailpn-mailing.php:1047
+#: includes/class-mailpn-mailing.php:1086
 msgid "Thank you!"
 msgstr "Gràcies!"
 
@@ -1797,7 +1902,7 @@ msgstr ""
 msgid "The hostname of your SMTP server."
 msgstr "El nom d'amfitrió del vostre servidor SMTP."
 
-#: includes/class-mailpn-mailing.php:746
+#: includes/class-mailpn-mailing.php:736
 msgid "The mail queue is paused. Please check the mail queue settings."
 msgstr ""
 "La cua de correu està en pausa. Si us plau, comproveu la configuració de la "
@@ -1844,7 +1949,7 @@ msgstr "El tipus de seguretat per a la vostra connexió SMTP."
 msgid "The time unit for the delay period."
 msgstr "La unitat de temps per al període de retard."
 
-#: includes/class-mailpn-settings.php:1884
+#: includes/class-mailpn-settings.php:1873
 msgid ""
 "These are emails waiting to be sent. They will be processed automatically "
 "every 10 minutes or you can process them manually."
@@ -1861,16 +1966,16 @@ msgstr ""
 "electrònics de benvinguda. Es processaran automàticament quan els rols "
 "d'usuari estiguin correctament definits."
 
-#: includes/class-mailpn-ajax.php:111
+#: includes/class-mailpn-ajax.php:115
 msgid "This is a test email sent from the MAILPN plugin."
 msgstr ""
 "Aquest és un correu electrònic de prova enviat des del connector MAILPN."
 
-#: includes/class-mailpn-mailing.php:721
+#: includes/class-mailpn-mailing.php:711
 msgid "This mail has already been sent."
 msgstr "Aquest correu ja s'ha enviat."
 
-#: includes/class-mailpn-mailing.php:731
+#: includes/class-mailpn-mailing.php:721
 msgid "This mail is being sent."
 msgstr "Aquest correu s'està enviant."
 
@@ -1880,7 +1985,7 @@ msgstr ""
 "Aquesta secció d'opcions estableix la informació que es mostrarà el correu "
 "electrònic."
 
-#: includes/class-mailpn-mailing.php:768
+#: includes/class-mailpn-mailing.php:758
 msgid ""
 "This will send a test email to your current email address using the same "
 "template and content as this mail campaign, bypassing all restrictions and "
@@ -1915,7 +2020,7 @@ msgstr "Clics totals:"
 msgid "Total emails"
 msgstr "Total de correus electrònics"
 
-#: includes/class-mailpn-settings.php:1905
+#: includes/class-mailpn-settings.php:1894
 msgid "Total emails in queue: %d"
 msgstr "Total de correus electrònics a la cua: %d"
 
@@ -1942,7 +2047,7 @@ msgstr ""
 msgid "Type"
 msgstr "Tipus"
 
-#: includes/class-mailpn-ajax.php:100 includes/class-mailpn-ajax.php:127
+#: includes/class-mailpn-ajax.php:100 includes/class-mailpn-ajax.php:131
 msgid "Unauthorized access"
 msgstr "Accés no autoritzat"
 
@@ -1959,7 +2064,7 @@ msgstr "URL úniques:"
 msgid "Unknown"
 msgstr "Desconegut"
 
-#: includes/class-mailpn-ajax.php:295
+#: includes/class-mailpn-ajax.php:302
 msgid "Unknown AJAX type"
 msgstr "Tipus AJAX desconegut"
 
@@ -1968,7 +2073,7 @@ msgstr "Tipus AJAX desconegut"
 msgid "Unknown Email"
 msgstr "Correu electrònic desconegut"
 
-#: includes/class-mailpn-settings.php:1921
+#: includes/class-mailpn-settings.php:1910
 msgid "Unknown Template"
 msgstr "Plantilla desconeguda"
 
@@ -1979,12 +2084,12 @@ msgstr "Plantilla desconeguda"
 msgid "Unknown User"
 msgstr "Usuari desconegut"
 
-#: includes/class-mailpn-post-type-mail.php:579
 #: includes/class-mailpn-post-type-rec.php:470
+#: includes/class-mailpn-post-type-mail.php:579
 msgid "Unset email type."
 msgstr "Tipus de correu electrònic no definit."
 
-#: includes/class-mailpn-mailing.php:843
+#: includes/class-mailpn-mailing.php:833
 msgid "Unsubscribe"
 msgstr "Cancel·la la subscripció"
 
@@ -2016,7 +2121,7 @@ msgstr "URL"
 msgid "User"
 msgstr "Usuari"
 
-#: includes/class-mailpn-settings.php:655 includes/class-mailpn-ajax.php:142
+#: includes/class-mailpn-settings.php:655 includes/class-mailpn-ajax.php:146
 msgid "User not found"
 msgstr "No s'ha trobat l'usuari"
 
@@ -2029,7 +2134,7 @@ msgstr ""
 msgid "User Roles"
 msgstr "Rols d'usuari"
 
-#: includes/class-mailpn-mailing.php:1085
+#: includes/class-mailpn-mailing.php:1075
 msgid "Username"
 msgstr "Nom d'usuari"
 
@@ -2038,7 +2143,12 @@ msgstr "Nom d'usuari"
 msgid "Users receiving the email"
 msgstr "Usuaris que reben el correu electrònic"
 
-#: includes/class-mailpn-mailing.php:752
+#: includes/class-mailpn-notifications-manager.php:133
+#: includes/class-mailpn-notifications-manager.php:136
+msgid "View content"
+msgstr "Veure contingut"
+
+#: includes/class-mailpn-mailing.php:742
 msgid "View latest submissions"
 msgstr "Veure els últims enviaments"
 
@@ -2050,11 +2160,11 @@ msgstr "Veure el registre de correu"
 msgid "View Mail template"
 msgstr "Veure plantilla de correu"
 
-#: includes/class-mailpn-post-type-rec.php:910
+#: includes/class-mailpn-post-type-rec.php:903
 msgid "View Statistics"
 msgstr "Veure estadístiques"
 
-#: includes/class-mailpn-mailing.php:1045
+#: includes/class-mailpn-mailing.php:1035
 msgid ""
 "We have received a request to reset the password for your account. If you "
 "made this request, click the link below to change your password:"
@@ -2066,6 +2176,10 @@ msgstr ""
 #: includes/class-mailpn-post-type-mail.php:89
 msgid "Weeks"
 msgstr "Setmanes"
+
+#: includes/class-mailpn-notifications-manager.php:525
+msgid "Welcome Email"
+msgstr "Correu electrònic de benvinguda"
 
 #: includes/class-mailpn-data.php:77
 msgid "Welcome email"
@@ -2125,7 +2239,13 @@ msgstr ""
 "Podeu definir les adreces que s'exclouran de l'enviament de correus "
 "electrònics."
 
-#: includes/class-mailpn-mailing.php:1080
+#: includes/class-mailpn-notifications-manager.php:664
+msgid "You have %d unread email notification"
+msgid_plural "You have %d unread email notifications"
+msgstr[0] "Tens %d notificació de correu electrònic sense llegir"
+msgstr[1] "Tens %d notificacions de correu electrònic sense llegir"
+
+#: includes/class-mailpn-mailing.php:1070
 msgid ""
 "You have a new user created on our platform. Please create a strong password "
 "to login."
@@ -2133,7 +2253,11 @@ msgstr ""
 "Tens un usuari nou creat a la nostra plataforma. Creeu una contrasenya "
 "segura per iniciar sessió."
 
-#: includes/class-mailpn-mailing.php:505
+#: includes/class-mailpn-notifications-manager.php:25
+msgid "You must be logged in to view notifications."
+msgstr "Heu d'iniciar la sessió per veure les notificacions."
+
+#: includes/class-mailpn-mailing.php:495
 msgid "You receive this email for your relationship with the project."
 msgstr "Rebeu aquest correu electrònic per la vostra relació amb el projecte."
 

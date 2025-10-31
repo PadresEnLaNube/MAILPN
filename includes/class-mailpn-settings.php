@@ -1077,18 +1077,17 @@ class MAILPN_Settings {
   public function mailpn_is_email_excepted($user_id) {
     $user = get_userdata($user_id);
     if (!$user) {
-      error_log("MAILPN: User $user_id doesn't exist, cannot check email exceptions");
       return false;
     }
     
     $user_email = $user->user_email;
-    error_log("MAILPN: Checking email exceptions for user $user_id with email: $user_email");
+    
     
     $mailpn_exception_emails = get_option('mailpn_exception_emails');
     $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
     $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
 
-    error_log("MAILPN: Exception settings - Emails: $mailpn_exception_emails, Domains: $mailpn_exception_emails_domains, Addresses: $mailpn_exception_emails_addresses");
+    
 
     // Exception domains and emails check
     if ($mailpn_exception_emails == 'on') {
@@ -1096,15 +1095,11 @@ class MAILPN_Settings {
         $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
 
         if (!empty($mailpn_exception_emails_domain)) {
-          error_log("MAILPN: Checking against domain exceptions: " . implode(', ', $mailpn_exception_emails_domain));
           foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
             if (strpos($user_email, $mailpn_exception_email_domain) !== false) {
-              error_log("MAILPN: User $user_id email $user_email matches domain exception: $mailpn_exception_email_domain");
               return true;
             }
           }
-        } else {
-          error_log("MAILPN: Domain exceptions enabled but no domains configured");
         }
       }
 
@@ -1112,20 +1107,13 @@ class MAILPN_Settings {
         $mailpn_exception_emails_address = get_option('mailpn_exception_emails_address');
 
         if (!empty($mailpn_exception_emails_address)) {
-          error_log("MAILPN: Checking against email exceptions: " . implode(', ', $mailpn_exception_emails_address));
           if (in_array($user_email, $mailpn_exception_emails_address)) {
-            error_log("MAILPN: User $user_id email $user_email matches email exception");
             return true;
           }
-        } else {
-          error_log("MAILPN: Email exceptions enabled but no emails configured");
         }
       }
-    } else {
-      error_log("MAILPN: Email exceptions are disabled");
     }
 
-    error_log("MAILPN: User $user_id email $user_email is not in exception list");
     return false;
   }
 
@@ -1145,11 +1133,10 @@ class MAILPN_Settings {
     }
     
     if (empty($pending_registrations)) {
-      error_log("MAILPN: No pending registrations to process");
       return;
     }
     
-    error_log("MAILPN: Processing " . count($pending_registrations) . " pending registrations");
+    
     
     $updated_pending_registrations = [];
     $processed_count = 0;
@@ -1168,18 +1155,17 @@ class MAILPN_Settings {
       
       // If user doesn't exist, discard this registration
       if (!$user) {
-        error_log("MAILPN: User $reg_user_id doesn't exist, discarding registration");
         $skipped_count++;
         continue;
       }
       
-      error_log("MAILPN: Processing registration for user $reg_user_id (email: {$user->user_email})");
+      
       
       // If user has the newsletter subscriber role, mark as processed and keep
       if (in_array('userspn_newsletter_subscriber', $user->roles)) {
         $registration['processed'] = true;
         $updated_pending_registrations[] = $registration;
-        error_log("MAILPN: User $reg_user_id has newsletter subscriber role, marking as processed");
+        
         $processed_count++;
         continue;
       }
@@ -1188,7 +1174,7 @@ class MAILPN_Settings {
       if ($this->mailpn_is_email_excepted($reg_user_id)) {
         $registration['processed'] = true;
         $updated_pending_registrations[] = $registration;
-        error_log("MAILPN: User $reg_user_id email is in exception list, marking as processed");
+        
         $processed_count++;
         continue;
       }
@@ -1199,10 +1185,9 @@ class MAILPN_Settings {
       // If an email was sent, mark as processed
       if ($sent) {
         $registration['processed'] = true;
-        error_log("MAILPN: Successfully processed welcome emails for user $reg_user_id");
+        
         $processed_count++;
       } else {
-        error_log("MAILPN: Failed to send welcome emails for user $reg_user_id - will retry later");
         $skipped_count++;
       }
       
@@ -1210,7 +1195,7 @@ class MAILPN_Settings {
       $updated_pending_registrations[] = $registration;
     }
     
-    error_log("MAILPN: Processing complete - Processed: $processed_count, Skipped: $skipped_count, Total: " . count($updated_pending_registrations));
+    
     
     update_option('mailpn_pending_welcome_registrations', $updated_pending_registrations);
   }
@@ -1301,7 +1286,7 @@ class MAILPN_Settings {
   public function mailpn_trigger_welcome_emails($user_id) {
     // Check if user's email is in the exception lists
     if ($this->mailpn_is_email_excepted($user_id)) {
-      error_log("MAILPN: User $user_id email is in exception list, skipping welcome emails");
+      
       return false;
     }
     
@@ -1321,11 +1306,10 @@ class MAILPN_Settings {
     ]);
     
     if (empty($welcome_emails)) {
-      error_log("MAILPN: No welcome email templates found for user $user_id");
       return false;
     }
     
-    error_log("MAILPN: Found " . count($welcome_emails) . " welcome email templates for user $user_id");
+    
     
     $mailing_plugin = new MAILPN_Mailing();
     $email_queued = false;
@@ -1336,12 +1320,11 @@ class MAILPN_Settings {
       $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
       $should_send = false;
       
-      error_log("MAILPN: Email $email_id has distribution: $distribution");
+      
       
       switch ($distribution) {
         case 'public':
           $should_send = true;
-          error_log("MAILPN: Public distribution - should send to user $user_id");
           break;
         case 'private_role':
           $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
@@ -1349,28 +1332,21 @@ class MAILPN_Settings {
             foreach ($user_roles as $role) {
               if (in_array($role, $user->roles)) {
                 $should_send = true;
-                error_log("MAILPN: User $user_id has role $role - should send email $email_id");
                 break;
               }
             }
-          }
-          if (!$should_send) {
-            error_log("MAILPN: User $user_id roles (" . implode(',', $user->roles) . ") don't match email $email_id roles (" . implode(',', $user_roles) . ")");
           }
           break;
         case 'private_user':
           $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
           if (!empty($user_list) && in_array($user_id, $user_list)) {
             $should_send = true;
-            error_log("MAILPN: User $user_id is in private user list - should send email $email_id");
           } else {
-            error_log("MAILPN: User $user_id is not in private user list for email $email_id");
           }
           break;
       }
       
       if (!$should_send) {
-        error_log("MAILPN: Skipping email $email_id for user $user_id - distribution mismatch");
         continue;
       }
       
@@ -1380,16 +1356,13 @@ class MAILPN_Settings {
       if ($delay_enabled === 'on') {
         // Schedule the email for delayed sending
         $this->mailpn_schedule_delayed_welcome_email($email_id, $user_id);
-        error_log("MAILPN: Scheduled delayed welcome email $email_id for user $user_id");
       } else {
         // Send immediately
         $result = $mailing_plugin->mailpn_queue_add($email_id, $user_id);
-        error_log("MAILPN: Added welcome email $email_id to queue for user $user_id - result: " . ($result ? 'success' : 'failed'));
       }
       $email_queued = true;
     }
     
-    error_log("MAILPN: Final result for user $user_id - email_queued: " . ($email_queued ? 'true' : 'false'));
     return $email_queued;
   }
   
@@ -1400,38 +1373,35 @@ class MAILPN_Settings {
    * @param int $user_id The user ID
    */
   public function mailpn_schedule_delayed_welcome_email($email_id, $user_id) {
-    error_log("MAILPN: Scheduling delayed welcome email - Email ID: $email_id, User ID: $user_id");
+    
     
     // Check if user's email is in the exception lists
     if ($this->mailpn_is_email_excepted($user_id)) {
-      error_log("MAILPN: User $user_id email is in exception list, skipping delayed email scheduling");
       return;
     }
     
     $delay_value = get_post_meta($email_id, 'mailpn_welcome_delay_value', true);
     $delay_unit = get_post_meta($email_id, 'mailpn_welcome_delay_unit', true);
     
-    error_log("MAILPN: Delay settings - Value: $delay_value, Unit: $delay_unit");
+    
     
     if (empty($delay_value) || empty($delay_unit)) {
-      error_log("MAILPN: Delay settings are empty, skipping delayed email scheduling");
       return;
     }
     
     // Calculate the delay in seconds
     $delay_seconds = $this->mailpn_calculate_delay_seconds($delay_value, $delay_unit);
     
-    error_log("MAILPN: Calculated delay: $delay_seconds seconds");
+    
     
     if ($delay_seconds <= 0) {
-      error_log("MAILPN: Invalid delay calculated, skipping delayed email scheduling");
       return;
     }
     
     // Calculate the scheduled time
     $scheduled_time = time() + $delay_seconds;
     
-    error_log("MAILPN: Scheduled time: " . date('Y-m-d H:i:s', $scheduled_time));
+    
     
     // Get existing scheduled emails
     $scheduled_emails = get_option('mailpn_scheduled_welcome_emails', []);
@@ -1450,7 +1420,6 @@ class MAILPN_Settings {
     ];
     
     $result = update_option('mailpn_scheduled_welcome_emails', $scheduled_emails);
-    error_log("MAILPN: Updated scheduled emails option - Result: " . ($result ? 'success' : 'failed') . ", Total scheduled: " . count($scheduled_emails));
   }
   
   /**

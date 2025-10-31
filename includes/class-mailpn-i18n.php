@@ -26,20 +26,12 @@ class MAILPN_i18n {
 	 * @since    1.0.0
 	 */
 	public function mailpn_pll_get_post_types($post_types, $is_settings) {
-		// Debug logging
-		error_log('MAILPN DEBUG: mailpn_pll_get_post_types called');
-		error_log('MAILPN DEBUG: is_settings = ' . ($is_settings ? 'true' : 'false'));
-		error_log('MAILPN DEBUG: Current post_types = ' . print_r($post_types, true));
 		
 		if ($is_settings){
 			unset($post_types['mailpn_mail']);
-			error_log('MAILPN DEBUG: Removed mailpn_mail from settings');
 		}else{
 			$post_types['mailpn_mail'] = 'mailpn_mail';
-			error_log('MAILPN DEBUG: Added mailpn_mail for translation');
 		}
-
-		error_log('MAILPN DEBUG: Final post_types = ' . print_r($post_types, true));
 		return $post_types;
 	}
 
@@ -49,16 +41,9 @@ class MAILPN_i18n {
 	 * @since    1.0.0
 	 */
 	public function mailpn_pll_get_taxonomies($taxonomies, $is_settings) {
-		// Debug logging
-		error_log('MAILPN DEBUG: mailpn_pll_get_taxonomies called');
-		error_log('MAILPN DEBUG: is_settings = ' . ($is_settings ? 'true' : 'false'));
-		error_log('MAILPN DEBUG: Current taxonomies = ' . print_r($taxonomies, true));
 		
 		// Include mailpn mail taxonomies for translation
 		$taxonomies['mailpn_mail_category'] = 'mailpn_mail_category';
-		error_log('MAILPN DEBUG: Added mailpn_mail_category for translation');
-		
-		error_log('MAILPN DEBUG: Final taxonomies = ' . print_r($taxonomies, true));
 		return $taxonomies;
 	}
 

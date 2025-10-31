@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.7';
+			$this->mailpn_version = '1.0.8';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -235,11 +235,6 @@ class MAILPN {
 		 * The class responsible for WooCommerce integration.
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-woocommerce.php';
-
-		/**
-		 * The class responsible for debugging functionality.
-		 */
-		require_once MAILPN_DIR . 'includes/class-mailpn-debug.php';
 
 		/**
 		 * The class responsible for notifications management.
@@ -445,7 +440,7 @@ class MAILPN {
 			$this->mailpn_loader->mailpn_add_action('updated_user_meta', $plugin_user, 'mailpn_newsletter_activation_hook', 10, 4);
 		} else {
 			if (function_exists('error_log')) {
-				error_log('[mailpn] MAILPN_Functions_User::mailpn_newsletter_activation_hook not found; hook not registered.');
+				// Debug logging removed
 			}
 		}
 	}
@@ -621,8 +616,7 @@ class MAILPN {
 		$plugin_shortcodes = new MAILPN_Shortcodes();
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-mail', $plugin_shortcodes, 'mailpn_mail');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-call-to-action', $plugin_shortcodes, 'mailpn_call_to_action');
-		$this->mailpn_loader->mailpn_add_shortcode('mailpn-debug-cart', $plugin_shortcodes, 'mailpn_debug_cart_shortcode');
-		$this->mailpn_loader->mailpn_add_shortcode('mailpn-debug-purchase', $plugin_shortcodes, 'mailpn_debug_purchase_shortcode');
+		// Debug shortcodes removed
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-test-cart-processing', $plugin_shortcodes, 'mailpn_test_cart_processing_shortcode');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-notifications', $plugin_shortcodes, 'mailpn_notifications');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-notifications-counter', $plugin_shortcodes, 'mailpn_notifications_counter');

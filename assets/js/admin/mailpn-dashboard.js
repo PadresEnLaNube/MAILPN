@@ -181,7 +181,6 @@ jQuery(document).ready(function($) {
 
         refreshStats: function() {
             // This could be used to refresh stats via AJAX if needed
-            console.log('Refreshing dashboard stats...');
         },
 
         initializeTooltips: function() {

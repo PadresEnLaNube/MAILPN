@@ -43,7 +43,6 @@
                 var script = document.createElement('script');
                 script.src = mailpn_qr_ajax.qrcode_js_url || '/assets/js/qrcode.min.js';
                 script.onload = function() {
-                    console.log('QR Code library loaded');
                 };
                 document.head.appendChild(script);
             }

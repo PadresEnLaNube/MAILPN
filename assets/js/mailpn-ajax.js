@@ -58,10 +58,6 @@
       });
 
       $.post(ajax_url, data, function(response) {
-        console.log('data');
-        console.log(data);
-        console.log('response');
-        console.log(response);
 
         var response_json = $.parseJSON(response);
 

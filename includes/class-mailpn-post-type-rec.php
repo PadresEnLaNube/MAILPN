@@ -657,8 +657,6 @@ class MAILPN_Post_Type_Rec
               #<?php echo esc_html($template->ID); ?>           <?php echo esc_html($template->post_title); ?>
             </option>
           <?php endforeach; ?>
-        <?php } else { ?>
-          <?php error_log('No mail templates found'); ?>
         <?php } ?>
       </select>
 
@@ -757,8 +755,7 @@ class MAILPN_Post_Type_Rec
         $query->set('meta_query', $meta_query);
       }
 
-      // Debug output
-      error_log('Meta Query: ' . print_r($meta_query, true));
+      // Debug output removed
     }
   }
 
@@ -767,18 +764,14 @@ class MAILPN_Post_Type_Rec
    */
   public function mailpn_get_statistics_data()
   {
-    // Debug log
-    error_log('MAILPN Statistics: AJAX request received');
-    error_log('MAILPN Statistics: POST data: ' . print_r($_POST, true));
+    // Debug log removed
 
     // Verify nonce
     if (!wp_verify_nonce($_POST['nonce'], 'mailpn_statistics_nonce')) {
-      error_log('MAILPN Statistics: Nonce verification failed');
-      error_log('MAILPN Statistics: Received nonce: ' . $_POST['nonce']);
       wp_die('Security check failed');
     }
 
-    error_log('MAILPN Statistics: Nonce verification passed');
+    
 
     // Get current filters
     $filters = [
@@ -826,7 +819,7 @@ class MAILPN_Post_Type_Rec
     $query = new WP_Query($args);
     $records = $query->posts;
 
-    error_log('MAILPN Statistics: Found ' . count($records) . ' records');
+    
 
     // Calculate statistics
     $stats = [
@@ -890,7 +883,7 @@ class MAILPN_Post_Type_Rec
     ksort($stats['sent_by_date']);
     arsort($stats['clicks_by_url']);
 
-    error_log('MAILPN Statistics: Sending response with data: ' . print_r($stats, true));
+    
 
     wp_send_json_success($stats);
   }

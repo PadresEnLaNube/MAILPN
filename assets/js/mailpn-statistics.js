@@ -7,16 +7,13 @@
         },
 
         bindEvents: function() {
-            console.log('MAILPN_Statistics: Binding events');
             $(document).on('click', '#mailpn-statistics-button', function(e) {
-                console.log('MAILPN_Statistics: Button clicked');
                 e.preventDefault();
                 MAILPN_Statistics.loadStatistics();
             });
         },
 
         loadStatistics: function() {
-            console.log('MAILPN_Statistics: loadStatistics called');
             
             // Check if MAILPN_Popups is available
             if (typeof MAILPN_Popups === 'undefined') {
@@ -32,7 +29,6 @@
                 template_filter: urlParams.get('mailpn_template_filter') || ''
             };
 
-            console.log('MAILPN_Statistics: Opening popup');
             // Show popup with loading state
             MAILPN_Popups.open('mailpn-statistics-popup');
 

@@ -193,9 +193,12 @@ class MAILPN_Notifications_Manager {
                                     
                                     // Display content interpreted (HTML)
                                     if (!empty($mail_content)) {
-                                        // If it's HTML content, display it directly
+                                        // If it's HTML content, process it and display
                                         if (strpos($mail_content, '<') !== false) {
-                                            echo wp_kses_post($mail_content);
+                                            // Remove <style> blocks and external stylesheet links to avoid CSS leaking as text
+                                            $content_html = preg_replace('/<style[^>]*>[\s\S]*?<\\/style>/i', '', $mail_content);
+                                            $content_html = preg_replace('/<link[^>]*rel=["\']?stylesheet["\']?[^>]*>/i', '', $content_html);
+                                            echo wp_kses_post($content_html);
                                         } else {
                                             // If it's plain text, convert line breaks to HTML
                                             echo wp_kses_post(nl2br(esc_html($mail_content)));
@@ -333,11 +336,7 @@ class MAILPN_Notifications_Manager {
 
         $query = new WP_Query($args);
         
-        // Debug: Log the query results
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('MailPN Debug - User ID: ' . $user_id . ' | Found posts: ' . $query->found_posts);
-            error_log('MailPN Debug - Query args: ' . print_r($args, true));
-        }
+        // Debug logging removed
         
         return $query->found_posts;
     }
@@ -691,6 +690,11 @@ class MAILPN_Notifications_Manager {
         if (!is_user_logged_in()) {
             return $content;
         }
+
+		// Do not render in admin dashboard
+		if (is_admin()) {
+			return $content;
+		}
 
         // Get current user ID
         $current_user_id = get_current_user_id();

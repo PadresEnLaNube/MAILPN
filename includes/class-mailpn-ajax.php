@@ -305,7 +305,6 @@ class MAILPN_Ajax {
       exit();
     } else {
       // No mailpn_ajax_type found
-      error_log('MAILPN AJAX Request - No mailpn_ajax_type found in POST data');
       echo wp_json_encode([
         'error_key' => 'mailpn_ajax_type_missing',
         'error_content' => esc_html__('AJAX type not specified', 'mailpn'),

@@ -3,10 +3,8 @@
   
     window.MAILPN_Popups = {
       open: function(popup, options = {}) {
-        console.log('MAILPN_Popups: open called with popup:', popup);
         var popupElement = typeof popup === 'string' ? $('#' + popup) : popup;
         
-        console.log('MAILPN_Popups: popupElement found:', popupElement.length);
         if (!popupElement.length) {
           console.error('MAILPN_Popups: Popup element not found');
           return;

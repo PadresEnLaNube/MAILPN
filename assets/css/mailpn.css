@@ -1869,6 +1869,8 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 
 .mailpn-notifications-list {
   max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .mailpn-notification {

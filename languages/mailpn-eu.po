@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Filkers WooCommerce Marketing\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-31 14:21+0000\n"
-"PO-Revision-Date: 2025-09-16 15:46+0000\n"
+"PO-Revision-Date: 2025-10-31 09:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: Basque\n"
 "Language: eu\n"
@@ -21,6 +21,36 @@ msgid_plural "%d clicks"
 msgstr[0] "%d klik"
 msgstr[1] "%d klik"
 
+#: includes/class-mailpn-notifications-manager.php:560
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "Duela %d egun"
+msgstr[1] "Duela %d egun"
+
+#: includes/class-mailpn-notifications-manager.php:557
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] "Duela %d ordu"
+msgstr[1] "Duela %d ordu"
+
+#: includes/class-mailpn-notifications-manager.php:554
+msgid "%d minute ago"
+msgid_plural "%d minutes ago"
+msgstr[0] "Duela %d minutu"
+msgstr[1] "Duela %d minutu"
+
+#: includes/class-mailpn-notifications-manager.php:281
+#: includes/class-mailpn-notifications-manager.php:712
+#: includes/class-mailpn-notifications-manager.php:715
+msgid "%d unread notification"
+msgid_plural "%d unread notifications"
+msgstr[0] "Irakurri gabeko %d jakinarazpen"
+msgstr[1] "%d irakurri gabeko jakinarazpen"
+
+#: includes/class-mailpn-notifications-manager.php:530
+msgid "Abandoned Cart"
+msgstr "Saski abandonatua"
+
 #: includes/class-mailpn-data.php:87
 msgid "Abandoned cart email"
 msgstr "Saskia utzita dagoen mezu elektronikoa"
@@ -30,7 +60,7 @@ msgid "Account verification code"
 msgstr "Kontua egiaztatzeko kodea"
 
 #: includes/class-mailpn-settings.php:795
-#: includes/class-mailpn-settings.php:1913
+#: includes/class-mailpn-settings.php:1902
 msgid "Actions"
 msgstr "Ekintzak"
 
@@ -38,7 +68,7 @@ msgstr "Ekintzak"
 msgid "Activate Cron Jobs"
 msgstr "Aktibatu Cron lanak"
 
-#: includes/class-mailpn-settings.php:1991
+#: includes/class-mailpn-settings.php:1980
 msgid "ACTIVE"
 msgstr "AKTIBOA"
 
@@ -105,7 +135,7 @@ msgstr "Gehitu bideoak"
 msgid "ago"
 msgstr "duela"
 
-#: includes/class-mailpn-ajax.php:304
+#: includes/class-mailpn-ajax.php:310
 msgid "AJAX type not specified"
 msgstr "AJAX mota zehaztu gabe"
 
@@ -138,15 +168,15 @@ msgstr "Posta elektronikoko txantiloi guztiak"
 msgid "All mail types"
 msgstr "Posta mota guztiak"
 
-#: includes/class-mailpn-mailing.php:500
+#: includes/class-mailpn-mailing.php:490
 msgid "All rights reserved"
 msgstr "Eskubide guztiak erreserbatuta"
 
-#: includes/class-mailpn-post-type-rec.php:706
+#: includes/class-mailpn-post-type-rec.php:704
 msgid "All users"
 msgstr "Erabiltzaile guztiak"
 
-#: includes/class-mailpn-mailing.php:797
+#: includes/class-mailpn-mailing.php:787
 msgid ""
 "Also there are new contents to be published in the future and sent by email."
 msgstr ""
@@ -166,15 +196,15 @@ msgstr "Errore bat gertatu da posta egiaztatzean."
 msgid "An error occurred while resending the errors."
 msgstr "Errore bat gertatu da erroreak berriro bidaltzean."
 
-#: includes/class-mailpn-mailing.php:794
+#: includes/class-mailpn-mailing.php:784
 msgid "Any content you publish in the post type selected will be sent."
 msgstr "Hautatutako mezu motan argitaratzen duzun edozein eduki bidaliko da."
 
-#: includes/class-mailpn-settings.php:1876
+#: includes/class-mailpn-settings.php:1865
 msgid "Are you sure you want to clear the entire email queue?"
 msgstr "Ziur zaude posta elektronikoaren ilara osoa garbitu nahi duzula?"
 
-#: includes/class-mailpn-settings.php:1963
+#: includes/class-mailpn-settings.php:1952
 msgid ""
 "Are you sure you want to remove all emails for this template from the queue?"
 msgstr ""
@@ -201,7 +231,7 @@ msgstr "Bidalketaren zain"
 msgid "Clear Debug Log"
 msgstr "Garbitu arazketa-erregistroa"
 
-#: includes/class-mailpn-settings.php:1876
+#: includes/class-mailpn-settings.php:1865
 msgid "Clear Queue"
 msgstr "Garbitu ilara"
 
@@ -231,7 +261,7 @@ msgid "Configure your SMTP server settings for sending emails."
 msgstr ""
 "Konfiguratu zure SMTP zerbitzariaren ezarpenak mezu elektronikoak bidaltzeko."
 
-#: includes/class-mailpn-mailing.php:1090
+#: includes/class-mailpn-mailing.php:1080
 msgid "Create new password"
 msgstr "Sortu pasahitz berria"
 
@@ -266,6 +296,10 @@ msgstr "Uneko ordua"
 #: includes/class-mailpn-settings.php:707
 msgid "Current Time:"
 msgstr "Uneko ordua:"
+
+#: includes/class-mailpn-notifications-manager.php:531
+msgid "Custom Email"
+msgstr "Mezu elektroniko pertsonalizatua"
 
 #: includes/class-mailpn-settings.php:151
 #: includes/class-mailpn-settings.php:152
@@ -356,27 +390,27 @@ msgstr "Astero"
 msgid "Each year"
 msgstr "Urtero"
 
-#: includes/class-mailpn-forms.php:326 includes/class-mailpn-common.php:155
+#: includes/class-mailpn-common.php:155 includes/class-mailpn-forms.php:326
 msgid "Edit audio"
 msgstr "Editatu audioa"
 
-#: includes/class-mailpn-forms.php:326 includes/class-mailpn-common.php:156
+#: includes/class-mailpn-common.php:156 includes/class-mailpn-forms.php:326
 msgid "Edit audios"
 msgstr "Editatu audioak"
 
-#: includes/class-mailpn-forms.php:347 includes/class-mailpn-common.php:159
+#: includes/class-mailpn-common.php:159 includes/class-mailpn-forms.php:347
 msgid "Edit file"
 msgstr "Editatu fitxategia"
 
-#: includes/class-mailpn-forms.php:347 includes/class-mailpn-common.php:160
+#: includes/class-mailpn-common.php:160 includes/class-mailpn-forms.php:347
 msgid "Edit files"
 msgstr "Editatu fitxategiak"
 
-#: includes/class-mailpn-forms.php:284 includes/class-mailpn-common.php:147
+#: includes/class-mailpn-common.php:147 includes/class-mailpn-forms.php:284
 msgid "Edit image"
 msgstr "Editatu irudia"
 
-#: includes/class-mailpn-forms.php:284 includes/class-mailpn-common.php:148
+#: includes/class-mailpn-common.php:148 includes/class-mailpn-forms.php:284
 msgid "Edit images"
 msgstr "Editatu irudiak"
 
@@ -397,11 +431,11 @@ msgstr "Editatu posta-erregistroaren kategoria"
 msgid "Edit Mail template"
 msgstr "Editatu Mail txantiloia"
 
-#: includes/class-mailpn-forms.php:305 includes/class-mailpn-common.php:151
+#: includes/class-mailpn-common.php:151 includes/class-mailpn-forms.php:305
 msgid "Edit video"
 msgstr "Editatu bideoa"
 
-#: includes/class-mailpn-forms.php:305 includes/class-mailpn-common.php:152
+#: includes/class-mailpn-common.php:152 includes/class-mailpn-forms.php:305
 msgid "Edit videos"
 msgstr "Editatu bideoak"
 
@@ -416,8 +450,8 @@ msgstr ""
 "mezu elektronikoak zuzenean zure paneletik zure publikoa inoiz ez bezala "
 "erakartzeko."
 
+#: includes/class-mailpn-mailing.php:1076
 #: includes/class-mailpn-settings.php:642
-#: includes/class-mailpn-mailing.php:1086
 msgid "Email"
 msgstr "Posta elektronikoa"
 
@@ -425,7 +459,7 @@ msgstr "Posta elektronikoa"
 msgid "Email after purchase"
 msgstr "Erosketaren ondoren posta elektronikoa"
 
-#: includes/class-mailpn-ajax.php:195
+#: includes/class-mailpn-ajax.php:202
 msgid "Email configuration error"
 msgstr "Posta elektronikoaren konfigurazio errorea"
 
@@ -492,6 +526,10 @@ msgstr "Posta elektronikoaren mekanika"
 msgid "Email not sent. Errors have been found."
 msgstr "Ez da bidali mezu elektronikoa. Akatsak aurkitu dira."
 
+#: includes/class-mailpn-notifications-manager.php:654
+msgid "Email Notifications"
+msgstr "Posta elektroniko bidezko jakinarazpenak"
+
 #: includes/class-mailpn-post-type-rec.php:65
 msgid "Email plain text content"
 msgstr "Testu arrunteko edukia posta elektronikoz"
@@ -501,25 +539,25 @@ msgstr "Testu arrunteko edukia posta elektronikoz"
 msgid "Email Queue"
 msgstr "Mezu elektronikoen ilara"
 
-#: includes/class-mailpn-settings.php:1840
+#: includes/class-mailpn-settings.php:1829
 msgid "Email queue cleared successfully."
 msgstr "Mezu elektronikoen ilara behar bezala garbitu da."
 
-#: includes/class-mailpn-settings.php:1867
+#: includes/class-mailpn-settings.php:1856
 msgid "Email Queue Management"
 msgstr "Mezu elektronikoen ilararen kudeaketa"
 
-#: includes/class-mailpn-settings.php:1834
+#: includes/class-mailpn-settings.php:1823
 msgid "Email queue processed successfully."
 msgstr "Mezu elektronikoen ilara behar bezala prozesatu da."
 
-#: includes/class-mailpn-settings.php:1859
+#: includes/class-mailpn-settings.php:1848
 msgid "Email removed from queue successfully."
 msgstr "Mezu elektronikoa behar bezala kendu da ilaratik."
 
-#: includes/class-mailpn-ajax.php:258 includes/class-mailpn-ajax.php:262
-#: includes/class-mailpn-ajax.php:268 includes/class-mailpn-ajax.php:275
-#: includes/class-mailpn-ajax.php:284
+#: includes/class-mailpn-ajax.php:265 includes/class-mailpn-ajax.php:269
+#: includes/class-mailpn-ajax.php:275 includes/class-mailpn-ajax.php:282
+#: includes/class-mailpn-ajax.php:291
 msgid "Email sending failed"
 msgstr "Huts egin du mezu elektronikoa bidaltzeak"
 
@@ -538,7 +576,7 @@ msgstr ""
 msgid "Email Settings"
 msgstr "Posta elektronikoaren ezarpenak"
 
-#: includes/class-mailpn-post-type-rec.php:918
+#: includes/class-mailpn-post-type-rec.php:911
 msgid "Email Statistics"
 msgstr "Posta elektronikoaren estatistikak"
 
@@ -554,7 +592,7 @@ msgstr "Mezu elektronikoaren gaia"
 
 #: includes/class-mailpn-settings.php:790
 #: includes/class-mailpn-settings.php:875
-#: includes/class-mailpn-settings.php:1910
+#: includes/class-mailpn-settings.php:1899
 msgid "Email Template"
 msgstr "Mezu elektronikoaren txantiloia"
 
@@ -568,22 +606,22 @@ msgstr "Mezu elektronikoen txantiloiak"
 msgid "Email Text Content"
 msgstr "Mezu elektronikoaren testu-edukia"
 
-#: includes/class-mailpn-post-type-mail.php:53
-#: includes/class-mailpn-post-type-mail.php:54
 #: includes/class-mailpn-post-type-rec.php:35
 #: includes/class-mailpn-post-type-rec.php:36
+#: includes/class-mailpn-post-type-mail.php:53
+#: includes/class-mailpn-post-type-mail.php:54
 msgid "Email type"
 msgstr "Posta elektroniko mota"
 
-#: includes/class-mailpn-settings.php:1956
+#: includes/class-mailpn-settings.php:1945
 msgid "emails"
 msgstr "mezu elektronikoak"
 
-#: includes/class-mailpn-mailing.php:738
+#: includes/class-mailpn-mailing.php:728
 msgid "emails every ten minutes"
 msgstr "mezu elektronikoak hamar minuturo"
 
-#: includes/class-mailpn-settings.php:1998
+#: includes/class-mailpn-settings.php:1987
 msgid "Emails Per Batch"
 msgstr "Multzo bakoitzeko mezu elektronikoak"
 
@@ -592,7 +630,7 @@ msgstr "Multzo bakoitzeko mezu elektronikoak"
 msgid "Emails sent"
 msgstr "Bidalitako mezu elektronikoak"
 
-#: includes/class-mailpn-mailing.php:734
+#: includes/class-mailpn-mailing.php:724
 msgid "emails sent"
 msgstr "bidalitako mezu elektronikoak"
 
@@ -604,7 +642,7 @@ msgstr "Egunero bidalitako mezu elektronikoak"
 msgid "Emails sent every ten minutes"
 msgstr "Hamar minuturo bidalitako mezu elektronikoak"
 
-#: includes/class-mailpn-settings.php:1994
+#: includes/class-mailpn-settings.php:1983
 msgid "Emails Sent Today"
 msgstr "Gaur bidalitako mezu elektronikoak"
 
@@ -657,7 +695,7 @@ msgstr "Errorea formularioa gordetzean."
 msgid "Every 10 minutes"
 msgstr "10 minuturo"
 
-#: includes/class-mailpn-settings.php:2003
+#: includes/class-mailpn-settings.php:1992
 msgid "Every 10 minutes via cron job"
 msgstr "10 minuturo cron lanaren bidez"
 
@@ -690,22 +728,26 @@ msgstr "Salbuespen mezu elektronikoen domeinuak"
 msgid "Exception emails domains list"
 msgstr "Salbuespen mezu elektronikoen domeinuen zerrenda"
 
+#: includes/class-mailpn-notifications-manager.php:170
+msgid "Failed to send"
+msgstr "Bidali ezin izan da"
+
 #: includes/class-mailpn-settings.php:579
 msgid "Failed to send email."
 msgstr "Ezin izan da mezu elektronikoa bidali."
 
-#: includes/class-mailpn-ajax.php:121 includes/class-mailpn-ajax.php:254
-#: includes/class-mailpn-ajax.php:283
+#: includes/class-mailpn-ajax.php:125 includes/class-mailpn-ajax.php:261
+#: includes/class-mailpn-ajax.php:290
 msgid "Failed to send test email"
 msgstr "Proba-mezu elektronikoa bidaltzea huts egin da"
 
-#: includes/class-mailpn-mailing.php:1081
+#: includes/class-mailpn-mailing.php:1071
 msgid "First of all, access the url below and use any of these credentials:"
 msgstr ""
 "Lehenik eta behin, sartu beheko url-era eta erabili kredentzial hauetako "
 "edozein:"
 
-#: includes/class-mailpn-mailing.php:469
+#: includes/class-mailpn-mailing.php:459
 msgid "Follow us to keep in touch."
 msgstr "Jarrai gaitzazu harremanetan jarraitzeko."
 
@@ -729,8 +771,8 @@ msgstr "Noizean behin"
 msgid "Go to MailPN templates"
 msgstr "Joan MailPN txantiloietara"
 
-#: includes/class-mailpn-mailing.php:1043
-#: includes/class-mailpn-mailing.php:1078 includes/class-mailpn-ajax.php:110
+#: includes/class-mailpn-mailing.php:1033
+#: includes/class-mailpn-mailing.php:1068 includes/class-mailpn-ajax.php:114
 msgid "Hello"
 msgstr "Kaixo"
 
@@ -797,7 +839,7 @@ msgstr ""
 "Eremu hau betetzen baduzu mezu elektronikoaren pasahitza berrezarri aurreko "
 "edukia pertsonalizatuko da zure informazioarekin."
 
-#: includes/class-mailpn-mailing.php:1055
+#: includes/class-mailpn-mailing.php:1045
 msgid "If you didn't make this request, ignore this email or"
 msgstr "Eskaera hau egin ez baduzu, ez ikusi mezu elektroniko honi edo"
 
@@ -872,6 +914,10 @@ msgstr ""
 "Jarraitutako esteka iraungi dela dirudi. Mesedez, ezarri zure jakinarazpen-"
 "hobespenak."
 
+#: includes/class-mailpn-notifications-manager.php:552
+msgid "Just now"
+msgstr "Oraintxe bertan"
+
 #: includes/class-mailpn-dashboard.php:180
 msgid "Last 7 days"
 msgstr "Azken 7 egunak"
@@ -884,7 +930,7 @@ msgstr "Azken Cron exekuzioa:"
 msgid "Legal name"
 msgstr "Izen legala"
 
-#: includes/class-mailpn-post-type-rec.php:923
+#: includes/class-mailpn-post-type-rec.php:916
 msgid "Loading statistics..."
 msgstr "Estatistikak kargatzen..."
 
@@ -901,10 +947,10 @@ msgstr "Maiuskulak eta minuskulak"
 msgid "Mail addressee"
 msgstr "Posta-hartzailea"
 
-#: includes/class-mailpn-post-type-mail.php:308
-#: includes/class-mailpn-post-type-mail.php:309
 #: includes/class-mailpn-post-type-rec.php:141
 #: includes/class-mailpn-post-type-rec.php:142
+#: includes/class-mailpn-post-type-mail.php:308
+#: includes/class-mailpn-post-type-mail.php:309
 msgid "Mail attachments"
 msgstr "Posta eranskinak"
 
@@ -957,7 +1003,7 @@ msgstr "Posta bidaltzeko hasiera data"
 msgid "Mail sending start time"
 msgstr "Posta bidaltzeko hasiera-ordua"
 
-#: includes/class-mailpn-mailing.php:155 includes/class-mailpn-mailing.php:181
+#: includes/class-mailpn-mailing.php:153 includes/class-mailpn-mailing.php:179
 msgid "Mail subject"
 msgstr "Posta gaia"
 
@@ -1002,13 +1048,30 @@ msgstr "Posta-kudeatzailea - MAILPN ezarpenak"
 msgid "Mailing Manager - PN"
 msgstr "Posta kudeatzailea - PN"
 
-#: includes/class-mailpn-ajax.php:109
+#: includes/class-mailpn-ajax.php:113
 msgid "MAILPN Test email"
 msgstr "MAILPN Proba-posta elektronikoa"
 
-#: includes/class-mailpn-mailing.php:512
+#: includes/class-mailpn-mailing.php:502
 msgid "Manage subscription"
 msgstr "Kudeatu harpidetza"
+
+#: includes/class-mailpn-notifications-manager.php:657
+#: includes/class-mailpn-notifications-manager.php:660
+msgid "Mark all as read"
+msgstr "Markatu dena irakurrita bezala"
+
+#: includes/class-mailpn-notifications-manager.php:141
+#: includes/class-mailpn-notifications-manager.php:144
+#: includes/class-mailpn-notifications-manager.php:223
+msgid "Mark as read"
+msgstr "Markatu irakurrita gisa"
+
+#: includes/class-mailpn-notifications-manager.php:148
+#: includes/class-mailpn-notifications-manager.php:151
+#: includes/class-mailpn-notifications-manager.php:224
+msgid "Mark as unread"
+msgstr "Markatu irakurri gabeko gisa"
 
 #: includes/class-mailpn-post-type-mail.php:179
 #: includes/class-mailpn-post-type-mail.php:209
@@ -1019,7 +1082,7 @@ msgstr "Minutuak"
 msgid "minutes"
 msgstr "minutu"
 
-#: includes/class-mailpn-ajax.php:135
+#: includes/class-mailpn-ajax.php:139
 msgid "Missing required parameters"
 msgstr "Beharrezko parametroak falta dira"
 
@@ -1040,8 +1103,8 @@ msgstr "Posta kategoria berria"
 msgid "New Mail Record category"
 msgstr "Posta-erregistro berria kategoria"
 
-#: includes/class-mailpn-mailing.php:1107
-#: includes/class-mailpn-mailing.php:1109
+#: includes/class-mailpn-mailing.php:1097
+#: includes/class-mailpn-mailing.php:1099
 msgid "New user"
 msgstr "Erabiltzaile berria"
 
@@ -1052,6 +1115,10 @@ msgstr "Erabiltzaile berriak sortzeko ongietorri-mezua"
 #: includes/class-mailpn-settings.php:107
 msgid "New users active notifications"
 msgstr "Erabiltzaile berrien jakinarazpenak aktibo"
+
+#: includes/class-mailpn-notifications-manager.php:526
+msgid "Newsletter"
+msgstr "Buletina"
 
 #: includes/class-mailpn-data.php:78
 msgid "Newsletter welcome email"
@@ -1065,15 +1132,19 @@ msgstr "Hurrengo 10 minutuko Cron-a"
 msgid "Next Cron Execution:"
 msgstr "Hurrengo Cron exekuzioa:"
 
-#: includes/class-mailpn-settings.php:2002
+#: includes/class-mailpn-settings.php:1991
 msgid "Next Processing"
 msgstr "Hurrengo prozesamendua"
+
+#: includes/class-mailpn-notifications-manager.php:204
+msgid "No content available"
+msgstr "Ez dago edukirik eskuragarri"
 
 #: includes/class-mailpn-settings.php:746
 msgid "No debug logs available yet."
 msgstr "Ez dago arazketa-erregistrorik oraindik eskuragarri."
 
-#: includes/class-mailpn-settings.php:1898
+#: includes/class-mailpn-settings.php:1887
 msgid "No emails in queue."
 msgstr "Ez dago mezu elektronikorik ilaran."
 
@@ -1092,6 +1163,14 @@ msgid ""
 msgstr ""
 "Ez dago buletinaren ongietorri mezu elektronikorik konfiguratuta MailPN-n. "
 "Mesedez, sortu bat buletina behar bezala funtziona dezan."
+
+#: includes/class-mailpn-notifications-manager.php:96
+msgid "No notifications found."
+msgstr "Ez da jakinarazpenik aurkitu."
+
+#: includes/class-mailpn-notifications-manager.php:730
+msgid "No notifications section found on this page."
+msgstr "Ez da jakinarazpenen atalik aurkitu orrialde honetan."
 
 #: includes/class-mailpn-dashboard.php:288
 msgid "No pending scheduled emails."
@@ -1114,7 +1193,11 @@ msgstr ""
 msgid "No roles"
 msgstr "Rolik ez"
 
-#: includes/class-mailpn-settings.php:1952
+#: includes/class-mailpn-notifications-manager.php:279
+msgid "No unread notifications"
+msgstr "Ez dago irakurri gabeko jakinarazpenik"
+
+#: includes/class-mailpn-settings.php:1941
 msgid "No valid recipients"
 msgstr "Ez dago hartzaile baliodunik"
 
@@ -1165,11 +1248,11 @@ msgstr "Jakinarazpenak"
 msgid "Number (0-9)"
 msgstr "Zenbakia (0-9)"
 
-#: includes/class-mailpn-mailing.php:734
+#: includes/class-mailpn-mailing.php:724
 msgid "of"
 msgstr "de"
 
-#: includes/class-mailpn-mailing.php:734
+#: includes/class-mailpn-mailing.php:724
 msgid "of total job"
 msgstr "lanpostu osoaren"
 
@@ -1195,6 +1278,7 @@ msgstr "Irekitze-tasa"
 
 #: includes/class-mailpn-post-type-rec.php:447
 #: includes/class-mailpn-post-type-rec.php:537
+#: includes/class-mailpn-notifications-manager.php:177
 msgid "Opened"
 msgstr "Irekita"
 
@@ -1205,6 +1289,14 @@ msgstr "Irekitako mezu elektronikoak"
 #: includes/class-mailpn-notifications.php:44
 msgid "Oppps! We are not able to unsubscribe your account."
 msgstr "Aupa! Ezin dugu zure kontua kendu."
+
+#: includes/class-mailpn-notifications-manager.php:529
+msgid "Order Complete"
+msgstr "Eskaera osatuta"
+
+#: includes/class-mailpn-notifications-manager.php:528
+msgid "Order Confirmation"
+msgstr "Eskaera Baieztapena"
 
 #: includes/class-mailpn-forms.php:395 includes/class-mailpn-forms.php:411
 msgid "Order element"
@@ -1244,7 +1336,11 @@ msgstr "Gurasoen Posta Erregistroaren kategoria:"
 msgid "Parent Mail template"
 msgstr "Gurasoen Posta txantiloia"
 
-#: includes/class-mailpn-mailing.php:1063
+#: includes/class-mailpn-notifications-manager.php:527
+msgid "Password Reset"
+msgstr "Pasahitza berrezarri"
+
+#: includes/class-mailpn-mailing.php:1053
 msgid "Password reset"
 msgstr "Pasahitza berrezarri"
 
@@ -1256,7 +1352,7 @@ msgstr "Pasahitza berrezartzeko mezu elektronikoa"
 msgid "Password strength checker"
 msgstr "Pasahitzaren sendotasuna egiaztatzailea"
 
-#: includes/class-mailpn-settings.php:1991
+#: includes/class-mailpn-settings.php:1980
 msgid "PAUSED"
 msgstr "PAUSATUTA"
 
@@ -1264,7 +1360,7 @@ msgstr "PAUSATUTA"
 msgid "Pending"
 msgstr "Zain"
 
-#: includes/class-mailpn-settings.php:1883
+#: includes/class-mailpn-settings.php:1872
 msgid "Pending Email Queue"
 msgstr "Zain dauden mezu elektronikoen ilara"
 
@@ -1290,7 +1386,7 @@ msgid "Please create a new user or login to save the information."
 msgstr ""
 "Mesedez, sortu erabiltzaile berri bat edo hasi saioa informazioa gordetzeko."
 
-#: includes/class-mailpn-mailing.php:1055
+#: includes/class-mailpn-mailing.php:1045
 msgid "please report it"
 msgstr "mesedez jakinarazi"
 
@@ -1309,7 +1405,7 @@ msgid "Post creation failed, could not find original post:"
 msgstr ""
 "Ezin izan da sortu argitalpena, ezin izan da jatorrizko argitalpena aurkitu:"
 
-#: includes/class-mailpn-ajax.php:151
+#: includes/class-mailpn-ajax.php:158
 msgid "Post not found"
 msgstr "Ez da mezua aurkitu"
 
@@ -1337,7 +1433,7 @@ msgstr "Posta txantiloia"
 msgid "Process Pending Registrations"
 msgstr "Prozesatu zain dauden erregistroak"
 
-#: includes/class-mailpn-settings.php:1872
+#: includes/class-mailpn-settings.php:1861
 msgid "Process Queue Now"
 msgstr "Prozesatu ilara orain"
 
@@ -1353,7 +1449,11 @@ msgstr "Prozesatu programatutako mezu elektronikoak orain"
 msgid "Processed"
 msgstr "Prozesatua"
 
-#: includes/class-mailpn-mailing.php:742
+#: includes/class-mailpn-notifications-manager.php:225
+msgid "Processing..."
+msgstr "Prozesatzen..."
+
+#: includes/class-mailpn-mailing.php:732
 msgid "Publish or update to begin sending."
 msgstr "Argitaratu edo eguneratu bidaltzen hasteko."
 
@@ -1361,15 +1461,15 @@ msgstr "Argitaratu edo eguneratu bidaltzen hasteko."
 msgid "Published content email"
 msgstr "Argitaratutako edukiaren posta elektronikoa"
 
-#: includes/class-mailpn-settings.php:1912
+#: includes/class-mailpn-settings.php:1901
 msgid "Queue Count"
 msgstr "Ilara kopurua"
 
-#: includes/class-mailpn-settings.php:1979
+#: includes/class-mailpn-settings.php:1968
 msgid "Queue Statistics"
 msgstr "Ilararen estatistikak"
 
-#: includes/class-mailpn-settings.php:1990
+#: includes/class-mailpn-settings.php:1979
 msgid "Queue Status"
 msgstr "Ilararen egoera"
 
@@ -1403,7 +1503,7 @@ msgstr "Hartzailearen helbide elektronikoa"
 msgid "Recipient email address"
 msgstr "Hartzailearen helbide elektronikoa"
 
-#: includes/class-mailpn-settings.php:1911
+#: includes/class-mailpn-settings.php:1900
 msgid "Recipients"
 msgstr "Hartzaileak"
 
@@ -1415,7 +1515,7 @@ msgstr "Izen-ematearen ordua"
 msgid "Remove"
 msgstr "Kendu"
 
-#: includes/class-mailpn-settings.php:1963
+#: includes/class-mailpn-settings.php:1952
 msgid "Remove All"
 msgstr "Kendu guztiak"
 
@@ -1427,11 +1527,11 @@ msgstr "Kendu elementua"
 msgid "Required field"
 msgstr "Beharrezko eremua"
 
-#: includes/class-mailpn-mailing.php:716
+#: includes/class-mailpn-mailing.php:706
 msgid "Resend emails"
 msgstr "Berriro bidali mezu elektronikoak"
 
-#: includes/class-mailpn-mailing.php:1049
+#: includes/class-mailpn-mailing.php:1039
 msgid "Reset your password"
 msgstr "Berrezarri pasahitza"
 
@@ -1498,7 +1598,8 @@ msgstr "Bilatu posta-erregistroak"
 msgid "Search Mail templates"
 msgstr "Bilatu posta-txantiloiak"
 
-#: includes/class-mailpn-settings.php:1765
+#: includes/class-mailpn-settings.php:1734
+#: includes/class-mailpn-settings.php:1754
 msgid "Security check failed: invalid nonce"
 msgstr "Segurtasun-egiaztapena huts egin du: baliogabeko ezegonkortasuna"
 
@@ -1580,11 +1681,11 @@ msgstr "Bidali erroreak administratzaile-kontura"
 msgid "Send Now"
 msgstr "Bidali orain"
 
-#: includes/class-mailpn-mailing.php:764 includes/class-mailpn-mailing.php:1123
+#: includes/class-mailpn-mailing.php:754 includes/class-mailpn-mailing.php:1113
 msgid "Send test email"
 msgstr "Bidali probako mezu elektronikoa"
 
-#: includes/class-mailpn-mailing.php:738
+#: includes/class-mailpn-mailing.php:728
 msgid "Sending"
 msgstr "Bidaltzen"
 
@@ -1604,6 +1705,10 @@ msgstr "Bidalitako mezu elektronikoak"
 #: includes/class-mailpn-post-type-rec.php:516
 msgid "Sent from:"
 msgstr "Bidalia hemendik:"
+
+#: includes/class-mailpn-notifications-manager.php:167
+msgid "Sent successfully"
+msgstr "Bidali da behar bezala"
 
 #: includes/class-mailpn-settings.php:878
 msgid "Sent Time"
@@ -1653,7 +1758,7 @@ msgstr ""
 msgid "Set the way in which the emails will be sent."
 msgstr "Ezarri mezu elektronikoak bidaltzeko modua."
 
-#: includes/class-mailpn-settings.php:1818
+#: includes/class-mailpn-settings.php:1807
 msgid "Settings"
 msgstr "Ezarpenak"
 
@@ -1685,7 +1790,7 @@ msgstr "SMTP Segurtasuna"
 msgid "SMTP Username"
 msgstr "SMTP erabiltzaile-izena"
 
-#: includes/class-mailpn-mailing.php:702
+#: includes/class-mailpn-mailing.php:692
 msgid ""
 "Some errors have occurred. Please check if contacts have their notifications "
 "enabled."
@@ -1693,8 +1798,8 @@ msgstr ""
 "Errore batzuk gertatu dira. Mesedez, egiaztatu kontaktuek jakinarazpenak "
 "gaituta dituzten."
 
-#: includes/class-mailpn-post-type-mail.php:392
 #: includes/class-mailpn-post-type-rec.php:231
+#: includes/class-mailpn-post-type-mail.php:392
 msgid "Sorry, you are not allowed to access this endpoint."
 msgstr "Barkatu, ez duzu baimenik amaiera-puntu honetara sartzeko."
 
@@ -1757,20 +1862,20 @@ msgstr "Proba elektronikoa"
 msgid "Test email content"
 msgstr "Probatu posta elektronikoaren edukia"
 
-#: includes/class-mailpn-ajax.php:105
+#: includes/class-mailpn-ajax.php:109
 msgid "Test email from MAILPN"
 msgstr "MAILPN-ren proba-mezu elektronikoa"
 
-#: includes/class-mailpn-ajax.php:119
+#: includes/class-mailpn-ajax.php:123
 msgid "Test email sent successfully"
 msgstr "Proba-mezu elektronikoa behar bezala bidali da"
 
-#: includes/class-mailpn-ajax.php:251
+#: includes/class-mailpn-ajax.php:258
 msgid "Test email sent successfully to"
 msgstr "Proba-mezu elektronikoa behar bezala bidali da helbide honetara:"
 
-#: includes/class-mailpn-mailing.php:1057
-#: includes/class-mailpn-mailing.php:1096
+#: includes/class-mailpn-mailing.php:1047
+#: includes/class-mailpn-mailing.php:1086
 msgid "Thank you!"
 msgstr "Eskerrik asko!"
 
@@ -1782,7 +1887,7 @@ msgstr "SMTP erabiltzean bidaltzaile gisa erabiliko den helbide elektronikoa."
 msgid "The hostname of your SMTP server."
 msgstr "Zure SMTP zerbitzariaren hostname."
 
-#: includes/class-mailpn-mailing.php:746
+#: includes/class-mailpn-mailing.php:736
 msgid "The mail queue is paused. Please check the mail queue settings."
 msgstr "Posta-ilara pausatuta dago. Mesedez, egiaztatu posta-ilara ezarpenak."
 
@@ -1827,7 +1932,7 @@ msgstr "Zure SMTP konexioaren segurtasun mota."
 msgid "The time unit for the delay period."
 msgstr "Atzerapen-aldiaren denbora-unitatea."
 
-#: includes/class-mailpn-settings.php:1884
+#: includes/class-mailpn-settings.php:1873
 msgid ""
 "These are emails waiting to be sent. They will be processed automatically "
 "every 10 minutes or you can process them manually."
@@ -1844,15 +1949,15 @@ msgstr ""
 "jasotzeko zain daudenak. Erabiltzaileen rolak behar bezala definitzen "
 "direnean automatikoki prozesatuko dira."
 
-#: includes/class-mailpn-ajax.php:111
+#: includes/class-mailpn-ajax.php:115
 msgid "This is a test email sent from the MAILPN plugin."
 msgstr "MAILPN pluginetik bidalitako proba-mezu elektroniko bat da hau."
 
-#: includes/class-mailpn-mailing.php:721
+#: includes/class-mailpn-mailing.php:711
 msgid "This mail has already been sent."
 msgstr "Posta hau dagoeneko bidali da."
 
-#: includes/class-mailpn-mailing.php:731
+#: includes/class-mailpn-mailing.php:721
 msgid "This mail is being sent."
 msgstr "Mezu hau bidaltzen ari da."
 
@@ -1861,7 +1966,7 @@ msgid "This options section sets information that the email will be showing."
 msgstr ""
 "Aukera atal honek mezu elektronikoak erakutsiko duen informazioa ezartzen du."
 
-#: includes/class-mailpn-mailing.php:768
+#: includes/class-mailpn-mailing.php:758
 msgid ""
 "This will send a test email to your current email address using the same "
 "template and content as this mail campaign, bypassing all restrictions and "
@@ -1896,7 +2001,7 @@ msgstr "Klik guztiak:"
 msgid "Total emails"
 msgstr "Mezu elektroniko guztiak"
 
-#: includes/class-mailpn-settings.php:1905
+#: includes/class-mailpn-settings.php:1894
 msgid "Total emails in queue: %d"
 msgstr "Ilaran dauden mezu elektroniko guztiak: %d"
 
@@ -1923,7 +2028,7 @@ msgstr ""
 msgid "Type"
 msgstr "Mota"
 
-#: includes/class-mailpn-ajax.php:100 includes/class-mailpn-ajax.php:127
+#: includes/class-mailpn-ajax.php:100 includes/class-mailpn-ajax.php:131
 msgid "Unauthorized access"
 msgstr "Baimenik gabeko sarbidea"
 
@@ -1940,7 +2045,7 @@ msgstr "URL bakarrak:"
 msgid "Unknown"
 msgstr "Ezezaguna"
 
-#: includes/class-mailpn-ajax.php:295
+#: includes/class-mailpn-ajax.php:302
 msgid "Unknown AJAX type"
 msgstr "AJAX mota ezezaguna"
 
@@ -1949,7 +2054,7 @@ msgstr "AJAX mota ezezaguna"
 msgid "Unknown Email"
 msgstr "Helbide elektroniko ezezaguna"
 
-#: includes/class-mailpn-settings.php:1921
+#: includes/class-mailpn-settings.php:1910
 msgid "Unknown Template"
 msgstr "Txantiloi ezezaguna"
 
@@ -1960,12 +2065,12 @@ msgstr "Txantiloi ezezaguna"
 msgid "Unknown User"
 msgstr "Erabiltzaile ezezaguna"
 
-#: includes/class-mailpn-post-type-mail.php:579
 #: includes/class-mailpn-post-type-rec.php:470
+#: includes/class-mailpn-post-type-mail.php:579
 msgid "Unset email type."
 msgstr "Kendu posta elektroniko mota."
 
-#: includes/class-mailpn-mailing.php:843
+#: includes/class-mailpn-mailing.php:833
 msgid "Unsubscribe"
 msgstr "Harpidetza kendu"
 
@@ -1997,7 +2102,7 @@ msgstr "URLa"
 msgid "User"
 msgstr "Erabiltzailea"
 
-#: includes/class-mailpn-settings.php:655 includes/class-mailpn-ajax.php:142
+#: includes/class-mailpn-settings.php:655 includes/class-mailpn-ajax.php:146
 msgid "User not found"
 msgstr "Erabiltzailea ez da aurkitu"
 
@@ -2011,7 +2116,7 @@ msgstr ""
 msgid "User Roles"
 msgstr "Erabiltzaileen rolak"
 
-#: includes/class-mailpn-mailing.php:1085
+#: includes/class-mailpn-mailing.php:1075
 msgid "Username"
 msgstr "Erabiltzaile izena"
 
@@ -2020,7 +2125,12 @@ msgstr "Erabiltzaile izena"
 msgid "Users receiving the email"
 msgstr "Posta elektronikoa jasotzen duten erabiltzaileak"
 
-#: includes/class-mailpn-mailing.php:752
+#: includes/class-mailpn-notifications-manager.php:133
+#: includes/class-mailpn-notifications-manager.php:136
+msgid "View content"
+msgstr "Ikusi edukia"
+
+#: includes/class-mailpn-mailing.php:742
 msgid "View latest submissions"
 msgstr "Ikusi azken bidalketak"
 
@@ -2032,11 +2142,11 @@ msgstr "Ikusi Posta-erregistroa"
 msgid "View Mail template"
 msgstr "Ikusi Mail txantiloia"
 
-#: includes/class-mailpn-post-type-rec.php:910
+#: includes/class-mailpn-post-type-rec.php:903
 msgid "View Statistics"
 msgstr "Ikusi estatistikak"
 
-#: includes/class-mailpn-mailing.php:1045
+#: includes/class-mailpn-mailing.php:1035
 msgid ""
 "We have received a request to reset the password for your account. If you "
 "made this request, click the link below to change your password:"
@@ -2047,6 +2157,10 @@ msgstr ""
 #: includes/class-mailpn-post-type-mail.php:89
 msgid "Weeks"
 msgstr "Asteak"
+
+#: includes/class-mailpn-notifications-manager.php:525
+msgid "Welcome Email"
+msgstr "Ongi etorri mezu elektronikoa"
 
 #: includes/class-mailpn-data.php:77
 msgid "Welcome email"
@@ -2104,7 +2218,13 @@ msgid "You can set the addresses that will be excluded from the email sending."
 msgstr ""
 "Mezu elektronikoen bidalketatik kanpo utziko diren helbideak ezar ditzakezu."
 
-#: includes/class-mailpn-mailing.php:1080
+#: includes/class-mailpn-notifications-manager.php:664
+msgid "You have %d unread email notification"
+msgid_plural "You have %d unread email notifications"
+msgstr[0] "Irakurri gabeko %d posta elektroniko bidezko jakinarazpen duzu"
+msgstr[1] "Irakurri gabeko %d posta elektroniko bidezko jakinarazpen dituzu"
+
+#: includes/class-mailpn-mailing.php:1070
 msgid ""
 "You have a new user created on our platform. Please create a strong password "
 "to login."
@@ -2112,7 +2232,11 @@ msgstr ""
 "Erabiltzaile berri bat sortu duzu gure plataforman. Mesedez, sortu pasahitz "
 "sendo bat saioa hasteko."
 
-#: includes/class-mailpn-mailing.php:505
+#: includes/class-mailpn-notifications-manager.php:25
+msgid "You must be logged in to view notifications."
+msgstr "Jakinarazpenak ikusteko saioa hasi behar duzu."
+
+#: includes/class-mailpn-mailing.php:495
 msgid "You receive this email for your relationship with the project."
 msgstr "E-mail hau proiektuarekin duzun harremanagatik jasotzen duzu."
 
