@@ -242,63 +242,9 @@ class MAILPN_Notifications_Manager {
      * @since    1.0.0
      */
     public function display_notifications_counter($atts = array()) {
-        // Check if user is logged in
-        if (!is_user_logged_in()) {
-            return '';
-        }
-
-        $current_user_id = get_current_user_id();
-        
-        // Parse shortcode attributes
-        $atts = shortcode_atts(array(
-            'class' => '',
-            'show_zero' => 'false',
-            'format' => 'number', // 'number', 'badge', 'text'
-        ), $atts);
-
-        $unread_count = $this->get_unread_notifications_count($current_user_id);
-        
-        // Don't show anything if count is 0 and show_zero is false
-        if ($unread_count == 0 && $atts['show_zero'] !== 'true') {
-            return '';
-        }
-
-        ob_start();
-        
-        switch ($atts['format']) {
-            case 'badge':
-                ?>
-                <span class="mailpn-notifications-badge <?php echo esc_attr($atts['class']); ?>" data-count="<?php echo esc_attr($unread_count); ?>">
-                    <?php echo esc_html($unread_count); ?>
-                </span>
-                <?php
-                break;
-                
-            case 'text':
-                ?>
-                <span class="mailpn-notifications-text <?php echo esc_attr($atts['class']); ?>">
-                    <?php 
-                    if ($unread_count == 0) {
-                        _e('No unread notifications', 'mailpn');
-                    } else {
-                        printf(_n('%d unread notification', '%d unread notifications', $unread_count, 'mailpn'), $unread_count);
-                    }
-                    ?>
-                </span>
-                <?php
-                break;
-                
-            case 'number':
-            default:
-                ?>
-                <span class="mailpn-notifications-counter <?php echo esc_attr($atts['class']); ?>" data-count="<?php echo esc_attr($unread_count); ?>">
-                    <?php echo esc_html($unread_count); ?>
-                </span>
-                <?php
-                break;
-        }
-        
-        return ob_get_clean();
+        // Counter display disabled - return empty string
+        // Notifications are only visible inside the popup
+        return '';
     }
 
     /**
@@ -686,57 +632,8 @@ class MAILPN_Notifications_Manager {
      * @since    1.0.0
      */
     public function add_notifications_icon_to_profile($content, $args = array()) {
-        // Check if user is logged in
-        if (!is_user_logged_in()) {
-            return $content;
-        }
-
-		// Do not render in admin dashboard
-		if (is_admin()) {
-			return $content;
-		}
-
-        // Get current user ID
-        $current_user_id = get_current_user_id();
-        
-        // Get unread count
-        $unread_count = $this->get_unread_notifications_count($current_user_id);
-        
-        // If no unread notifications, return original content
-        if ($unread_count == 0) {
-            return $content;
-        }
-
-        // Create notifications icon
-        ob_start();
-        ?>
-        <div class="mailpn-profile-notifications-icon" style="position: relative; display: inline-block; margin: 10px;">
-            <div class="mailpn-tooltip">
-                <a href="#" class="mailpn-notifications-profile-link" style="display: inline-block; padding: 8px; background: var(--mailpn-bg-color-main); color: white; border-radius: 50%; text-decoration: none; transition: all 0.3s ease;" title="<?php printf(_n('%d unread notification', '%d unread notifications', $unread_count, 'mailpn'), $unread_count); ?>">
-                    <i class="material-icons-outlined" style="font-size: 24px;">notifications</i>
-                </a>
-                <span class="mailpn-tooltiptext"><?php printf(_n('%d unread notification', '%d unread notifications', $unread_count, 'mailpn'), $unread_count); ?></span>
-            </div>
-            
-            <!-- Notification badge -->
-            <span class="mailpn-notifications-badge" style="position: absolute; top: -5px; right: -5px; background: #f44336; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.75em; font-weight: 600; min-width: 18px; text-align: center; line-height: 1.2;">
-                <?php echo esc_html($unread_count); ?>
-            </span>
-        </div>
-        
-        <?php
-        // Enqueue profile notifications JavaScript
-        wp_enqueue_script('mailpn-profile-notifications', plugin_dir_url(__FILE__) . '../assets/js/mailpn-profile-notifications.js', array('jquery'), '1.0.0', true);
-        
-        // Localize script with data
-        wp_localize_script('mailpn-profile-notifications', 'mailpn_profile_notifications', array(
-            'no_section_message' => __('No notifications section found on this page.', 'mailpn')
-        ));
-        ?>
-        <?php
-        $notifications_icon = ob_get_clean();
-
-        // Prepend notifications icon to the content
-        return $notifications_icon . $content;
+        // Icon and badge display disabled - return original content
+        // Notifications are only visible inside the popup
+        return $content;
     }
 }

@@ -635,7 +635,7 @@ class MAILPN_Settings {
           echo '<p>' . esc_html__('No pending welcome registrations.', 'mailpn') . '</p>';
         } else {
           ?>
-          <table class="wp-list-table widefat fixed striped">
+          <table class="wp-list-table widefat fixed striped mailpn-table mailpn-table-pending-registrations">
             <thead>
               <tr>
                 <th><?php esc_html_e('User', 'mailpn'); ?></th>
@@ -649,14 +649,23 @@ class MAILPN_Settings {
           <?php
 
           foreach ($pending_registrations as $registration) {
-            $user = get_userdata($registration['user_id']);
+            $user = !empty($registration['user_id']) ? get_userdata($registration['user_id']) : false;
+            $user_name = '';
+            
+            if ($user && !empty($registration['user_id'])) {
+              $user_name = MAILPN_Functions_User::get_user_name($registration['user_id']);
+            }
             
             if (!$user) {
-              $user_name = esc_html__('User not found', 'mailpn');
+              if (empty($user_name)) {
+                $user_name = esc_html__('User not found', 'mailpn');
+              }
               $user_email = esc_html__('N/A', 'mailpn');
               $user_roles = esc_html__('N/A', 'mailpn');
             } else {
-              $user_name = $user->display_name;
+              if (empty($user_name)) {
+                $user_name = !empty($user->display_name) ? $user->display_name : esc_html__('Unknown', 'mailpn');
+              }
               $user_email = $user->user_email;
               $user_roles = !empty($user->roles) ? implode(', ', $user->roles) : esc_html__('No roles', 'mailpn');
             }
@@ -784,7 +793,7 @@ class MAILPN_Settings {
 						return $a['scheduled_time'] - $b['scheduled_time'];
 					});
           ?>
-					<table class="wp-list-table widefat fixed striped">
+					<table class="wp-list-table widefat fixed striped mailpn-table mailpn-table-scheduled-emails">
             <thead>
               <tr>
                 <th><?php esc_html_e('Email Template', 'mailpn'); ?></th>
@@ -803,7 +812,13 @@ class MAILPN_Settings {
 						$user = get_userdata($scheduled_email['user_id']);
 						
 						$email_title = $email_post ? $email_post->post_title : esc_html__('Unknown', 'mailpn');
-						$user_name = $user ? $user->display_name : esc_html__('Unknown', 'mailpn');
+						$user_name = '';
+						if ($user && !empty($scheduled_email['user_id'])) {
+							$user_name = MAILPN_Functions_User::get_user_name($scheduled_email['user_id']);
+						}
+						if (empty($user_name)) {
+							$user_name = $user ? $user->display_name : esc_html__('Unknown', 'mailpn');
+						}
 						$user_email = $user ? $user->user_email : esc_html__('Unknown', 'mailpn');
 						$scheduled_time = date('Y-m-d H:i:s', $scheduled_email['scheduled_time']);
 						$created_time = date('Y-m-d H:i:s', $scheduled_email['created_time']);
@@ -869,7 +884,7 @@ class MAILPN_Settings {
 					$recent_logs = array_slice($scheduled_logs, -20);
 					
 					?>
-					<table class="wp-list-table widefat fixed striped">
+					<table class="wp-list-table widefat fixed striped mailpn-table mailpn-table-sent-emails">
             <thead>
               <tr>
                 <th><?php esc_html_e('Email Template', 'mailpn'); ?></th>
@@ -887,7 +902,13 @@ class MAILPN_Settings {
 						$user = get_userdata($log['user_id']);
 						
 						$email_title = $email_post ? $email_post->post_title : esc_html__('Unknown', 'mailpn');
-						$user_name = $user ? $user->display_name : esc_html__('Unknown', 'mailpn');
+						$user_name = '';
+						if ($user && !empty($log['user_id'])) {
+							$user_name = MAILPN_Functions_User::get_user_name($log['user_id']);
+						}
+						if (empty($user_name)) {
+							$user_name = $user ? $user->display_name : esc_html__('Unknown', 'mailpn');
+						}
 						$user_email = $user ? $user->user_email : esc_html__('Unknown', 'mailpn');
 						$scheduled_time = date('Y-m-d H:i:s', $log['scheduled_time']);
 						$sent_time = date('Y-m-d H:i:s', $log['sent_time']);
@@ -935,7 +956,7 @@ class MAILPN_Settings {
 			
 			<div class="mailpn-system-info mailpn-mb-30">
 				<h2><?php esc_html_e('System Information', 'mailpn'); ?></h2>
-				<table class="wp-list-table widefat fixed striped">
+				<table class="wp-list-table widefat fixed striped mailpn-table mailpn-table-system-info">
 					<tbody>
 						<tr>
 							<td><strong><?php esc_html_e('Current Time', 'mailpn'); ?></strong></td>
@@ -1893,7 +1914,7 @@ class MAILPN_Settings {
           
           echo '<p><strong>' . sprintf(esc_html__('Total emails in queue: %d', 'mailpn'), $total_emails) . '</strong></p>';
           ?>
-          <table class="wp-list-table widefat fixed striped">
+          <table class="wp-list-table widefat fixed striped mailpn-table mailpn-table-email-queue">
             <thead>
               <tr>
                 <th><?php esc_html_e('Email Template', 'mailpn'); ?></th>
@@ -1905,7 +1926,7 @@ class MAILPN_Settings {
             <tbody>
           <?php
 
-          foreach ($pending_templates as $mail_id => $user_ids) {
+            foreach ($pending_templates as $mail_id => $user_ids) {
             $email_post = get_post($mail_id);
             $email_title = $email_post ? $email_post->post_title : esc_html__('Unknown Template', 'mailpn');
             $email_type = $email_post ? get_post_meta($mail_id, 'mailpn_type', true) : '';
@@ -1915,8 +1936,15 @@ class MAILPN_Settings {
             foreach ($user_ids as $user_id) {
               $user = get_userdata($user_id);
               if ($user) {
+                $user_display_name = MAILPN_Functions_User::get_user_name($user_id);
+                if (empty($user_display_name)) {
+                  $user_display_name = $user->display_name;
+                }
+                if (empty($user_display_name)) {
+                  $user_display_name = esc_html__('Unknown', 'mailpn');
+                }
                 // Format: display_name-user_id (email)
-                $user_display = $user->display_name . '-' . $user_id . ' (' . $user->user_email . ')';
+                $user_display = $user_display_name . '-' . $user_id . ' (' . $user->user_email . ')';
                 $user_details[] = $user_display;
               }
             }
@@ -1973,7 +2001,7 @@ class MAILPN_Settings {
         $emails_per_batch = get_option('mailpn_sent_every_ten_minutes', 5);
         
         ?>
-        <table class="wp-list-table widefat fixed striped">
+        <table class="wp-list-table widefat fixed striped mailpn-table mailpn-table-queue-stats">
           <tbody>
             <tr>
               <td><strong><?php esc_html_e('Queue Status', 'mailpn'); ?></strong></td>
