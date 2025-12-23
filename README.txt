@@ -13,6 +13,153 @@ Effortlessly manage your email campaigns. Schedule, send, and track emails direc
 
 Transform your WordPress site into a powerful email management hub with our intuitive plugin. Whether you're running newsletters, promotional campaigns, or customer outreach, this tool empowers you to Schedule Emails (plan campaigns in advance with an easy-to-use scheduler), Personalize Content (Create tailored messages with dynamic content fields), Track Performance (Monitor open rates, click-through rates, and engagement metrics in real time), Seamless Integration: (Connect with popular email services or use your SMTP server), Automation Features: (Set up automated responses and drip campaigns to save time and boost engagement). Perfect for bloggers, small businesses, and marketers, this plugin combines simplicity with robust functionality to ensure your emails get delivered and make an impact. Start growing your audience today!
 
+= Core Features =
+
+* **Email Template Management**: Create and manage unlimited email templates using WordPress's familiar post editor. Each template supports rich HTML content, custom styling, and dynamic shortcodes for personalized messaging.
+
+* **SMTP Configuration**: Full SMTP support with authentication, allowing you to connect to any SMTP server (Gmail, Outlook, custom servers). Configure SMTP host, port, security (TLS/SSL), authentication credentials, and custom sender information. Includes Gmail-specific optimizations for better deliverability.
+
+* **Email Queue System**: Intelligent email queue management that processes emails in controlled batches. Configure sending rates (emails per 10 minutes and daily limits) to prevent server overload and ensure optimal deliverability. Automatic queue pausing when daily limits are reached, with automatic reset after 24 hours.
+
+* **Scheduled Email Delivery**: Schedule emails to be sent at specific times in the future. Perfect for welcome emails, follow-ups, and time-sensitive campaigns. Includes delayed welcome email functionality with configurable delays.
+
+* **Email Tracking & Analytics**: Comprehensive tracking system including:
+  - **Open Tracking**: Track email opens using invisible tracking pixels. Monitor when recipients open your emails with timestamps.
+  - **Click Tracking**: Track all link clicks in emails. See which links are clicked most, track unique clicks per user, and analyze click patterns.
+  - **Detailed Statistics**: View click statistics by URL, total clicks, unique users who clicked, and detailed click history with timestamps and IP addresses.
+
+* **Email Types & Automation**:
+  - **Welcome Emails**: Automated welcome emails for new users with configurable delays
+  - **One-Time Emails**: Send emails that are only sent once per recipient
+  - **Published Content Emails**: Automatically send emails when new content is published. Configure to send notifications about new posts, pages, or custom post types
+  - **Coded Emails**: Special emails with unique codes (e.g., verification codes)
+  - **Password Reset Emails**: Customizable password reset emails with branded templates
+  - **New User Notifications**: Automated emails sent when new users register
+
+* **WooCommerce Integration**: Seamless integration with WooCommerce for e-commerce email automation:
+  - **Purchase Emails**: Automatically send emails after purchase completion with configurable delays
+  - **Abandoned Cart Emails**: Detect and send emails to users who abandon their shopping carts. Configurable delay periods (minutes, hours, or days)
+  - **Cart Tracking**: Monitor cart activity and send targeted recovery emails
+
+* **Email Distribution Options**: Flexible recipient targeting:
+  - Send to all users
+  - Send to specific user roles
+  - Send to individual selected users
+  - Support for custom user queries
+
+* **Exception Management**: Advanced email filtering system:
+  - Exclude specific email domains from receiving emails
+  - Exclude individual email addresses
+  - Perfect for testing environments or excluding internal accounts
+
+* **Email Records & History**: Complete audit trail of all sent emails:
+  - Track every email sent with full details (recipient, subject, content, attachments, timestamps)
+  - View email status (sent, queued, failed)
+  - Detailed error logging for failed sends
+  - Email content stored in both HTML and plain text formats
+  - Server information and IP tracking
+
+* **Dashboard & Statistics**: Comprehensive dashboard providing:
+  - Recent sent emails count (last 7 days)
+  - Pending scheduled emails count
+  - Detailed email history with filtering options
+  - Visual statistics and progress tracking
+  - Email queue status monitoring
+
+* **Email Templates & Branding**: Professional email template system:
+  - Customizable header images
+  - Customizable footer images
+  - Configurable maximum email width
+  - Legal information footer (company name, address)
+  - Custom footer messages
+  - Social media links support
+  - Responsive design for mobile devices
+
+* **Dynamic Content & Shortcodes**: Powerful shortcode system for personalization:
+  - `[user-name]` - Display recipient's name
+  - `[post-name]` - Display post titles with links
+  - `[new-contents]` - Display recently published content
+  - Support for user data (first name, last name, email, nickname, ID)
+  - Post-specific shortcodes
+  - Custom content filters
+
+* **Test Email Functionality**: Send test emails to verify templates before sending to all recipients. Test emails bypass queue system and restrictions for immediate delivery.
+
+* **Error Handling & Logging**: Robust error management:
+  - Detailed error messages for failed sends
+  - SMTP error reporting
+  - Option to email admin on send failures
+  - Error retry functionality
+  - Comprehensive error logs with timestamps and details
+
+* **Role-Based Permissions**: Fine-grained access control:
+  - Custom capabilities for email management
+  - Role-specific permissions for creating, editing, and sending emails
+  - Taxonomy capabilities for email categories
+  - Secure permission system following WordPress standards
+
+* **Email Queue Management**: Advanced queue control:
+  - View and manage pending emails
+  - Pause/resume queue functionality
+  - Progress tracking for bulk sends
+  - Automatic cleanup of processed items
+  - Queue status indicators
+
+* **Welcome Email Management**: Dedicated interface for managing welcome emails:
+  - View pending welcome email registrations
+  - Manage scheduled welcome emails
+  - Cleanup tools for old or stuck registrations
+  - Unified management interface
+
+* **Notifications System**: Built-in notification management:
+  - User notification preferences
+  - Subscription management links in emails
+  - Unsubscribe functionality
+  - Integration with USERSPN plugin for enhanced user management
+
+* **Multilingual Support**: Fully translation-ready:
+  - Translation files included for Spanish (ES), Catalan (CA), Basque (EU), Galician (GL), Italian (IT), and Portuguese (PT)
+  - Uses WordPress i18n standards
+  - Easy to translate with Loco Translate or similar tools
+
+* **Security Features**:
+  - Nonce verification for all AJAX requests
+  - Input sanitization and validation
+  - KSES filtering for HTML content
+  - Secure SMTP password storage
+  - Permission checks throughout
+
+* **Cron Job Management**: Automated background processing:
+  - Daily cleanup tasks (removed users, old logs)
+  - Every 10 minutes email queue processing
+  - Weekly maintenance tasks
+  - Scheduled email processing
+  - WooCommerce automated email processing
+
+* **Form Builder Integration**: Advanced form building capabilities:
+  - Multiple input types (text, email, select, textarea, file uploads, images, videos, audio)
+  - Conditional fields
+  - Multi-field groups
+  - Password strength checker
+  - Range inputs with visual feedback
+  - Star rating inputs
+
+* **Public-Facing Features**:
+  - Email subscription management popups
+  - Unsubscribe functionality
+  - Click tracking redirects
+  - Open tracking endpoints
+  - Public shortcodes for notifications
+
+* **Developer-Friendly**:
+  - Well-structured codebase following WordPress coding standards
+  - Extensible with filters and hooks
+  - Custom post types for emails and records
+  - Custom taxonomies for organization
+  - REST API endpoints for tracking
+
+Perfect for bloggers, small businesses, e-commerce stores, and marketers who need a comprehensive email management solution without the complexity of external services. The plugin integrates seamlessly with WordPress and provides all the tools you need to create, send, track, and manage your email campaigns effectively.
+
 
 == Credits ==
 This plugin stands on the shoulders of giants
