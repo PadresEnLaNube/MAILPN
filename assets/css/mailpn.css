@@ -1174,44 +1174,6 @@ textarea{
 .mailpn-white-space-pre-wrap{
   white-space:pre-wrap;
 }
-.mailpn-width-100-percent~.select2-container{
-  width:100%!important;
-}
-.mailpn-body .select2-search__field{
-  padding:10px!important;
-  font-size:var(--wp--preset--font-size--normal);
-}
-.mailpn-select,.mailpn-select~.select2-container .select2-selection__rendered{
-  font-family:var(--wp--preset--font-family--manrope);
-  font-weight:var(--wp--preset--font-weight--normal);
-  font-size:var(--wp--preset--font-size--normal);
-}
-.mailpn-select.mailpn-display-none + .mailpn-select~.select2-container{
-  display:none
-}
-.mailpn-body.mailpn-body-logged-in.mailpn-body-administrator .select2-dropdown{
-  top:30px;
-}
-.mailpn-select~.select2-container .select2-selection--single,.mailpn-select~.select2-container .select2-selection:not(.select2-selection--multiple) .select2-selection__rendered,.mailpn-select~.select2-container .select2-selection__arrow{
-  min-height:45px;
-}
-.mailpn-select~.select2-container .select2-selection__placeholder,.mailpn-select~.select2-container .select2-selection:not(.select2-selection--multiple) .select2-selection__rendered{
-  line-height:45px;
-}
-.mailpn-select~.select2-container .select2-selection--single .select2-selection__clear{
-  font-size:var(--wp--preset--font-size--normal);
-  padding-right:10px;
-}
-.mailpn-select~.select2-container .select2-selection--single .select2-selection__rendered{
-  padding-top:0;
-  padding-bottom:0;
-}
-.mailpn-select~.select2-container .select2-selection--multiple{
-  height:auto;
-}
-.mailpn-select~.select2-container .select2-selection--multiple .select2-search--inline{
-  display:contents;
-}
 
 /* mailpn TABS */
 .mailpn-tabs{
@@ -1763,17 +1725,19 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
     color:var(--mailpn-color-main);
     font-size:16px;
   }
-  .mailpn-input-field-disabled input,.mailpn-input-field-disabled select,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--single,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__rendered,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__rendered input,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered input,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered li{
-    border:0!important;
-    padding:0!important;
-    background-color:transparent!important;
+
+  /* Section vertical line for code-folding style */
+  .mailpn-section-wrapper {
+    position: relative;
   }
-  .mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__arrow,.mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__clear{
-    display:none!important;
+
+  /* Vertical line for code folding style. We don't depend on JS: the block itself is hidden with display:none when closed, so the border only shows when open. */
+  .mailpn-section-wrapper > .mailpn-toggle-content {
+    position: relative;
+    border-left: 2px solid var(--mailpn-color-main);
+    padding-left: 18px; /* 20px original - 2px border */
   }
-  .mailpn-select~.select2-container--default.select2-container--disabled .select2-selection--multiple .select2-selection__rendered{
-    display:grid!important;
-  }
+
 /* END mailpn FORMS */
 
 /* mailpn SWITCH */
