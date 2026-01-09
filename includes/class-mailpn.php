@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.9';
+			$this->mailpn_version = '1.0.10';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';

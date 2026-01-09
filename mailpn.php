@@ -13,7 +13,7 @@
  * Plugin Name:       Mailing Manager - PN
  * Plugin URI:        https://padresenlanube.com/plugins/mailpn/
  * Description:       Effortlessly manage your email campaigns with our WordPress Email Management Plugin. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
- * Version:           1.0.9
+ * Version:           1.0.10
  * Requires at least: 3.0
  * Requires PHP:      7.2
  * Author:            Padres en la Nube
@@ -34,7 +34,7 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('MAILPN_VERSION', '1.0.9');
+define('MAILPN_VERSION', '1.0.10');
 define('MAILPN_DIR', plugin_dir_path(__FILE__));
 define('MAILPN_URL', plugin_dir_url(__FILE__));
 
