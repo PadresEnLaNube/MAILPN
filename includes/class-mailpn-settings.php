@@ -265,7 +265,7 @@ class MAILPN_Settings {
     $mailpn_options['mailpn_section_smtp_start'] = [
       'section' => 'start',
       'label' => __('SMTP Configuration', 'mailpn'),
-      'description' => __('Configure your SMTP server settings for sending emails.', 'mailpn'),
+      'description' => __('Configure your SMTP server settings for sending emails. To set up SMTP: 1) Enable SMTP by checking the "Enable SMTP" checkbox, 2) Enter your SMTP Host (e.g., smtp.gmail.com for Gmail, smtp.mail.yahoo.com for Yahoo), 3) Set the SMTP Port (commonly 587 for TLS or 465 for SSL), 4) Select the Security type (TLS, SSL, or None), 5) If your server requires authentication, enable "SMTP Authentication" and enter your Username and Password (for Gmail, you must use an App Password, not your regular password), 6) Optionally set the From Email and From Name that will appear as the sender. After configuration, test your settings by sending a test email.', 'mailpn'),
     ];
 
     $mailpn_options['mailpn_smtp_enabled'] = [
@@ -375,6 +375,17 @@ class MAILPN_Settings {
       'label' => __('From Name (SMTP)', 'mailpn'),
       'placeholder' => 'Your Name',
       'description' => __('The name that will be used as the sender when using SMTP.', 'mailpn'),
+    ];
+
+    $mailpn_options['mailpn_smtp_wp_native_emails'] = [
+      'id' => 'mailpn_smtp_wp_native_emails',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'checkbox',
+      'parent' => 'mailpn_smtp_enabled',
+      'parent_option' => 'on',
+      'label' => __('Use SMTP for native WordPress emails', 'mailpn'),
+      'description' => __('When enabled, all native WordPress emails (password recovery, new user notification, comment notifications, admin notifications, etc.) will be sent via your SMTP server instead of the default PHP mail(). Requires SMTP to be enabled and configured above.', 'mailpn'),
     ];
 
     $mailpn_options['mailpn_section_smtp_end'] = [

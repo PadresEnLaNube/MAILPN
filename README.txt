@@ -4,7 +4,7 @@ Donate link: https://padresenlanube.com/
 Tags: email, mailing, notifications, sender, mail address
 Requires at least: 3.0
 Tested up to: 6.8
-Stable tag: 1.0.10
+Stable tag: 1.0.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Effortlessly manage your email campaigns. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
@@ -177,12 +177,6 @@ Copyright 2013-2018 David Deutsch
 https://owlcarousel2.github.io/OwlCarousel2/
 https://github.com/OwlCarousel2/OwlCarousel2/blob/develop/dist/owl.carousel.js
 
-Select2 4.0.13
-License MIT - https://github.com/select2/select2/blob/master/LICENSE.md
-https://github.com/select2/select2/tree/master
-https://github.com/select2/select2/blob/master/dist/js/select2.js
-https://github.com/select2/select2/blob/master/dist/css/select2.css
-
 Trumbowyg v2.27.3 - A lightweight WYSIWYG editor
 alex-d.github.io/Trumbowyg/
 License MIT - Author : Alexandre Demode (Alex-D)
@@ -249,6 +243,224 @@ The Mailing Manager - PN plugin is tested with the latest version of WordPress. 
 = How do I uninstall the plugin? =
 
 To uninstall the plugin, go to the 'Plugins' screen in WordPress, find the Mailing Manager - PN plugin, and click 'Deactivate'. After deactivating, you can click 'Delete' to remove the plugin and its files from your site. Note that this will not delete your recipes, but you should back up your data before uninstalling any plugin.
+
+
+== Developers ==
+
+This section provides comprehensive documentation for developers who want to integrate or extend the MAILPN plugin functionality.
+
+=== Plugin Structure ===
+
+* **Main File**: `mailpn.php`
+* **Version**: 1.0.15
+* **Constants**: `MAILPN_VERSION`, `MAILPN_DIR`, `MAILPN_URL`, `MAILPN_CPTS`
+* **Custom Post Types**: `mailpn_mail` (emails), `mailpn_rec` (records)
+
+=== Sending Emails Programmatically ===
+
+==== Using Shortcode (Recommended) ====
+
+The primary method to send emails is through the `[mailpn-sender]` shortcode:
+
+```
+do_shortcode('[mailpn-sender 
+    mailpn_type="email_welcome" 
+    mailpn_user_to="1" 
+    mailpn_subject="Email Subject"
+    mailpn_id="123"
+    mailpn_once="1"
+]Email content here[/mailpn-sender]');
+```
+
+**Parameters:**
+* `mailpn_user_to` (required): User ID or email address
+* `mailpn_id` (optional): Post ID of type `mailpn_mail`
+* `mailpn_type` (optional): Email type (`email_welcome`, `email_published_content`, `email_coded`, etc.)
+* `mailpn_subject` (optional): Email subject line
+* `mailpn_once` (optional): Set to `1` to send only once per user
+* `post_id` (optional): Related post ID
+* `post_parent_id` (optional): Parent post ID
+
+==== Using PHP Class Directly ====
+
+```
+$mailing = new MAILPN_Mailing();
+$result = $mailing->mailpn_sender([
+    'mailpn_user_to' => 1,
+    'mailpn_id' => 123,
+    'mailpn_type' => 'email_welcome',
+    'mailpn_subject' => 'Welcome',
+    'mailpn_once' => 1
+], 'Email content');
+```
+
+=== Available Shortcodes ===
+
+==== Content Shortcodes ====
+* `[mailpn-text query="addressee_name" user_id="1"]` - Display user data (name, email, ID, nickname)
+* `[user-name]` - Display recipient's name
+* `[post-name]` - Display post title with link
+* `[new-contents]` - Display recently published content
+* `[mailpn-contents post_id="123"]` - Display content based on email type
+
+==== Utility Shortcodes ====
+* `[mailpn-mail]` - Render complete email
+* `[mailpn-call-to-action]` - Call-to-action button
+* `[mailpn-notifications]` - Notification system
+* `[mailpn-notifications-counter]` - Notification counter
+
+=== Configuration Options ===
+
+Access plugin settings using WordPress `get_option()`:
+
+==== SMTP Configuration ====
+* `mailpn_smtp_enabled` - Enable/disable SMTP ('on'/'off')
+* `mailpn_smtp_wp_native_emails` - Use SMTP for native WordPress emails ('on'/'off'). When on, password recovery, new user notification, comment notifications, admin notifications and any other wp_mail() call use SMTP.
+* `mailpn_smtp_host` - SMTP host address
+* `mailpn_smtp_port` - SMTP port number
+* `mailpn_smtp_secure` - Security type ('tls', 'ssl', or 'none')
+* `mailpn_smtp_username` - SMTP username
+* `mailpn_smtp_password` - SMTP password
+
+==== Sending Limits ====
+* `mailpn_sent_every_ten_minutes` - Emails per 10 minutes (default: 5)
+* `mailpn_sent_every_day` - Daily email limit (default: 500)
+
+==== Sender Information ====
+* `mailpn_from_name` - Sender name
+* `mailpn_from_email` - Sender email address
+
+==== Email Exceptions ====
+* `mailpn_exception_emails` - Enable exception system ('on'/'off')
+* `mailpn_exception_emails_domains` - Exclude email domains
+* `mailpn_exception_emails_addresses` - Exclude specific email addresses
+
+==== Tracking ====
+* `mailpn_click_tracking` - Enable click tracking ('on'/'off')
+* `mailpn_open_tracking` - Enable open tracking ('on'/'off')
+
+=== Email Queue Management ===
+
+==== Queue System ====
+```
+// Get current queue
+$queue = get_option('mailpn_queue'); // Array: [mail_id => [user_ids]]
+
+// Process queue manually
+$mailing = new MAILPN_Mailing();
+$mailing->mailpn_queue_process();
+
+// Check queue status
+$paused = get_option('mailpn_queue_paused'); // 'on' if paused
+```
+
+==== Adding Emails to Queue ====
+```
+$mail_id = 123;
+$users = get_users(['fields' => 'ids']);
+$queue = get_option('mailpn_queue', []);
+
+foreach ($users as $user_id) {
+    $queue[$mail_id][] = $user_id;
+}
+
+update_option('mailpn_queue', $queue);
+// Queue is processed automatically via cron every 10 minutes
+```
+
+=== Tracking and Analytics ===
+
+==== Click Tracking ====
+```
+// Automatically replace links with tracking (built-in)
+// Or manually:
+$content = MAILPN_Click_Tracking::replace_links($content, $mail_id, $user_id);
+
+// Track click manually
+MAILPN_Click_Tracking::track_click($mail_id, $user_id, $url);
+```
+
+==== Open Tracking ====
+Open tracking is automatic via tracking pixel. Data is stored in `mailpn_rec` custom post type.
+
+==== Statistics ====
+Access statistics via AJAX action: `wp_ajax_mailpn_get_statistics` (requires proper permissions)
+
+=== Hooks and Filters ===
+
+==== Actions ====
+* `mailpn_form_save` - Fired when forms are saved
+* `mailpn_cron_daily` - Daily cron task
+* `mailpn_cron_ten_minutes` - Every 10 minutes cron task
+* `mailpn_cron_weekly` - Weekly cron task
+
+==== Filters ====
+* `wp_mail_from` - Customize sender email
+* `wp_mail_from_name` - Customize sender name
+* `retrieve_password_message` - Customize password reset email
+* `wp_new_user_notification_email` - Customize new user email
+
+=== WooCommerce Integration ===
+
+The plugin automatically integrates with WooCommerce if active:
+* Purchase completion emails
+* Abandoned cart emails
+* Cart activity tracking
+
+=== Example Usage ===
+
+==== Send Welcome Email ====
+```
+$user_id = 1;
+$subject = 'Welcome to our site';
+$content = '<h1>Welcome!</h1><p>Thanks for registering.</p>';
+
+do_shortcode('[mailpn-sender 
+    mailpn_type="email_welcome" 
+    mailpn_user_to="' . $user_id . '" 
+    mailpn_subject="' . esc_attr($subject) . '"
+    mailpn_once="1"
+]' . $content . '[/mailpn-sender]');
+```
+
+==== Send Personalized Email ====
+```
+$user_id = 1;
+$mail_id = 123;
+
+do_shortcode('[mailpn-sender 
+    mailpn_user_to="' . $user_id . '" 
+    mailpn_id="' . $mail_id . '"
+    mailpn_subject="Important Notification"
+]Hello [user-name], this is a personalized email.[/mailpn-sender]');
+```
+
+=== Security Considerations ===
+
+* All AJAX requests require nonce verification
+* Input sanitization via `MAILPN_Forms::mailpn_sanitizer()`
+* KSES filtering for HTML content
+* User permission checks throughout
+* Secure SMTP password storage
+
+=== Key Developer Files ===
+
+* `includes/class-mailpn.php` - Main plugin class
+* `includes/class-mailpn-mailing.php` - Email sending functionality
+* `includes/class-mailpn-settings.php` - Settings management
+* `includes/class-mailpn-ajax.php` - AJAX handlers
+* `includes/class-mailpn-cron.php` - Scheduled tasks
+* `includes/class-mailpn-click-tracking.php` - Click tracking
+
+=== Requirements ===
+
+* WordPress 3.0 or higher
+* PHP 7.2 or higher
+* WordPress cron must be functional for queue processing
+
+=== Support ===
+
+For developer support, visit the plugin's support forum or contact: info@padresenlanube.com
 
 
 == Changelog ==

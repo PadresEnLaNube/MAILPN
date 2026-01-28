@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.10';
+			$this->mailpn_version = '1.0.15';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -240,6 +240,11 @@ class MAILPN {
 		 * The class responsible for notifications management.
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-notifications-manager.php';
+
+		/**
+		 * The class responsible for selector functionality.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-selector.php';
 
 		$this->mailpn_loader = new MAILPN_Loader();
 	}
@@ -622,6 +627,10 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-notifications-counter', $plugin_shortcodes, 'mailpn_notifications_counter');
 		
 		$plugin_mailing = new MAILPN_Mailing();
+		// Use SMTP for native WordPress emails (password recovery, new user, comments, etc.) when both options are enabled.
+		if (get_option('mailpn_smtp_enabled') === 'on' && get_option('mailpn_smtp_wp_native_emails') === 'on') {
+			add_action('phpmailer_init', [$plugin_mailing, 'mailpn_configure_smtp']);
+		}
 		if (get_option('mailpn_password_new') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('wp_new_user_notification_email', $plugin_mailing, 'mailpn_wp_new_user_notification_email', 10, 3);
 		}

@@ -1284,6 +1284,13 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 .mailpn-task{
   margin-bottom:20px;
 }
+.toplevel_page_mailpn_options .mailpn-input-wrapper.mailpn_submit {
+  position: fixed;
+  bottom: 0;
+  right: calc(50% - 150px);
+  margin-bottom: 0;
+  z-index: 99999;
+}
 
 @media all and (max-width:768px){
   .mailpn-text-2-columns{
@@ -1462,13 +1469,44 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   }
 /* END OWL CAROUSEL */
 
-/* mailpn FORMS */
+/* MAILPN FORMS */
   .mailpn-section-helper{
     position:absolute;
     left:-25px;
     top:-5px;
     font-size:20px!important;
     cursor:help;
+  }
+  .mailpn-section-info-block{
+    margin-bottom:20px;
+  }
+  .mailpn-section-info-icon{
+    font-size:16px;
+    margin-right:3px;
+    vertical-align:middle!important;
+    color:var(--mailpn-color-main);
+    display:inline-block;
+    width:30px!important;
+  }
+  .mailpn-section-info-block small{
+    vertical-align:middle!important;
+  }
+  .mailpn-toggle{
+    outline:none;
+    box-shadow:none;
+  }
+  .mailpn-toggle:focus,
+  .mailpn-toggle:active,
+  .mailpn-toggle:focus-visible{
+    outline:none;
+    box-shadow:none;
+  }
+  a.mailpn-toggle:focus,
+  a.mailpn-toggle:active,
+  a.mailpn-toggle:focus-visible{
+    outline:none !important;
+    box-shadow:none !important;
+    border:none !important;
   }
   .mailpn-toggle label{
     font-weight:bold;
@@ -1738,9 +1776,9 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
     padding-left: 18px; /* 20px original - 2px border */
   }
 
-/* END mailpn FORMS */
+/* END MAILPN FORMS */
 
-/* mailpn SWITCH */
+/* MAILPN SWITCH */
   .mailpn-switch input.mailpn-input[type="checkbox"]{
     min-height:24px!important;
     margin-bottom:0!important;
@@ -1798,7 +1836,7 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   .mailpn-checkbox[disabled] ~ .mailpn-slider{
     cursor:default;
   }
-/* END mailpn SWITCH */
+/* END MAILPN SWITCH */
 
 /* MAILPN NOTIFICATIONS STYLES */
 .mailpn-notifications-container {

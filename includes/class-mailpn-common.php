@@ -10,7 +10,8 @@
  * @subpackage MAILPN/includes
  * @author     Padres en la Nube <info@padresenlanube.com>
  */
-class MAILPN_Common {
+class MAILPN_Common
+{
 
 	/**
 	 * The ID of this plugin.
@@ -37,7 +38,8 @@ class MAILPN_Common {
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct($plugin_name, $version) {
+	public function __construct($plugin_name, $version)
+	{
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 	}
@@ -47,31 +49,32 @@ class MAILPN_Common {
 	 *
 	 * @since    1.0.0
 	 */
-	public function mailpn_enqueue_styles() {
+	public function mailpn_enqueue_styles()
+	{
 		if (!wp_style_is($this->plugin_name . '-material-icons-outlined', 'enqueued')) {
 			wp_enqueue_style($this->plugin_name . '-material-icons-outlined', MAILPN_URL . 'assets/css/material-icons-outlined.min.css', [], $this->version, 'all');
-    }
+		}
 
-    if (!wp_style_is($this->plugin_name . '-select2', 'enqueued')) {
-			wp_enqueue_style($this->plugin_name . '-select2', MAILPN_URL . 'assets/css/select2.min.css', [], $this->version, 'all');
-    }
+		if (!wp_style_is($this->plugin_name . '-selector', 'enqueued')) {
+			wp_enqueue_style($this->plugin_name . '-selector', MAILPN_URL . 'assets/css/mailpn-selector.css', [], $this->version, 'all');
+		}
 
-    if (!wp_style_is($this->plugin_name . '-trumbowyg', 'enqueued')) {
+		if (!wp_style_is($this->plugin_name . '-trumbowyg', 'enqueued')) {
 			wp_enqueue_style($this->plugin_name . '-trumbowyg', MAILPN_URL . 'assets/css/trumbowyg.min.css', [], $this->version, 'all');
-    }
+		}
 
-    if (!wp_style_is($this->plugin_name . '-popups', 'enqueued')) {
-		wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');
-    }
+		if (!wp_style_is($this->plugin_name . '-popups', 'enqueued')) {
+			wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');
+		}
 
 
-    if (!wp_style_is($this->plugin_name . '-tooltipster', 'enqueued')) {
+		if (!wp_style_is($this->plugin_name . '-tooltipster', 'enqueued')) {
 			wp_enqueue_style($this->plugin_name . '-tooltipster', MAILPN_URL . 'assets/css/tooltipster.min.css', [], $this->version, 'all');
-    }
+		}
 
-    if (!wp_style_is($this->plugin_name . '-owl', 'enqueued')) {
+		if (!wp_style_is($this->plugin_name . '-owl', 'enqueued')) {
 			wp_enqueue_style($this->plugin_name . '-owl', MAILPN_URL . 'assets/css/owl.min.css', [], $this->version, 'all');
-    }
+		}
 
 		wp_enqueue_style($this->plugin_name, MAILPN_URL . 'assets/css/mailpn.css', [], $this->version, 'all');
 	}
@@ -81,30 +84,31 @@ class MAILPN_Common {
 	 *
 	 * @since    1.0.0
 	 */
-	public function mailpn_enqueue_scripts() {
-    if(!wp_script_is('jquery-ui-sortable', 'enqueued')) {
+	public function mailpn_enqueue_scripts()
+	{
+		if (!wp_script_is('jquery-ui-sortable', 'enqueued')) {
 			wp_enqueue_script('jquery-ui-sortable');
-    }
+		}
 
-    if(!wp_script_is($this->plugin_name . '-select2', 'enqueued')) {
-			wp_enqueue_script($this->plugin_name . '-select2', MAILPN_URL . 'assets/js/select2.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
-    }
+		if(!wp_script_is($this->plugin_name . '-selector', 'enqueued')) {
+			wp_enqueue_script($this->plugin_name . '-selector', MAILPN_URL . 'assets/js/mailpn-selector.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+		}
 
-    if(!wp_script_is($this->plugin_name . '-trumbowyg', 'enqueued')) {
+		if (!wp_script_is($this->plugin_name . '-trumbowyg', 'enqueued')) {
 			wp_enqueue_script($this->plugin_name . '-trumbowyg', MAILPN_URL . 'assets/js/trumbowyg.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
-    }
+		}
 
-	if(!wp_script_is($this->plugin_name . '-popups', 'enqueued')) {
-		wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
-	}
+		if (!wp_script_is($this->plugin_name . '-popups', 'enqueued')) {
+			wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+		}
 
-    if(!wp_script_is($this->plugin_name . '-tooltipster', 'enqueued')) {
+		if (!wp_script_is($this->plugin_name . '-tooltipster', 'enqueued')) {
 			wp_enqueue_script($this->plugin_name . '-tooltipster', MAILPN_URL . 'assets/js/tooltipster.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
-    }
+		}
 
-    if(!wp_script_is($this->plugin_name . '-owl', 'enqueued')) {
+		if (!wp_script_is($this->plugin_name . '-owl', 'enqueued')) {
 			wp_enqueue_script($this->plugin_name . '-owl', MAILPN_URL . 'assets/js/owl.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
-    }
+		}
 
 		wp_enqueue_script($this->plugin_name, MAILPN_URL . 'assets/js/mailpn.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		wp_enqueue_script($this->plugin_name . '-ajax', MAILPN_URL . 'assets/js/mailpn-ajax.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
@@ -128,7 +132,7 @@ class MAILPN_Common {
 		$mailpn_btn_id = !empty($_GET['mailpn_btn_id']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_btn_id'])) : '';
 		$mailpn_popup = !empty($_GET['mailpn_popup']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_popup'])) : '';
 		$mailpn_tab = !empty($_GET['mailpn_tab']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_tab'])) : '';
-		
+
 		wp_localize_script($this->plugin_name, 'mailpn_action', [
 			'action' => $mailpn_action,
 			'btn_id' => $mailpn_btn_id,
@@ -162,22 +166,29 @@ class MAILPN_Common {
 			'select_files' => esc_html(__('Select files', 'mailpn')),
 			'ordered_element' => esc_html(__('Ordered element', 'mailpn')),
 		]);
+
+		// Initialize popups
+		MAILPN_Popups::instance();
+
+		// Initialize selectors
+		MAILPN_Selector::instance();
 	}
 
-  public function mailpn_body_classes($classes) {
-	  $classes[] = 'mailpn-body';
+	public function mailpn_body_classes($classes)
+	{
+		$classes[] = 'mailpn-body';
 
-	  if (!is_user_logged_in()) {
-      $classes[] = 'mailpn-body-unlogged';
-    }else{
-      $classes[] = 'mailpn-body-logged-in';
+		if (!is_user_logged_in()) {
+			$classes[] = 'mailpn-body-unlogged';
+		} else {
+			$classes[] = 'mailpn-body-logged-in';
 
-      $user = new WP_User(get_current_user_id());
-      foreach ($user->roles as $role) {
-        $classes[] = 'mailpn-body-' . $role;
-      }
-    }
+			$user = new WP_User(get_current_user_id());
+			foreach ($user->roles as $role) {
+				$classes[] = 'mailpn-body-' . $role;
+			}
+		}
 
-	  return $classes;
-  }
+		return $classes;
+	}
 }

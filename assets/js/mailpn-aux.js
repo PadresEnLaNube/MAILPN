@@ -8,10 +8,16 @@
 
     if ($('.mailpn-select').length) {
       $('.mailpn-select').each(function(index) {
-        if ($(this).children('option').length < 7) {
-          $(this).select2({minimumResultsForSearch: -1, allowClear: true});
-        }else{
-          $(this).select2({allowClear: true});
+        if ($(this).attr('multiple') == 'true') {
+          // For a multiple select
+          $(this).MAILPN_Selector({
+            multiple: true,
+            searchable: true,
+            placeholder: mailpn_i18n.select_options,
+          });
+        } else {
+          // For a single select
+          $(this).MAILPN_Selector();
         }
       });
     }

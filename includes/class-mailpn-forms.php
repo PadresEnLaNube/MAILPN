@@ -432,10 +432,6 @@ class MAILPN_Forms {
       <?php if (array_key_exists('section', $input_array) && !empty($input_array['section'])): ?>      
         <?php if ($input_array['section'] == 'start'): ?>
           <div class="mailpn-toggle-wrapper mailpn-section-wrapper mailpn-position-relative mailpn-mb-30 <?php echo array_key_exists('class', $input_array) ? esc_attr($input_array['class']) : ''; ?>" id="<?php echo array_key_exists('id', $input_array) ? esc_attr($input_array['id']) : ''; ?>">
-            <?php if (array_key_exists('description', $input_array) && !empty($input_array['description'])): ?>
-              <i class="material-icons-outlined mailpn-section-helper mailpn-color-main-0 mailpn-tooltip" title="<?php echo wp_kses_post($input_array['description']); ?>">help</i>
-            <?php endif ?>
-
             <a href="#" class="mailpn-toggle mailpn-width-100-percent mailpn-text-decoration-none">
               <div class="mailpn-display-table mailpn-width-100-percent mailpn-mb-20">
                 <div class="mailpn-display-inline-table mailpn-width-90-percent">
@@ -448,6 +444,12 @@ class MAILPN_Forms {
             </a>
 
             <div class="mailpn-content mailpn-pl-10 mailpn-toggle-content mailpn-mb-20 mailpn-display-none-soft">
+              <?php if (array_key_exists('description', $input_array) && !empty($input_array['description'])): ?>
+                <div class="mailpn-section-info-block mailpn-mb-20">
+                  <i class="material-icons-outlined mailpn-section-info-icon">info_outline</i>
+                  <small><?php echo wp_kses_post($input_array['description']); ?></small>
+                </div>
+              <?php endif ?>
         <?php elseif ($input_array['section'] == 'end'): ?>
             </div>
           </div>
@@ -475,6 +477,258 @@ class MAILPN_Forms {
           </div>
         </div>
       <?php endif ?>
+    <?php
+  }
+
+  /**
+   * Display wrapper for field values with format control
+   * 
+   * @param array $input_array The input array containing field configuration
+   * @param string $type The type of field (user, post, option)
+   * @param int $mailpn_id The ID of the user/post/option
+   * @param int $mailpn_meta_array Whether the field is part of a meta array
+   * @param int $mailpn_array_index The index in the meta array
+   * @param string $mailpn_format The display format ('half' or 'full')
+   * @return string Formatted HTML output
+   */
+  public static function mailpn_input_display_wrapper($input_array, $type, $mailpn_id = 0, $mailpn_meta_array = 0, $mailpn_array_index = 0, $mailpn_format = 'half') {
+    ob_start();
+    ?>
+    <?php if (array_key_exists('section', $input_array) && !empty($input_array['section'])): ?>      
+      <?php if ($input_array['section'] == 'start'): ?>
+        <div class="mailpn-toggle-wrapper mailpn-section-wrapper mailpn-position-relative mailpn-mb-30 <?php echo array_key_exists('class', $input_array) ? esc_attr($input_array['class']) : ''; ?>" id="<?php echo array_key_exists('id', $input_array) ? esc_attr($input_array['id']) : ''; ?>">
+          <a href="#" class="mailpn-toggle mailpn-width-100-percent mailpn-text-decoration-none">
+            <div class="mailpn-display-table mailpn-width-100-percent mailpn-mb-20">
+              <div class="mailpn-display-inline-table mailpn-width-90-percent">
+                <label class="mailpn-cursor-pointer mailpn-mb-20 mailpn-color-main-0"><?php echo wp_kses($input_array['label'], MAILPN_KSES); ?></label>
+              </div>
+              <div class="mailpn-display-inline-table mailpn-width-10-percent mailpn-text-align-right">
+                <i class="material-icons-outlined mailpn-cursor-pointer mailpn-color-main-0">add</i>
+              </div>
+            </div>
+          </a>
+
+          <div class="mailpn-content mailpn-pl-10 mailpn-toggle-content mailpn-mb-20 mailpn-display-none-soft">
+            <?php if (array_key_exists('description', $input_array) && !empty($input_array['description'])): ?>
+              <div class="mailpn-section-info-block mailpn-mb-20">
+                <i class="material-icons-outlined mailpn-section-info-icon">info_outline</i>
+                <small><?php echo wp_kses_post($input_array['description']); ?></small>
+              </div>
+            <?php endif ?>
+      <?php elseif ($input_array['section'] == 'end'): ?>
+          </div>
+        </div>
+      <?php endif ?>
+    <?php else: ?>
+      <div class="mailpn-input-wrapper <?php echo esc_attr($input_array['id']); ?> mailpn-input-display-<?php echo esc_attr($input_array['input']); ?> <?php echo (!empty($input_array['required']) && $input_array['required'] == true) ? 'mailpn-input-field-required' : ''; ?> mailpn-mb-30">
+        <?php if (array_key_exists('label', $input_array) && !empty($input_array['label'])): ?>
+          <div class="mailpn-display-inline-table <?php echo ($mailpn_format == 'half' ? 'mailpn-width-40-percent' : 'mailpn-width-100-percent'); ?> mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-vertical-align-top">
+            <div class="mailpn-p-10 <?php echo (array_key_exists('parent', $input_array) && !empty($input_array['parent']) && $input_array['parent'] != 'this') ? 'mailpn-pl-30' : ''; ?>">
+              <label class="mailpn-vertical-align-middle mailpn-display-block <?php echo (array_key_exists('description', $input_array) && !empty($input_array['description'])) ? 'mailpn-toggle' : ''; ?>" for="<?php echo esc_attr($input_array['id']); ?>">
+                <?php echo wp_kses($input_array['label'], MAILPN_KSES); ?>
+                <?php echo (array_key_exists('required', $input_array) && !empty($input_array['required']) && $input_array['required'] == true) ? '<span class="mailpn-tooltip" title="' . esc_html(__('Required field', 'mailpn')) . '">*</span>' : ''; ?>
+                <?php echo (array_key_exists('description', $input_array) && !empty($input_array['description'])) ? '<i class="material-icons-outlined mailpn-cursor-pointer mailpn-float-right">add</i>' : ''; ?>
+              </label>
+
+              <?php if (array_key_exists('description', $input_array) && !empty($input_array['description'])): ?>
+                <div class="mailpn-toggle-content mailpn-display-none-soft">
+                  <small><?php echo wp_kses_post(wp_specialchars_decode($input_array['description'])); ?></small>
+                </div>
+              <?php endif ?>
+            </div>
+          </div>
+        <?php endif; ?>
+
+        <div class="mailpn-display-inline-table <?php echo ((array_key_exists('label', $input_array) && empty($input_array['label'])) ? 'mailpn-width-100-percent' : ($mailpn_format == 'half' ? 'mailpn-width-60-percent' : 'mailpn-width-100-percent')); ?> mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-vertical-align-top">
+          <div class="mailpn-p-10 <?php echo (array_key_exists('parent', $input_array) && !empty($input_array['parent']) && $input_array['parent'] != 'this') ? 'mailpn-pl-30' : ''; ?>">
+            <div class="mailpn-input-field">
+              <?php self::mailpn_input_display($input_array, $type, $mailpn_id, $mailpn_meta_array, $mailpn_array_index); ?>
+            </div>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+    <?php
+    return ob_get_clean();
+  }
+
+  /**
+   * Display formatted values of mailpn_input_builder fields in frontend
+   * 
+   * @param array $mailpn_input The input array containing field configuration
+   * @param string $mailpn_type The type of field (user, post, option)
+   * @param int $mailpn_id The ID of the user/post/option
+   * @param int $mailpn_meta_array Whether the field is part of a meta array
+   * @param int $mailpn_array_index The index in the meta array
+   * @return string Formatted HTML output of field values
+   */
+  public static function mailpn_input_display($mailpn_input, $mailpn_type, $mailpn_id = 0, $mailpn_meta_array = 0, $mailpn_array_index = 0) {
+    // Get the current value using the new function
+    $current_value = self::mailpn_get_field_value($mailpn_input['id'], $mailpn_type, $mailpn_id, $mailpn_meta_array, $mailpn_array_index, $mailpn_input);
+
+    // Start the field value display
+    ?>
+      <div class="mailpn-field-value">
+        <?php
+        switch ($mailpn_input['input']) {
+          case 'input':
+            switch ($mailpn_input['type']) {
+              case 'hidden':
+                break;
+              case 'nonce':
+                break;
+              case 'file':
+                if (!empty($current_value)) {
+                  $file_url = wp_get_attachment_url($current_value);
+                  ?>
+                    <div class="mailpn-file-display">
+                      <a href="<?php echo esc_url($file_url); ?>" target="_blank" class="mailpn-file-link">
+                        <?php echo esc_html(basename($file_url)); ?>
+                      </a>
+                    </div>
+                  <?php
+                } else {
+                  echo '<span class="mailpn-no-file">' . esc_html__('No file uploaded', 'mailpn') . '</span>';
+                }
+                break;
+
+              case 'checkbox':
+                ?>
+                  <div class="mailpn-checkbox-display">
+                    <span class="mailpn-checkbox-status <?php echo $current_value === 'on' ? 'checked' : 'unchecked'; ?>">
+                      <?php echo $current_value === 'on' ? esc_html__('Yes', 'mailpn') : esc_html__('No', 'mailpn'); ?>
+                    </span>
+                  </div>
+                <?php
+                break;
+
+              case 'radio':
+                if (!empty($mailpn_input['radio_options'])) {
+                  foreach ($mailpn_input['radio_options'] as $option) {
+                    if ($current_value === $option['value']) {
+                      ?>
+                        <span class="mailpn-radio-selected"><?php echo esc_html($option['label']); ?></span>
+                      <?php
+                    }
+                  }
+                }
+                break;
+
+              case 'color':
+                ?>
+                  <div class="mailpn-color-display">
+                    <span class="mailpn-color-preview" style="background-color: <?php echo esc_attr($current_value); ?>"></span>
+                    <span class="mailpn-color-value"><?php echo esc_html($current_value); ?></span>
+                  </div>
+                <?php
+                break;
+
+              default:
+                ?>
+                  <span class="mailpn-text-value"><?php echo esc_html($current_value); ?></span>
+                <?php
+                break;
+            }
+            break;
+
+          case 'select':
+            if (!empty($mailpn_input['options']) && is_array($mailpn_input['options'])) {
+              if (array_key_exists('multiple', $mailpn_input) && $mailpn_input['multiple']) {
+                // Handle multiple select
+                $selected_values = is_array($current_value) ? $current_value : array();
+                if (!empty($selected_values)) {
+                  ?>
+                  <div class="mailpn-select-values mailpn-select-values-column">
+                    <?php foreach ($selected_values as $value): ?>
+                      <?php if (isset($mailpn_input['options'][$value])): ?>
+                        <div class="mailpn-select-value-item"><?php echo esc_html($mailpn_input['options'][$value]); ?></div>
+                      <?php endif; ?>
+                    <?php endforeach; ?>
+                  </div>
+                  <?php
+                }
+              } else {
+                // Handle single select
+                $current_value = is_scalar($current_value) ? (string)$current_value : '';
+                if (isset($mailpn_input['options'][$current_value])) {
+                  ?>
+                  <span class="mailpn-select-value"><?php echo esc_html($mailpn_input['options'][$current_value]); ?></span>
+                  <?php
+                }
+              }
+            }
+            break;
+
+          case 'textarea':
+            ?>
+              <div class="mailpn-textarea-value"><?php echo wp_kses_post(nl2br($current_value)); ?></div>
+            <?php
+            break;
+          case 'image':
+            if (!empty($current_value)) {
+              $image_ids = is_array($current_value) ? $current_value : explode(',', $current_value);
+              ?>
+                <div class="mailpn-image-gallery">
+                  <?php foreach ($image_ids as $image_id): ?>
+                    <div class="mailpn-image-item">
+                      <?php echo wp_get_attachment_image($image_id, 'medium'); ?>
+                    </div>
+                  <?php endforeach; ?>
+                </div>
+              <?php
+            } else {
+              ?>
+                <span class="mailpn-no-image"><?php esc_html_e('No images uploaded', 'mailpn'); ?></span>
+              <?php
+            }
+            break;
+          case 'editor':
+            ?>
+              <div class="mailpn-editor-content"><?php echo wp_kses_post($current_value); ?></div>
+            <?php
+            break;
+          case 'html':
+            if (!empty($mailpn_input['html_content'])) {
+              ?>
+                <div class="mailpn-html-content"><?php echo wp_kses_post(do_shortcode($mailpn_input['html_content'])); ?></div>
+              <?php
+            }
+            break;
+          case 'html_multi':
+            switch ($mailpn_type) {
+              case 'user':
+                $html_multi_fields_length = !empty(get_user_meta($mailpn_id, $mailpn_input['html_multi_fields'][0]['id'], true)) ? count(get_user_meta($mailpn_id, $mailpn_input['html_multi_fields'][0]['id'], true)) : 0;
+                break;
+              case 'post':
+                $html_multi_fields_length = !empty(get_post_meta($mailpn_id, $mailpn_input['html_multi_fields'][0]['id'], true)) ? count(get_post_meta($mailpn_id, $mailpn_input['html_multi_fields'][0]['id'], true)) : 0;
+                break;
+              case 'option':
+                $html_multi_fields_length = !empty(get_option($mailpn_input['html_multi_fields'][0]['id'])) ? count(get_option($mailpn_input['html_multi_fields'][0]['id'])) : 0;
+            }
+
+            ?>
+              <div class="mailpn-html-multi-content">
+                <?php if ($html_multi_fields_length): ?>
+                  <?php foreach (range(0, ($html_multi_fields_length - 1)) as $length_index): ?>
+                    <div class="mailpn-html-multi-group mailpn-display-table mailpn-width-100-percent mailpn-mb-30">
+                      <?php foreach ($mailpn_input['html_multi_fields'] as $index => $html_multi_field): ?>
+                          <div class="mailpn-display-inline-table mailpn-width-60-percent">
+                            <label><?php echo esc_html($html_multi_field['label']); ?></label>
+                          </div>
+
+                          <div class="mailpn-display-inline-table mailpn-width-40-percent">
+                            <?php self::mailpn_input_display($html_multi_field, $mailpn_type, $mailpn_id, 1, $length_index); ?>
+                          </div>
+                      <?php endforeach ?>
+                    </div>
+                  <?php endforeach ?>
+                <?php endif; ?>
+              </div>
+            <?php
+            break;
+        }
+        ?>
+      </div>
     <?php
   }
 

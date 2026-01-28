@@ -119,7 +119,8 @@ class MAILPN_Mailing {
     $mailpn_subject = $atts['mailpn_subject'];
 
     $mailpn_result = 0;
-    $user_email = get_userdata($mailpn_user_to)->user_email;
+    $user_data = get_userdata($mailpn_user_to);
+    $user_email = !empty($user_data) && is_object($user_data) ? $user_data->user_email : '';
 
     
     $mailpn_exception_emails = get_option('mailpn_exception_emails');
@@ -346,9 +347,6 @@ class MAILPN_Mailing {
    */
   public function mailpn_configure_smtp($phpmailer) {
     try {
-      // Enable SMTP
-      $phpmailer->isSMTP();
-      
       // Get SMTP settings
       $smtp_host = get_option('mailpn_smtp_host');
       $smtp_port = get_option('mailpn_smtp_port');
@@ -359,13 +357,18 @@ class MAILPN_Mailing {
       $smtp_from_email = get_option('mailpn_smtp_from_email');
       $smtp_from_name = get_option('mailpn_smtp_from_name');
 
-      // Validate required settings
+      // Validate required settings - if not configured, don't configure SMTP and let WordPress use default mail
       if (empty($smtp_host)) {
-        throw new Exception('SMTP host is not configured');
+        // SMTP is enabled but not configured - remove SMTP configuration and use default mail
+        return;
       }
       if (empty($smtp_port)) {
-        throw new Exception('SMTP port is not configured');
+        // SMTP port is not configured - remove SMTP configuration and use default mail
+        return;
       }
+
+      // Enable SMTP only if configuration is valid
+      $phpmailer->isSMTP();
 
       // Configure SMTP settings
       $phpmailer->Host = $smtp_host;
@@ -379,7 +382,8 @@ class MAILPN_Mailing {
       // Set authentication if enabled
       if ($smtp_auth === 'on') {
         if (empty($smtp_username) || empty($smtp_password)) {
-          throw new Exception('SMTP authentication is enabled but username or password is missing');
+          // SMTP auth is enabled but credentials are missing - disable SMTP and use default mail
+          return;
         }
         $phpmailer->SMTPAuth = true;
         $phpmailer->Username = $smtp_username;
