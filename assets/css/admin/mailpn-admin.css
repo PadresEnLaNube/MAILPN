@@ -127,6 +127,73 @@
     font-size: 15px;
 }
 
+/* Shortcodes Help */
+.mailpn-sc-help {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.mailpn-sc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: #f0f0f1;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #2c3338;
+    text-decoration: none;
+    position: fixed;
+    top: 150px;
+}
+.mailpn-sc-btn:hover {
+    background: #e8e8e9;
+    color: #2c3338;
+}
+.mailpn-sc-btn i {
+    font-size: 16px;
+}
+.mailpn-sc-list {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    position: fixed;
+    top: 150px;
+    left: 150px;
+}
+.mailpn-sc-collapsed .mailpn-sc-list {
+    display: none;
+}
+.mailpn-sc-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f6f7f7;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    padding: 3px 8px;
+}
+.mailpn-sc-code {
+    font-family: monospace;
+    font-size: 12px;
+    color: #1d2327;
+}
+.mailpn-sc-item .mailpn-btn-copy {
+    display: inline-flex;
+    color: #787c82;
+    text-decoration: none;
+}
+.mailpn-sc-item .mailpn-btn-copy i {
+    font-size: 14px;
+}
+.mailpn-sc-item .mailpn-btn-copy:hover {
+    color: #2c3338;
+}
+
 .mailpn-admin-notice-front {
     display: flex;
     align-items: center;
@@ -148,4 +215,146 @@
 .mailpn-admin-notice-front p {
     margin: 0;
     font-size: 15px;
+}
+
+/* Status Cards */
+.mailpn-status-card {
+    border-radius: 6px;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid #ccc;
+    margin-bottom: 12px;
+}
+.mailpn-status-sent {
+    border-left-color: #46b450;
+}
+.mailpn-status-queue {
+    border-left-color: #f0b849;
+}
+.mailpn-status-draft {
+    border-left-color: #b4b9be;
+    background: #f9f9f9;
+}
+.mailpn-status-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+.mailpn-status-sent .mailpn-status-header i {
+    color: #46b450;
+}
+.mailpn-status-queue .mailpn-status-header i {
+    color: #f0b849;
+}
+.mailpn-status-draft .mailpn-status-header i {
+    color: #b4b9be;
+}
+.mailpn-status-body {
+    margin-top: 10px;
+}
+.mailpn-status-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 13px;
+    color: #50575e;
+}
+.mailpn-status-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.mailpn-status-stat i {
+    font-size: 16px;
+    color: #787c82;
+}
+.mailpn-status-rate {
+    color: #787c82;
+    font-size: 12px;
+}
+.mailpn-status-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* Queue Progress Bar */
+.mailpn-queue-progress-track {
+    width: 100%;
+    height: 8px;
+    background: #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.mailpn-queue-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f0b849, #e6a517);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    animation: mailpn-progress-pulse 2s ease-in-out infinite;
+}
+@keyframes mailpn-progress-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
+}
+
+/* Status Errors */
+.mailpn-status-errors {
+    margin-top: 10px;
+}
+.mailpn-status-error-msg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #d63638;
+    font-size: 13px;
+    margin: 0 0 6px;
+}
+.mailpn-status-error-msg i {
+    font-size: 18px;
+}
+.mailpn-status-error-details {
+    font-size: 12px;
+    color: #50575e;
+}
+.mailpn-status-error-details summary {
+    cursor: pointer;
+    color: #2271b1;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+.mailpn-status-error-details ul {
+    margin: 4px 0 0 16px;
+    padding: 0;
+    list-style: disc;
+}
+.mailpn-status-error-details li {
+    margin-bottom: 2px;
+}
+
+/* Status Paused */
+.mailpn-status-paused {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: #fef8ee;
+    border: 1px solid #f0b849;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #6e4b00;
+}
+.mailpn-status-paused i {
+    font-size: 18px;
+    color: #f0b849;
 }

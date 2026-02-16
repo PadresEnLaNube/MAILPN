@@ -28,6 +28,39 @@
     });
   });
 
+  $(document).on('click', '.mailpn-btn-resend-all', function(e) {
+    e.preventDefault();
+    var mailpn_btn = $(this);
+    var post_id = $(this).data('mailpn-post-id');
+    mailpn_btn.addClass('mailpn-link-disabled').siblings('.mailpn-waiting').removeClass('mailpn-display-none');
+
+    var ajax_url = mailpn_ajax.ajax_url;
+
+    var data = {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_resend_all',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+      mailpn_mail_id: post_id,
+    };
+
+    $.post(ajax_url, data, function(response) {
+      if ($.parseJSON(response)['error_key'] == 'mailpn_resend_all_error') {
+        mailpn_get_main_message($.parseJSON(response)['error_content']);
+      }else {
+        location.reload();
+        mailpn_get_main_message(mailpn_i18n.saved_successfully);
+      }
+
+      mailpn_btn.removeClass('mailpn-link-disabled').siblings('.mailpn-waiting').addClass('mailpn-display-none')
+    });
+  });
+
+  // Shortcodes help toggle
+  $(document).on('click', '.mailpn-sc-toggle', function(e) {
+    e.preventDefault();
+    $(this).closest('.mailpn-sc-help').toggleClass('mailpn-sc-collapsed');
+  });
+
   // MailPN Stats Popup
   $(document).on('click', '.mailpn-stats-button', function(e) {
     e.preventDefault();

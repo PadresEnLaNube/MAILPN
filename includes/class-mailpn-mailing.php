@@ -429,7 +429,7 @@ class MAILPN_Mailing {
     wp_add_inline_style('mail-template-css', $mailpn_template_css);
     
     $mailpn_max_width = get_option('mailpn_max_width');
-    $max_width_style = (!empty($mailpn_max_width) && is_numeric($mailpn_max_width)) ? 'max-width:' . intval($mailpn_max_width) . 'px; margin:auto;' : '';
+    $mailpn_max_width_val = (!empty($mailpn_max_width) && is_numeric($mailpn_max_width)) ? intval($mailpn_max_width) : 700;
     ob_start();
     ?>
       <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -437,11 +437,11 @@ class MAILPN_Mailing {
         <head>
           <meta name="viewport" content="width=device-width" />
           <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-          <title><?php echo esc_html($mailpn_subject); ?></title>          
+          <title><?php echo esc_html($mailpn_subject); ?></title>
         </head>
 
-        <body class="mailpn-content">
-          <table class="mailpn-table-main" align="center" style="<?php echo esc_attr($max_width_style); ?>">
+        <body class="mailpn-content" style="margin:0;padding:0;">
+          <table class="mailpn-table-main" width="<?php echo esc_attr($mailpn_max_width_val); ?>" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:<?php echo esc_attr($mailpn_max_width_val); ?>px;margin:0 auto;">
             <tbody>
               <?php if (!empty(get_option('mailpn_image_header'))): ?>
                 <tr style="text-align:center;">
@@ -691,80 +691,115 @@ class MAILPN_Mailing {
       <?php if (in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded'])): ?>
         <?php $mailpn_status = get_post_meta($post_id, 'mailpn_status', true); ?>
         
-        <?php if (!empty(get_option('mailpn_error')[$post_id]) && $mailpn_status == 'sent'): ?>
-          <div class="mailpn-error">
-            <p class="mailpn-alert-error"><?php esc_html_e('Some errors have occurred. Please check if contacts have their notifications enabled.', 'mailpn'); ?></p>
-
-            <ul class="mailpn-ml-20">
-              <?php foreach (get_option('mailpn_error')[$post_id] as $unique_id => $mailpn_error): ?>
-                <?php $user_info = get_userdata($mailpn_error['mailpn_user_to']); ?>
-
-                <?php if (!empty($user_info)): ?>
-                  <li>
-                    <p><a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $mailpn_error['mailpn_user_to'])); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold mailpn-mr-10" target="_blank"><i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i> #<?php echo esc_html($mailpn_error['mailpn_user_to']); ?> <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?></a> (<a href="mailto:<?php echo esc_html($user_info->user_email); ?>" target="_blank"><?php echo esc_html($user_info->user_email); ?></a>)</p>
-                  </li>
-                <?php endif ?>
-              <?php endforeach ?>
-            </ul>
-
-            <a href="#" data-mailpn-post-id="<?php echo esc_html($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend emails', 'mailpn'); ?></a><?php esc_html(MAILPN_Data::mailpn_loader()); ?>
-          </div>
-        <?php else: ?>
-          <div class="mailpn-progress">
-            <?php if ($mailpn_status == 'sent'): ?>
-              <p class="mailpn-alert-success"><?php esc_html_e('This mail has already been sent.', 'mailpn'); ?></p>
-            <?php elseif ($mailpn_status == 'queue'): ?>
-              <?php 
-                $emails_pending = count(get_option('mailpn_queue')[$post_id]);
-                $emails_sent = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id, 'orderby' => 'ID', 'order' => 'ASC', ]));
-                $emails_total = $emails_pending + $emails_sent;
-                $mails_sent_every_ten_minutes = (!empty(get_option('mailpn_sent_every_ten_minutes'))) ? get_option('mailpn_sent_every_ten_minutes') : 5;
-              ?>
-
-              <div class="mailpn-alert-warning mailpn-font-size-20">
-                <?php esc_html_e('This mail is being sent.', 'mailpn'); ?> <?php esc_html(MAILPN_Data::mailpn_loader(true)); ?>
-                  
-                <div class="mailpn-progress-bar">
-                  <p class="mailpn-font-weight-bold"><?php echo $emails_total > 0 ? number_format(((intval($emails_sent) * 100) / intval($emails_total)), 1) : 0; ?>% <?php esc_html_e('of total job', 'mailpn'); ?> (<?php echo esc_html($emails_sent); ?> <?php esc_html_e('emails sent', 'mailpn'); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?>)</p>
-                </div>
-
-                <div class="mailpn-text-align-right">
-                  <p>* <?php esc_html_e('Sending', 'mailpn'); ?> <?php echo esc_html($mails_sent_every_ten_minutes); ?> <?php esc_html_e('emails every ten minutes', 'mailpn'); ?>.</p>
-                </div>
-              </div>
-            <?php else: ?>
-              <p class="mailpn-alert-warning"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></p>
-            <?php endif ?>
-
-            <?php if (!empty(get_option('mailpn_queue_paused'))): ?>
-              <p class="mailpn-alert-warning"><?php esc_html_e('The mail queue is paused. Please check the mail queue settings.', 'mailpn'); ?></p>
-            <?php endif ?>
-          </div>
-
-          <div class="mailpn-sent-to mailpn-display-table mailpn-width-100-percent">
-            <div class="mailpn-display-table-cell mailpn-width-50-percent mailpn-tablet-width-100-percent mailpn-text-align-center"> 
-              <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View latest submissions', 'mailpn'); ?></a>
+        <?php if ($mailpn_status == 'sent'): ?>
+          <?php
+            $mailpn_timestamps = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
+            $last_sent = !empty($mailpn_timestamps) && is_array($mailpn_timestamps) ? end($mailpn_timestamps) : '';
+            $emails_sent_count = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id, 'orderby' => 'ID', 'order' => 'ASC']));
+            $mailpn_errors = get_option('mailpn_error');
+            $has_errors = !empty($mailpn_errors[$post_id]);
+          ?>
+          <div class="mailpn-status-card mailpn-status-sent">
+            <div class="mailpn-status-header">
+              <i class="material-icons-outlined">check_circle</i>
+              <span class="mailpn-status-label"><?php esc_html_e('Sent', 'mailpn'); ?></span>
             </div>
+            <div class="mailpn-status-body">
+              <div class="mailpn-status-stats">
+                <?php if (!empty($last_sent)): ?>
+                  <span class="mailpn-status-stat"><i class="material-icons-outlined">schedule</i> <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $last_sent)); ?></span>
+                <?php endif; ?>
+                <span class="mailpn-status-stat"><i class="material-icons-outlined">mail</i> <?php echo esc_html($emails_sent_count); ?> <?php esc_html_e('emails sent', 'mailpn'); ?></span>
+              </div>
 
-            <div class="mailpn-display-table-cell mailpn-width-50-percent mailpn-tablet-width-100-percent">
-              <?php 
-                // Solo mostrar el botón de prueba si hay un usuario logueado
-                if (is_user_logged_in()): 
-                  $current_user = wp_get_current_user();
-              ?>
-                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email mailpn-display-inline" 
-                  data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" 
-                  data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
-                  <?php esc_html_e('Send test email', 'mailpn'); ?>
-                </a>
-
-                <div class="mailpn-test-email-info mailpn-display-inline">
-                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+              <?php if ($has_errors): ?>
+                <div class="mailpn-status-errors">
+                  <p class="mailpn-status-error-msg"><i class="material-icons-outlined">warning</i> <?php esc_html_e('Some errors occurred during sending.', 'mailpn'); ?></p>
+                  <details class="mailpn-status-error-details">
+                    <summary><?php esc_html_e('View affected users', 'mailpn'); ?></summary>
+                    <ul>
+                      <?php foreach ($mailpn_errors[$post_id] as $unique_id => $mailpn_error): ?>
+                        <?php $user_info = get_userdata($mailpn_error['mailpn_user_to']); ?>
+                        <?php if (!empty($user_info)): ?>
+                          <li>
+                            <a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $mailpn_error['mailpn_user_to'])); ?>" target="_blank">#<?php echo esc_html($mailpn_error['mailpn_user_to']); ?> <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?></a>
+                            (<a href="mailto:<?php echo esc_attr($user_info->user_email); ?>"><?php echo esc_html($user_info->user_email); ?></a>)
+                          </li>
+                        <?php endif; ?>
+                      <?php endforeach; ?>
+                    </ul>
+                  </details>
                 </div>
               <?php endif; ?>
             </div>
+            <div class="mailpn-status-actions">
+              <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View submissions', 'mailpn'); ?></a>
+              <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-resend-all"><?php esc_html_e('Resend to all', 'mailpn'); ?></a>
+              <?php if ($has_errors): ?>
+                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend errors', 'mailpn'); ?></a>
+              <?php endif; ?>
+              <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
+                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
+                  data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
+                  data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                  <?php esc_html_e('Send test email', 'mailpn'); ?>
+                </a>
+                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+              <?php endif; ?>
+              <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
+            </div>
           </div>
-        <?php endif ?>
+
+        <?php elseif ($mailpn_status == 'queue'): ?>
+          <?php
+            $mailpn_queue_data = get_option('mailpn_queue');
+            $emails_pending = !empty($mailpn_queue_data[$post_id]) ? count($mailpn_queue_data[$post_id]) : 0;
+            $emails_sent = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id, 'orderby' => 'ID', 'order' => 'ASC']));
+            $emails_total = $emails_pending + $emails_sent;
+            $progress_pct = $emails_total > 0 ? round(($emails_sent * 100) / $emails_total, 1) : 0;
+            $mails_sent_every_ten_minutes = (!empty(get_option('mailpn_sent_every_ten_minutes'))) ? get_option('mailpn_sent_every_ten_minutes') : 5;
+          ?>
+          <div class="mailpn-status-card mailpn-status-queue">
+            <div class="mailpn-status-header">
+              <i class="material-icons-outlined">send</i>
+              <span class="mailpn-status-label"><?php esc_html_e('Sending...', 'mailpn'); ?></span>
+            </div>
+            <div class="mailpn-status-body">
+              <div class="mailpn-queue-progress-track">
+                <div class="mailpn-queue-progress-fill" style="width:<?php echo esc_attr($progress_pct); ?>%"></div>
+              </div>
+              <div class="mailpn-status-stats">
+                <span class="mailpn-status-stat"><strong><?php echo esc_html($emails_sent); ?></strong> <?php esc_html_e('of', 'mailpn'); ?> <strong><?php echo esc_html($emails_total); ?></strong> <?php esc_html_e('emails sent', 'mailpn'); ?> (<?php echo esc_html($progress_pct); ?>%)</span>
+                <span class="mailpn-status-stat mailpn-status-rate"><i class="material-icons-outlined">speed</i> <?php echo esc_html($mails_sent_every_ten_minutes); ?> <?php esc_html_e('emails every ten minutes', 'mailpn'); ?></span>
+              </div>
+            </div>
+            <?php if (!empty(get_option('mailpn_queue_paused'))): ?>
+              <div class="mailpn-status-paused">
+                <i class="material-icons-outlined">pause_circle</i> <?php esc_html_e('The mail queue is paused. Please check the mail queue settings.', 'mailpn'); ?>
+              </div>
+            <?php endif; ?>
+            <div class="mailpn-status-actions">
+              <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View submissions', 'mailpn'); ?></a>
+              <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
+                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
+                  data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
+                  data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                  <?php esc_html_e('Send test email', 'mailpn'); ?>
+                </a>
+                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+              <?php endif; ?>
+              <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
+            </div>
+          </div>
+
+        <?php else: ?>
+          <div class="mailpn-status-card mailpn-status-draft">
+            <div class="mailpn-status-header">
+              <i class="material-icons-outlined">drafts</i>
+              <span class="mailpn-status-label"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></span>
+            </div>
+          </div>
+        <?php endif; ?>
 
         <?php if (in_array($mailpn_type, ['email_published_content'])): ?>
           <?php
@@ -820,6 +855,35 @@ class MAILPN_Mailing {
 
     $mailpn_error[$post_id] = [];
     update_option('mailpn_error', $mailpn_error);
+  }
+
+  public function mailpn_resend_all($post_id) {
+    $users_to = self::mailpn_get_users_to($post_id);
+
+    if (!empty($users_to)) {
+      // Delete existing mailpn_rec records for this mail so mailpn_once_mailed does not block
+      $existing_recs = get_posts([
+        'fields'      => 'ids',
+        'numberposts' => -1,
+        'post_type'   => 'mailpn_rec',
+        'post_status' => ['any'],
+        'meta_key'    => 'mailpn_rec_mail_id',
+        'meta_value'  => $post_id,
+        'orderby'     => 'ID',
+        'order'       => 'ASC',
+      ]);
+
+      if (!empty($existing_recs)) {
+        foreach ($existing_recs as $rec_id) {
+          wp_delete_post($rec_id, true);
+        }
+      }
+
+      // Re-enqueue each user
+      foreach ($users_to as $user_id) {
+        self::mailpn_queue_add($post_id, $user_id);
+      }
+    }
   }
 
   public function mailpn_subscription_unsubscribe_btn($user_id){

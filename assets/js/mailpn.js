@@ -434,4 +434,24 @@
 		}
 	});
   });
+
+  $(document).on('click', '.mailpn-btn-copy', function(e) {
+    e.preventDefault();
+    var textToCopy = $($(this).attr('data-mailpn-copy-content')).text();
+    
+    // Try using the modern Clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(textToCopy)
+        .then(() => {
+          mailpn_get_main_message(mailpn_i18n.copied);
+        })
+        .catch(() => {
+          // Fallback for when clipboard API fails
+          fallback_copy_text_to_clipboard(textToCopy);
+        });
+    } else {
+      // Fallback for older browsers
+      fallback_copy_text_to_clipboard(textToCopy);
+    }
+  });
 })(jQuery);

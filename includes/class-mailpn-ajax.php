@@ -95,6 +95,18 @@ class MAILPN_Ajax {
 
           echo wp_json_encode(['error_key' => '', ]);exit();
           break;
+        case 'mailpn_resend_all':
+          if (!empty($mailpn_mail_id)) {
+            $plugin_mailing = new MAILPN_Mailing();
+            $plugin_mailing->mailpn_resend_all($mailpn_mail_id);
+
+            update_post_meta($mailpn_mail_id, 'mailpn_status', 'queue');
+          }else{
+            echo wp_json_encode(['error_key' => 'mailpn_resend_all_error', 'error_content' => esc_html(__('An error occurred while resending the mail.', 'mailpn')), ]);exit();
+          }
+
+          echo wp_json_encode(['error_key' => '', ]);exit();
+          break;
         case 'mailpn_test_email_send':
           if (!current_user_can('manage_options')) {
             echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);

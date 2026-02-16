@@ -216,19 +216,6 @@ class MAILPN_Notifications_Manager {
         </div>
         
         <?php
-        // Enqueue notifications JavaScript
-        wp_enqueue_script('mailpn-notifications', plugin_dir_url(__FILE__) . '../assets/js/mailpn-notifications.js', array('jquery'), '1.0.0', true);
-        
-        // Localize script with AJAX data
-        wp_localize_script('mailpn-notifications', 'mailpn_notifications_ajax', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('mailpn_notification_nonce'),
-            'mark_read_text' => __('Mark as read', 'mailpn'),
-            'mark_unread_text' => __('Mark as unread', 'mailpn'),
-            'processing_text' => __('Processing...', 'mailpn')
-        ));
-        ?>
-        <?php
         
         wp_reset_postdata();
         return ob_get_clean();

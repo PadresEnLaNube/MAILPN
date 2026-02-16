@@ -43,6 +43,18 @@ class MAILPN_Post_Type_Mail
       'input' => 'html',
       'html_content' => '[mailpn-tools post_id="' . $post_id . '"]',
     ];
+    $mailpn_fields_meta['mailpn_shortcodes_help'] = [
+      'id' => 'mailpn_shortcodes_help',
+      'input' => 'html',
+      'html_content' => '<div class="mailpn-sc-help mailpn-sc-collapsed">'
+        . '<a href="#" class="mailpn-sc-toggle mailpn-sc-btn"><i class="material-icons-outlined">code</i> ' . esc_html__('Shortcodes', 'mailpn') . '</a>'
+        . '<div class="mailpn-sc-list">'
+        . '<span class="mailpn-sc-item"><span id="mailpn-sc-user-name" class="mailpn-sc-code">&#91;user-name&#93;</span><a href="#" class="mailpn-btn-copy" data-mailpn-copy-content="#mailpn-sc-user-name"><i class="material-icons-outlined">content_copy</i></a></span>'
+        . '<span class="mailpn-sc-item"><span id="mailpn-sc-post-name" class="mailpn-sc-code">&#91;post-name&#93;</span><a href="#" class="mailpn-btn-copy" data-mailpn-copy-content="#mailpn-sc-post-name"><i class="material-icons-outlined">content_copy</i></a></span>'
+        . '<span class="mailpn-sc-item"><span id="mailpn-sc-new-contents" class="mailpn-sc-code">&#91;new-contents&#93;</span><a href="#" class="mailpn-btn-copy" data-mailpn-copy-content="#mailpn-sc-new-contents"><i class="material-icons-outlined">content_copy</i></a></span>'
+        . '</div>'
+        . '</div>',
+    ];
     $mailpn_fields_meta['mailpn_type'] = [
       'id' => 'mailpn_type',
       'class' => 'mailpn-select mailpn-width-100-percent',

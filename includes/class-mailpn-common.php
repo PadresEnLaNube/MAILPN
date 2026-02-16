@@ -115,6 +115,17 @@ class MAILPN_Common
 		wp_enqueue_script($this->plugin_name . '-aux', MAILPN_URL . 'assets/js/mailpn-aux.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		wp_enqueue_script($this->plugin_name . '-forms', MAILPN_URL . 'assets/js/mailpn-forms.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 
+		if (!wp_script_is($this->plugin_name . '-notifications', 'enqueued')) {
+			wp_enqueue_script($this->plugin_name . '-notifications', MAILPN_URL . 'assets/js/mailpn-notifications.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+			wp_localize_script($this->plugin_name . '-notifications', 'mailpn_notifications_ajax', [
+				'ajax_url' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('mailpn_notification_nonce'),
+				'mark_read_text' => __('Mark as read', 'mailpn'),
+				'mark_unread_text' => __('Mark as unread', 'mailpn'),
+				'processing_text' => __('Processing...', 'mailpn'),
+			]);
+		}
+
 		wp_localize_script($this->plugin_name, 'mailpn_ajax', [
 			'ajax_url' => admin_url('admin-ajax.php'),
 			'mailpn_ajax_nonce' => wp_create_nonce('mailpn-nonce'),
