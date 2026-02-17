@@ -555,17 +555,23 @@ class MAILPN_Post_Type_Mail
   {
     $new_columns = [];
 
-    // Add title column first
+    // Add checkbox column first for bulk actions
+    if (isset($columns['cb'])) {
+      $new_columns['cb'] = $columns['cb'];
+    }
+
+    // Add title column
     if (isset($columns['title'])) {
       $new_columns['title'] = $columns['title'];
     }
 
-    // Add our custom column after title
+    // Add our custom columns after title
     $new_columns['mailpn_mail_type'] = __('Mail Type', 'mailpn');
+    $new_columns['mailpn_mail_status'] = __('Status', 'mailpn');
 
-    // Add remaining columns
+    // Add remaining columns, skip author
     foreach ($columns as $key => $value) {
-      if ($key !== 'title') {
+      if (!in_array($key, ['cb', 'title', 'author'])) {
         $new_columns[$key] = $value;
       }
     }
@@ -589,6 +595,45 @@ class MAILPN_Post_Type_Mail
           <p><i
               class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">mark_email_read</i>
             <?php esc_html_e('Unset email type.', 'mailpn'); ?></p>
+          <?php
+        }
+        break;
+
+      case 'mailpn_mail_status':
+        $mailpn_status = get_post_meta($post_id, 'mailpn_status', true);
+
+        if ($mailpn_status === 'sent') {
+          $mailpn_timestamps = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
+          $last_sent = !empty($mailpn_timestamps) && is_array($mailpn_timestamps) ? end($mailpn_timestamps) : '';
+          ?>
+          <span class="mailpn-column-status-badge mailpn-column-status-sent">
+            <i class="material-icons-outlined mailpn-vertical-align-middle">check_circle</i>
+            <?php esc_html_e('Sent', 'mailpn'); ?>
+          </span>
+          <?php if (!empty($last_sent)): ?>
+            <span class="mailpn-column-status-detail"><?php echo esc_html(date_i18n(get_option('date_format'), $last_sent)); ?></span>
+          <?php endif; ?>
+          <?php
+        } elseif ($mailpn_status === 'queue') {
+          $mailpn_queue_data = get_option('mailpn_queue');
+          $emails_pending = !empty($mailpn_queue_data[$post_id]) ? count($mailpn_queue_data[$post_id]) : 0;
+          $emails_sent = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id]));
+          $emails_total = $emails_pending + $emails_sent;
+          ?>
+          <span class="mailpn-column-status-badge mailpn-column-status-queue">
+            <i class="material-icons-outlined mailpn-vertical-align-middle">send</i>
+            <?php esc_html_e('Sending...', 'mailpn'); ?>
+          </span>
+          <?php if ($emails_total > 0): ?>
+            <span class="mailpn-column-status-detail"><?php echo esc_html($emails_sent); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?></span>
+          <?php endif; ?>
+          <?php
+        } else {
+          ?>
+          <span class="mailpn-column-status-badge mailpn-column-status-draft">
+            <i class="material-icons-outlined mailpn-vertical-align-middle">drafts</i>
+            <?php esc_html_e('Draft', 'mailpn'); ?>
+          </span>
           <?php
         }
         break;
