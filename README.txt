@@ -4,7 +4,7 @@ Donate link: https://padresenlanube.com/
 Tags: email, mailing, notifications, sender, mail address
 Requires at least: 3.0
 Tested up to: 6.8
-Stable tag: 1.0.19
+Stable tag: 1.0.20
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Effortlessly manage your email campaigns. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
@@ -252,7 +252,7 @@ This section provides comprehensive documentation for developers who want to int
 === Plugin Structure ===
 
 * **Main File**: `mailpn.php`
-* **Version**: 1.0.19
+* **Version**: 1.0.20
 * **Constants**: `MAILPN_VERSION`, `MAILPN_DIR`, `MAILPN_URL`, `MAILPN_CPTS`
 * **Custom Post Types**: `mailpn_mail` (emails), `mailpn_rec` (records)
 
