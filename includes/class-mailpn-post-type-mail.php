@@ -555,25 +555,13 @@ class MAILPN_Post_Type_Mail
   {
     $new_columns = [];
 
-    // Add checkbox column first for bulk actions
-    if (isset($columns['cb'])) {
-      $new_columns['cb'] = $columns['cb'];
-    }
-
-    // Add title column
-    if (isset($columns['title'])) {
-      $new_columns['title'] = $columns['title'];
-    }
-
-    // Add our custom columns after title
-    $new_columns['mailpn_mail_type'] = __('Mail Type', 'mailpn');
+    $new_columns['cb']    = isset($columns['cb']) ? $columns['cb'] : '<input type="checkbox" />';
+    $new_columns['title'] = isset($columns['title']) ? $columns['title'] : __('Title', 'mailpn');
+    $new_columns['mailpn_mail_type']   = __('Mail Type', 'mailpn');
     $new_columns['mailpn_mail_status'] = __('Status', 'mailpn');
 
-    // Add remaining columns, skip author
-    foreach ($columns as $key => $value) {
-      if (!in_array($key, ['cb', 'title', 'author'])) {
-        $new_columns[$key] = $value;
-      }
+    if (isset($columns['date'])) {
+      $new_columns['date'] = $columns['date'];
     }
 
     return $new_columns;
@@ -590,6 +578,74 @@ class MAILPN_Post_Type_Mail
             <?php echo isset(MAILPN_Data::mailpn_mail_types()[$mail_type]) ? esc_html(MAILPN_Data::mailpn_mail_types()[$mail_type]) : esc_html($mail_type); ?>
           </p>
           <?php
+          // Distribution info
+          $distribution = get_post_meta($post_id, 'mailpn_distribution', true);
+          if (!empty($distribution)) {
+            ?>
+            <div class="mailpn-column-meta">
+              <?php if ($distribution === 'private_role'): ?>
+                <?php
+                  $roles = get_post_meta($post_id, 'mailpn_distribution_role', true);
+                  if (!empty($roles) && is_array($roles)):
+                    global $wp_roles;
+                ?>
+                  <span class="mailpn-column-meta-item" title="<?php esc_attr_e('Roles receiving this email', 'mailpn'); ?>">
+                    <i class="material-icons-outlined">group</i>
+                    <?php
+                      $role_names = [];
+                      foreach ($roles as $role_slug) {
+                        $role_names[] = isset($wp_roles->roles[$role_slug]) ? $wp_roles->roles[$role_slug]['name'] : $role_slug;
+                      }
+                      echo esc_html(implode(', ', $role_names));
+                    ?>
+                  </span>
+                <?php endif; ?>
+              <?php elseif ($distribution === 'private_user'): ?>
+                <?php
+                  $user_list = get_post_meta($post_id, 'mailpn_distribution_user', true);
+                  $user_count = !empty($user_list) && is_array($user_list) ? count($user_list) : 0;
+                ?>
+                <span class="mailpn-column-meta-item" title="<?php esc_attr_e('Specific users', 'mailpn'); ?>">
+                  <i class="material-icons-outlined">person</i>
+                  <?php echo esc_html(sprintf(_n('%d user', '%d users', $user_count, 'mailpn'), $user_count)); ?>
+                </span>
+              <?php elseif ($distribution === 'public'): ?>
+                <span class="mailpn-column-meta-item" title="<?php esc_attr_e('All users', 'mailpn'); ?>">
+                  <i class="material-icons-outlined">public</i>
+                  <?php esc_html_e('All users', 'mailpn'); ?>
+                </span>
+              <?php endif; ?>
+
+              <?php
+              // Delay info for welcome emails
+              if ($mail_type === 'email_welcome') {
+                $delay_enabled = get_post_meta($post_id, 'mailpn_welcome_delay_enabled', true);
+                if ($delay_enabled === 'on') {
+                  $delay_value = get_post_meta($post_id, 'mailpn_welcome_delay_value', true);
+                  $delay_unit = get_post_meta($post_id, 'mailpn_welcome_delay_unit', true);
+                  if (!empty($delay_value) && !empty($delay_unit)) {
+                    $unit_labels = [
+                      'hours' => _n_noop('%d hour', '%d hours', 'mailpn'),
+                      'days' => _n_noop('%d day', '%d days', 'mailpn'),
+                      'weeks' => _n_noop('%d week', '%d weeks', 'mailpn'),
+                      'months' => _n_noop('%d month', '%d months', 'mailpn'),
+                    ];
+                    $delay_label = isset($unit_labels[$delay_unit])
+                      ? sprintf(translate_nooped_plural($unit_labels[$delay_unit], intval($delay_value)), intval($delay_value))
+                      : $delay_value . ' ' . $delay_unit;
+                    ?>
+                    <span class="mailpn-column-meta-item mailpn-column-meta-delay" title="<?php esc_attr_e('Sending delay', 'mailpn'); ?>">
+                      <i class="material-icons-outlined">schedule</i>
+                      <?php echo esc_html($delay_label); ?>
+                    </span>
+                    <?php
+                  }
+                }
+              }
+              ?>
+            </div>
+          <?php
+          }
         } else {
           ?>
           <p><i

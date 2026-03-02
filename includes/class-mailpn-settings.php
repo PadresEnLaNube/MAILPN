@@ -170,6 +170,14 @@ class MAILPN_Settings {
           'label' => __('Email contents after reset password link', 'mailpn'),
           'description' => __('If you complete this field the contents after the reset password link of the email will be customized with your information.', 'mailpn'),
         ];
+      $mailpn_options['mailpn_wp_emails_wrapper'] = [
+        'id' => 'mailpn_wp_emails_wrapper',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'checkbox',
+        'label' => __('Format all WordPress emails', 'mailpn'),
+        'description' => __('Automatically wrap all WordPress core emails (password change, email change, admin notifications, etc.) with the MailPN email template. Adds header/footer, makes links clickable, removes [Site Name] from subjects, and logs all sends.', 'mailpn'),
+      ];
       $mailpn_options['mailpn_exception_emails'] = [
         'id' => 'mailpn_exception_emails',
         'class' => 'mailpn-input mailpn-width-100-percent',
@@ -215,6 +223,39 @@ class MAILPN_Settings {
               ],
             ]
           ];
+          $mailpn_options['mailpn_exception_emails_domains_whitelist'] = [
+            'id' => 'mailpn_exception_emails_domains_whitelist',
+            'class' => 'mailpn-input mailpn-width-100-percent',
+            'input' => 'input',
+            'type' => 'checkbox',
+            'parent' => 'this mailpn_exception_emails_domains',
+            'parent_option' => 'on',
+            'label' => __('Whitelist addresses from excluded domains', 'mailpn'),
+            'placeholder' => __('Whitelist addresses from excluded domains', 'mailpn'),
+            'description' => __('Allow specific email addresses to receive emails even if their domain is excluded.', 'mailpn'),
+          ];
+            $mailpn_options['mailpn_exception_emails_domains_whitelist_list'] = [
+              'id' => 'mailpn_exception_emails_domains_whitelist_list',
+              'class' => 'mailpn-input mailpn-width-100-percent',
+              'input' => 'html_multi',
+              'multi_array' => ['address', ],
+              'parent' => 'mailpn_exception_emails_domains_whitelist',
+              'parent_option' => 'on',
+              'label' => __('Whitelisted email addresses', 'mailpn'),
+              'placeholder' => __('Whitelisted email addresses', 'mailpn'),
+              'description' => __('Set the email addresses that will be allowed to receive emails even if their domain is excluded.', 'mailpn'),
+              'html_multi_fields' => [
+                $mailpn_exception_emails_domains_whitelist_address = [
+                  'id' => 'mailpn_exception_emails_domains_whitelist_address',
+                  'class' => 'mailpn-input mailpn-width-100-percent',
+                  'input' => 'input',
+                  'type' => 'text',
+                  'multiple' => true,
+                  'label' => esc_html(__('Address (for example: comercial@' . $mailpn_domain, 'mailpn')),
+                  'placeholder' => esc_html(__('comercial@' . $mailpn_domain, 'mailpn')),
+                ],
+              ]
+            ];
         $mailpn_options['mailpn_exception_emails_addresses'] = [
           'id' => 'mailpn_exception_emails_addresses',
           'class' => 'mailpn-input mailpn-width-100-percent',
@@ -415,6 +456,22 @@ class MAILPN_Settings {
       'section' => 'end',
     ];
     
+    $mailpn_options['mailpn_section_roles_start'] = [
+      'section' => 'start',
+      'label' => __('User Role Management', 'mailpn'),
+      'description' => __('Manage which users have the Mailing Manager role. Users with this role can manage email campaigns and settings.', 'mailpn'),
+    ];
+      $mailpn_options['mailpn_role_manager_selector'] = [
+        'id' => 'mailpn_role_manager_selector',
+        'input' => 'user_role_selector',
+        'label' => __('Mailing Manager - PN Role', 'mailpn'),
+        'role' => 'mailpn_role_manager',
+        'role_label' => __('Mailing Manager - PN', 'mailpn'),
+      ];
+    $mailpn_options['mailpn_section_roles_end'] = [
+      'section' => 'end',
+    ];
+
     $mailpn_options['mailpn_submit'] = [
       'id' => 'mailpn_submit',
       'input' => 'input',
@@ -1127,8 +1184,13 @@ class MAILPN_Settings {
         $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
 
         if (!empty($mailpn_exception_emails_domain)) {
+          // Check if whitelist is enabled and email is whitelisted
+          $mailpn_domain_whitelist_enabled = get_option('mailpn_exception_emails_domains_whitelist');
+          $mailpn_domain_whitelist = $mailpn_domain_whitelist_enabled == 'on' ? get_option('mailpn_exception_emails_domains_whitelist_address') : [];
+          $is_whitelisted = !empty($mailpn_domain_whitelist) && in_array($user_email, $mailpn_domain_whitelist);
+
           foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
-            if (strpos($user_email, $mailpn_exception_email_domain) !== false) {
+            if (strpos($user_email, $mailpn_exception_email_domain) !== false && !$is_whitelisted) {
               return true;
             }
           }
@@ -1345,40 +1407,10 @@ class MAILPN_Settings {
     
     $mailing_plugin = new MAILPN_Mailing();
     $email_queued = false;
-    $user = get_userdata($user_id);
-    
+
     foreach ($welcome_emails as $email_id) {
       // Check if user should receive this email based on distribution settings
-      $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
-      $should_send = false;
-      
-      
-      
-      switch ($distribution) {
-        case 'public':
-          $should_send = true;
-          break;
-        case 'private_role':
-          $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
-          if (!empty($user_roles) && !empty($user)) {
-            foreach ($user_roles as $role) {
-              if (in_array($role, $user->roles)) {
-                $should_send = true;
-                break;
-              }
-            }
-          }
-          break;
-        case 'private_user':
-          $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
-          if (!empty($user_list) && in_array($user_id, $user_list)) {
-            $should_send = true;
-          } else {
-          }
-          break;
-      }
-      
-      if (!$should_send) {
+      if (!MAILPN_Mailing::mailpn_user_matches_distribution($email_id, $user_id)) {
         continue;
       }
       
@@ -1703,27 +1735,9 @@ class MAILPN_Settings {
       
       $can_receive_emails = false;
       foreach ($welcome_emails as $email_id) {
-        $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
-        
-        if ($distribution === 'public') {
+        if (MAILPN_Mailing::mailpn_user_matches_distribution($email_id, $reg_user_id)) {
           $can_receive_emails = true;
           break;
-        } elseif ($distribution === 'private_role') {
-          $user_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
-          if (!empty($user_roles)) {
-            foreach ($user_roles as $role) {
-              if (in_array($role, $user->roles)) {
-                $can_receive_emails = true;
-                break 2;
-              }
-            }
-          }
-        } elseif ($distribution === 'private_user') {
-          $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
-          if (!empty($user_list) && in_array($reg_user_id, $user_list)) {
-            $can_receive_emails = true;
-            break;
-          }
         }
       }
       

@@ -837,7 +837,7 @@ input:checked + .mailpn-slider:before{
   box-shadow:none;
   line-height:20px;
   border:none;
-  padding:5px 20px;
+  padding:15px 35px;
   -webkit-transition:all 0.5s ease-in-out;
   -moz-transition:all 0.5s ease-in-out;
   -ms-transition:all 0.5s ease-in-out;
@@ -848,6 +848,7 @@ input:checked + .mailpn-slider:before{
 }
 .mailpn-btn:hover{
   background-color:var(--mailpn-bg-color-main-alt);
+  transform:translateY(-2px);
 }
 .mailpn-btn-mini{
   line-height:20px;
@@ -2463,3 +2464,7 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 }
 
 /* END MAILPN PROFILE NOTIFICATIONS ICON STYLES */
+
+.mailpn-input-wrapper .mailpn-p-10:has(> label) {
+  padding-bottom: 0;
+}

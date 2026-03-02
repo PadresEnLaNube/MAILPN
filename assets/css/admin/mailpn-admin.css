@@ -359,6 +359,37 @@
     color: #f0b849;
 }
 
+/* Column Meta Info */
+.mailpn-column-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+.mailpn-column-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    background: #f0f0f1;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #50575e;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+.mailpn-column-meta-item i {
+    font-size: 13px;
+    color: #787c82;
+}
+.mailpn-column-meta-delay {
+    background: #fef8ee;
+    color: #9a6700;
+}
+.mailpn-column-meta-delay i {
+    color: #d4a017;
+}
+
 /* Column Status Badges */
 .mailpn-column-status-badge {
     display: inline-flex;
@@ -392,4 +423,93 @@
     margin-top: 4px;
     font-size: 12px;
     color: #787c82;
+}
+
+/* User Role Selector */
+.mailpn-user-role-selector-wrapper {
+    padding: 10px 0;
+}
+.mailpn-users-with-role-box {
+    background: #f0f6fc;
+    border: 1px solid #c3d9ed;
+    border-radius: 6px;
+}
+.mailpn-users-with-role-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.mailpn-user-role-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 13px;
+}
+.mailpn-user-role-item i {
+    font-size: 16px;
+    color: #787c82;
+}
+.mailpn-role-badge {
+    display: inline-block;
+    background: #2271b1;
+    color: #fff;
+    border-radius: 10px;
+    padding: 1px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+.mailpn-user-role-select {
+    min-height: 200px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 4px;
+}
+.mailpn-user-role-select option {
+    padding: 4px 8px;
+}
+.mailpn-user-role-select option[data-has-role="true"] {
+    background: #f0f6fc;
+    font-weight: 600;
+}
+.mailpn-role-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.mailpn-alert-warning {
+    background: #fcf9e8;
+    border: 1px solid #dba617;
+    border-radius: 6px;
+    color: #6e4b00;
+}
+.mailpn-alert-warning i {
+    color: #dba617;
+}
+.mailpn-color-success {
+    color: #00a32a;
+}
+.mailpn-color-error {
+    color: #d63638;
+}
+.mailpn-role-message p {
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin: 0;
+}
+.mailpn-role-message .mailpn-color-success {
+    background: #edfaef;
+    border: 1px solid #00a32a;
+}
+.mailpn-role-message .mailpn-color-error {
+    background: #fcf0f1;
+    border: 1px solid #d63638;
+}
+.mailpn-input-wrapper.mailpn-input-field-user_role_selector:has(input[type="hidden"]) {
+    display: block !important;
 }

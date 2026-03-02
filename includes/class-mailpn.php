@@ -639,6 +639,11 @@ class MAILPN {
 			$this->mailpn_loader->mailpn_add_filter('retrieve_password_message', $plugin_mailing, 'mailpn_retrieve_password_message', 10, 4);
 		}
 
+		if (get_option('mailpn_wp_emails_wrapper') == 'on') {
+			$this->mailpn_loader->mailpn_add_filter('wp_mail', $plugin_mailing, 'mailpn_wp_mail_wrapper', 99, 1);
+			add_action('wp_mail_succeeded', [$plugin_mailing, 'mailpn_log_wrapped_email']);
+		}
+
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-sender', $plugin_mailing, 'mailpn_sender');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-text', $plugin_mailing, 'mailpn_text');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-contents', $plugin_mailing, 'mailpn_contents');

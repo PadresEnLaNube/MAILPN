@@ -455,4 +455,69 @@
 
     mailpn_toggle.siblings('.mailpn-toggle-content').fadeToggle();
   });
+
+  // Role management functionality
+  function mailpn_handle_role_action(action, btn) {
+    var wrapper = btn.closest('.mailpn-user-role-selector-wrapper');
+    var select = wrapper.find('.mailpn-user-role-select');
+    var selectedUsers = select.val();
+    var role = select.data('role');
+    var roleLabel = select.data('role-label');
+    var nonce = wrapper.find('.mailpn-role-nonce').val();
+    var messageDiv = wrapper.find('.mailpn-role-message');
+
+    if (!selectedUsers || selectedUsers.length === 0) {
+      messageDiv.removeClass('mailpn-display-none-soft').html('<p class="mailpn-color-error"><i class="material-icons-outlined mailpn-vertical-align-middle">warning</i> Please select at least one user.</p>');
+      return;
+    }
+
+    var confirmMsg = action === 'assign'
+      ? 'Are you sure you want to assign the ' + roleLabel + ' role to ' + selectedUsers.length + ' user(s)?'
+      : 'Are you sure you want to remove the ' + roleLabel + ' role from ' + selectedUsers.length + ' user(s)?';
+
+    if (!confirm(confirmMsg)) return;
+
+    btn.prop('disabled', true);
+
+    $.ajax({
+      url: mailpn_ajax.ajax_url,
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        action: 'mailpn_ajax',
+        mailpn_ajax_type: 'mailpn_update_user_role',
+        mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+        role_action: action,
+        role: role,
+        user_ids: selectedUsers,
+        role_nonce: nonce
+      },
+      success: function(response) {
+        if (typeof response === 'string') {
+          try { response = JSON.parse(response); } catch(e) { return; }
+        }
+        if (response.error_key === '') {
+          messageDiv.removeClass('mailpn-display-none-soft').html('<p class="mailpn-color-success"><i class="material-icons-outlined mailpn-vertical-align-middle">check_circle</i> ' + response.error_content + '</p>');
+          setTimeout(function() { location.reload(); }, 1500);
+        } else {
+          messageDiv.removeClass('mailpn-display-none-soft').html('<p class="mailpn-color-error"><i class="material-icons-outlined mailpn-vertical-align-middle">error</i> ' + response.error_content + '</p>');
+          btn.prop('disabled', false);
+        }
+      },
+      error: function() {
+        messageDiv.removeClass('mailpn-display-none-soft').html('<p class="mailpn-color-error"><i class="material-icons-outlined mailpn-vertical-align-middle">error</i> An error occurred. Please try again.</p>');
+        btn.prop('disabled', false);
+      }
+    });
+  }
+
+  $(document).on('click', '.mailpn-assign-role-btn', function(e) {
+    e.preventDefault();
+    mailpn_handle_role_action('assign', $(this));
+  });
+
+  $(document).on('click', '.mailpn-remove-role-btn', function(e) {
+    e.preventDefault();
+    mailpn_handle_role_action('remove', $(this));
+  });
 })(jQuery);

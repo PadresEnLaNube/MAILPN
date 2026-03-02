@@ -11,6 +11,8 @@
  * @author     Padres en la Nube <info@padresenlanube.com>
  */
 class MAILPN_Mailing {
+  private $wrapped_email_data = null;
+
   public function mailpn_text($atts) {
     /* echo do_shortcode('[mailpn-text query="addressee_name"]'); */
     $atts = shortcode_atts([
@@ -21,15 +23,17 @@ class MAILPN_Mailing {
     $user_id = $atts['user_id'];
     $query = $atts['query'];
 
-    $user_info = get_userdata($user_id);
+    $user_info = is_numeric($user_id) ? get_userdata(intval($user_id)) : false;
 
-    ob_start();
+    if (empty($user_info) || !is_object($user_info)) {
+      return '';
+    }
 
     switch ($query) {
       case 'addressee_name':
         return $user_info->first_name . ' ' . $user_info->last_name;
       case 'addressee_first_name':
-        return $user_info->last_name;
+        return $user_info->first_name;
       case 'addressee_last_name':
         return $user_info->last_name;
       case 'addressee_email':
@@ -122,19 +126,35 @@ class MAILPN_Mailing {
     $user_data = get_userdata($mailpn_user_to);
     $user_email = !empty($user_data) && is_object($user_data) ? $user_data->user_email : '';
 
-    
+    // If mailpn_user_to is a direct email address, use it for exception checks
+    if (empty($user_email) && filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL)) {
+      $user_email = $mailpn_user_to;
+    }
+
+    // Resolve type early so system emails can bypass restrictions
+    $mailpn_type = !empty($mailpn_type) ? $mailpn_type : (!empty($mailpn_id) ? get_post_meta($mailpn_id, 'mailpn_type', true) : bin2hex(openssl_random_pseudo_bytes(6)));
+
+    // System email types that must always be delivered regardless of restrictions
+    $mailpn_system_types = ['email_password_reset', 'email_verify_code', 'email_welcome'];
+    $is_system_email = in_array($mailpn_type, $mailpn_system_types, true);
+
     $mailpn_exception_emails = get_option('mailpn_exception_emails');
     $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
     $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
 
-    // Exception domains and emails check
-    if ($mailpn_exception_emails == 'on') {
+    // Exception domains and emails check (skip for system emails)
+    if ($mailpn_exception_emails == 'on' && !$is_system_email) {
       if ($mailpn_exception_emails_domains == 'on') {
         $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
 
         if (!empty($mailpn_exception_emails_domain)) {
+          // Check if whitelist is enabled and email is whitelisted
+          $mailpn_domain_whitelist_enabled = get_option('mailpn_exception_emails_domains_whitelist');
+          $mailpn_domain_whitelist = $mailpn_domain_whitelist_enabled == 'on' ? get_option('mailpn_exception_emails_domains_whitelist_address') : [];
+          $is_whitelisted = !empty($mailpn_domain_whitelist) && in_array($user_email, $mailpn_domain_whitelist);
+
           foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
-            if (strpos($user_email, $mailpn_exception_email_domain) !== false) {
+            if (strpos($user_email, $mailpn_exception_email_domain) !== false && !$is_whitelisted) {
               return false;
             }
           }
@@ -149,8 +169,6 @@ class MAILPN_Mailing {
         }
       }
     }
-
-    $mailpn_type = !empty($mailpn_type) ? $mailpn_type : (!empty($mailpn_id) ? get_post_meta($mailpn_id, 'mailpn_type', true) : bin2hex(openssl_random_pseudo_bytes(6)));
     $mailpn_subject = !empty($mailpn_subject) ? $mailpn_subject : (!empty($mailpn_id) ? esc_html(get_the_title($mailpn_id)) : esc_html(__('Mail subject', 'mailpn')));
 
     $mailpn_content = !empty($mailpn_id) ? get_post($mailpn_id)->post_content : $mailpn_content;
@@ -223,7 +241,7 @@ class MAILPN_Mailing {
           update_option('mailpn_error', [$mailpn_id => [$unique_id => $wph_meta_value]]);
         }else{
           $wph_option_new = get_option('mailpn_error', true);
-          $wph_option_new[$mailpn_id][] = [$unique_id => $wph_meta_value];
+          $wph_option_new[$mailpn_id][$unique_id] = $wph_meta_value;
           update_option('mailpn_error', $wph_option_new);
         }
       }
@@ -970,6 +988,25 @@ class MAILPN_Mailing {
     $mailpn_queue = get_option('mailpn_queue');
 
     if (!empty($mail_id) && !empty($user_id)) {
+      // Check if user is blocked before adding to queue
+      if (is_numeric($user_id)) {
+        // Check notification status
+        if (class_exists('USERSPN') && get_user_meta($user_id, 'userspn_notifications', true) != 'on') {
+          $mailpn_type = get_post_meta($mail_id, 'mailpn_type', true);
+          $mailpn_system_types = ['email_password_reset', 'email_verify_code', 'email_welcome'];
+          if (!in_array($mailpn_type, $mailpn_system_types, true)) {
+            return false;
+          }
+        }
+
+        // Check exception email lists
+        $settings_plugin = new MAILPN_Settings();
+        $mailpn_type = !empty($mailpn_type) ? $mailpn_type : get_post_meta($mail_id, 'mailpn_type', true);
+        $mailpn_system_types = !empty($mailpn_system_types) ? $mailpn_system_types : ['email_password_reset', 'email_verify_code', 'email_welcome'];
+        if (!in_array($mailpn_type, $mailpn_system_types, true) && $settings_plugin->mailpn_is_email_excepted($user_id)) {
+          return false;
+        }
+      }
       if (empty($mailpn_queue)) {
         update_option('mailpn_queue', [$mail_id => [$user_id]]);
       }else{
@@ -1024,7 +1061,7 @@ class MAILPN_Mailing {
       if (!empty($mailpn_distribution_role)) {
         foreach ($mailpn_distribution_role as $role) {
           $users_role = get_users(['fields' => 'ids', 'number' => -1, 'role' => $role, 'orderby' => 'ID', 'order' => 'ASC']);
-          
+
           if (!empty($users_role)) {
             foreach ($users_role as $user_id) {
               $user_ids[] = $user_id;
@@ -1035,7 +1072,7 @@ class MAILPN_Mailing {
 
       // Sort all user IDs by ID to ensure consistent order
       sort($user_ids, SORT_NUMERIC);
-      return $user_ids;
+      return self::mailpn_filter_blocked_users($user_ids, $mail_id);
     }elseif ($mail_distribution == 'private_user') {
       $user_ids = get_post_meta($mail_id, 'mailpn_distribution_user', true);
 
@@ -1043,10 +1080,85 @@ class MAILPN_Mailing {
       if (is_array($user_ids)) {
         sort($user_ids, SORT_NUMERIC);
       }
-      
-      return $user_ids;
+
+      return self::mailpn_filter_blocked_users($user_ids, $mail_id);
     }else{
-      return get_users(['fields' => 'ids', 'number' => -1, 'orderby' => 'ID', 'order' => 'ASC']);
+      $user_ids = get_users(['fields' => 'ids', 'number' => -1, 'orderby' => 'ID', 'order' => 'ASC']);
+      return self::mailpn_filter_blocked_users($user_ids, $mail_id);
+    }
+  }
+
+  /**
+   * Filter out users that are blocked from receiving emails
+   * Checks notification status and exception email lists
+   */
+  private static function mailpn_filter_blocked_users($user_ids, $mail_id) {
+    if (empty($user_ids) || !is_array($user_ids)) {
+      return $user_ids;
+    }
+
+    $mailpn_type = get_post_meta($mail_id, 'mailpn_type', true);
+    $mailpn_system_types = ['email_password_reset', 'email_verify_code', 'email_welcome'];
+    $is_system_email = in_array($mailpn_type, $mailpn_system_types, true);
+
+    // System emails bypass all blocking
+    if ($is_system_email) {
+      return $user_ids;
+    }
+
+    $settings_plugin = new MAILPN_Settings();
+    $filtered_ids = [];
+
+    foreach ($user_ids as $user_id) {
+      // Check notification status
+      if (class_exists('USERSPN') && get_user_meta($user_id, 'userspn_notifications', true) != 'on') {
+        continue;
+      }
+
+      // Check exception email lists
+      if ($settings_plugin->mailpn_is_email_excepted($user_id)) {
+        continue;
+      }
+
+      $filtered_ids[] = $user_id;
+    }
+
+    return $filtered_ids;
+  }
+
+  /**
+   * Check if a user matches the distribution settings of a mail template
+   *
+   * @param int $email_id The mail template post ID
+   * @param int $user_id The user ID
+   * @return bool True if the user should receive this email
+   */
+  public static function mailpn_user_matches_distribution($email_id, $user_id) {
+    $distribution = get_post_meta($email_id, 'mailpn_distribution', true);
+    $user = get_userdata($user_id);
+
+    if (empty($user)) {
+      return false;
+    }
+
+    switch ($distribution) {
+      case 'public':
+        return true;
+      case 'private_role':
+        $template_roles = get_post_meta($email_id, 'mailpn_distribution_role', true);
+        if (!empty($template_roles) && is_array($template_roles)) {
+          foreach ($template_roles as $role) {
+            if (in_array($role, $user->roles)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      case 'private_user':
+        $user_list = get_post_meta($email_id, 'mailpn_distribution_user', true);
+        return !empty($user_list) && is_array($user_list) && in_array($user_id, $user_list);
+      default:
+        return false;
     }
   }
 
@@ -1185,8 +1297,95 @@ class MAILPN_Mailing {
         <span class="mailpn-test-email-result"></span>
       </div>
     <?php
-    $mailpn_return_string = ob_get_contents(); 
-    ob_end_clean(); 
+    $mailpn_return_string = ob_get_contents();
+    ob_end_clean();
     return $mailpn_return_string;
+  }
+
+  public function mailpn_wp_mail_wrapper($args) {
+    $message = $args['message'];
+    $subject = $args['subject'];
+    $headers = $args['headers'];
+
+    // Skip if already HTML (sent by MailPN or another plugin)
+    if (stripos($message, '<!DOCTYPE') !== false || stripos($message, 'mailpn-table-main') !== false) {
+      return $args;
+    }
+
+    // Convert plain text body to HTML
+    $html = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+    // URLs → clickable links
+    $html = preg_replace(
+      '/(https?:\/\/[^\s<>\)\"]+)/i',
+      '<a href="$1" target="_blank" style="color:#3d731a;text-decoration:underline;">$1</a>',
+      $html
+    );
+    // Double newlines → paragraphs, single newlines → <br>
+    $paragraphs = preg_split('/\n\s*\n/', $html);
+    $html = '<p>' . implode('</p><p>', array_map(function($p) {
+      return nl2br(trim($p));
+    }, $paragraphs)) . '</p>';
+
+    // Clean subject: remove [Site Name] prefix
+    $clean_subject = preg_replace('/^\[.+?\]\s*/', '', $subject);
+
+    // Wrap with MailPN template
+    $mailpn_legal_name = get_option('mailpn_legal_name');
+    $mailpn_legal_address = get_option('mailpn_legal_address');
+    $wrapped_message = $this->mailpn_template($clean_subject, $html, [], $mailpn_legal_name, $mailpn_legal_address, 0, 0);
+
+    // Set HTML content type header
+    $new_headers = is_array($headers) ? $headers : (is_string($headers) && !empty($headers) ? explode("\n", $headers) : []);
+    // Remove any existing content-type header
+    $new_headers = array_filter($new_headers, function($h) {
+      return stripos($h, 'content-type') === false;
+    });
+    $new_headers[] = 'Content-Type: text/html; charset=UTF-8';
+
+    // Store data for logging
+    $this->wrapped_email_data = [
+      'to' => $args['to'],
+      'subject' => $clean_subject,
+      'message_html' => $wrapped_message,
+      'message_text' => $message,
+    ];
+
+    $args['subject'] = $clean_subject;
+    $args['message'] = $wrapped_message;
+    $args['headers'] = $new_headers;
+
+    return $args;
+  }
+
+  public function mailpn_log_wrapped_email($mail_data) {
+    if ($this->wrapped_email_data === null) {
+      return;
+    }
+
+    $data = $this->wrapped_email_data;
+    $this->wrapped_email_data = null;
+
+    $to = is_array($data['to']) ? $data['to'][0] : $data['to'];
+    $user = get_user_by('email', $to);
+    $user_id = $user ? $user->ID : 0;
+
+    $post_functions = new MAILPN_Functions_Post();
+    $post_functions->mailpn_insert_post($data['subject'], $data['message_html'], '', sanitize_title($data['subject']), 'mailpn_rec', 'publish', 1, 0, [], [], [
+      'mailpn_rec_content' => $data['message_html'],
+      'mailpn_rec_type' => 'wp_core_email',
+      'mailpn_rec_to' => $user_id,
+      'mailpn_rec_to_email' => $to,
+      'mailpn_rec_attachments' => [],
+      'mailpn_rec_mail_id' => 0,
+      'mailpn_rec_mail_result' => 1,
+      'mailpn_rec_post_id' => 0,
+      'mailpn_rec_headers' => 'Content-Type: text/html; charset=UTF-8',
+      'mailpn_rec_error' => '',
+      'mailpn_rec_server_ip' => $_SERVER['SERVER_ADDR'] ?? '',
+      'mailpn_rec_sent_datetime' => current_time('mysql'),
+      'mailpn_rec_subject' => $data['subject'],
+      'mailpn_rec_content_html' => $data['message_html'],
+      'mailpn_rec_content_text' => $data['message_text'],
+    ], false);
   }
 }

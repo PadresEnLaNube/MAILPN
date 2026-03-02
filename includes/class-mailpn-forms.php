@@ -385,7 +385,7 @@ class MAILPN_Forms {
           <div class="mailpn-field mailpn-html-multi-wrapper mailpn-mb-50" <?php echo wp_kses_post($mailpn_parent_block); ?>>
             <?php if ($html_multi_fields_length): ?>
               <?php foreach (range(0, ($html_multi_fields_length - 1)) as $length_index): ?>
-                <div class="mailpn-html-multi-group mailpn-display-table mailpn-width-100-percent mailpn-mb-30">
+                <div class="mailpn-html-multi-group mailpn-display-table mailpn-width-100-percent">
                   <div class="mailpn-display-inline-table mailpn-width-90-percent">
                     <?php foreach ($mailpn_input['html_multi_fields'] as $index => $html_multi_field): ?>
                       <?php self::mailpn_input_builder($html_multi_field, $mailpn_type, $mailpn_id, false, true, $length_index); ?>
@@ -423,6 +423,51 @@ class MAILPN_Forms {
           </div>
         <?php
         break;
+      case 'user_role_selector':
+        if (!current_user_can('manage_options')) {
+          ?>
+          <div class="mailpn-field"><p class="mailpn-color-error"><?php esc_html_e('You do not have permission to manage user roles.', 'mailpn'); ?></p></div>
+          <?php
+          break;
+        }
+        $users = get_users(['orderby' => 'display_name', 'order' => 'ASC']);
+        $target_role = isset($mailpn_input['role']) ? $mailpn_input['role'] : 'mailpn_role_manager';
+        $role_label = isset($mailpn_input['role_label']) ? $mailpn_input['role_label'] : __('Mailing Manager - PN', 'mailpn');
+        $users_with_role = array_filter($users, function ($user) use ($target_role) {
+          return in_array($target_role, (array) $user->roles);
+        });
+        ?>
+        <div class="mailpn-user-role-selector-wrapper" <?php echo wp_kses_post($mailpn_parent_block); ?>>
+          <?php if (!empty($users_with_role)): ?>
+            <div class="mailpn-mb-20 mailpn-p-15 mailpn-users-with-role-box">
+              <h4 class="mailpn-mb-10"><?php echo esc_html(sprintf(__('Users with %s Role', 'mailpn'), $role_label)); ?> <span class="mailpn-role-badge"><?php echo count($users_with_role); ?></span></h4>
+              <div class="mailpn-users-with-role-list">
+                <?php foreach ($users_with_role as $user): ?>
+                  <div class="mailpn-user-role-item"><i class="material-icons-outlined">person</i> <strong><?php echo esc_html($user->display_name); ?></strong> <span class="mailpn-color-gray">(<?php echo esc_html($user->user_email); ?>)</span></div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+          <?php else: ?>
+            <div class="mailpn-mb-20 mailpn-p-15 mailpn-alert-warning"><p><i class="material-icons-outlined mailpn-vertical-align-middle">info</i> <?php echo esc_html(sprintf(__('No users currently have the %s role.', 'mailpn'), $role_label)); ?></p></div>
+          <?php endif; ?>
+          <div class="mailpn-mb-20">
+            <label for="mailpn_user_select_<?php echo esc_attr($mailpn_input['id']); ?>" class="mailpn-mb-10 mailpn-display-block"><?php esc_html_e('Select Users', 'mailpn'); ?></label>
+            <select id="mailpn_user_select_<?php echo esc_attr($mailpn_input['id']); ?>" class="mailpn-select mailpn-width-100-percent mailpn-user-role-select" multiple size="10" data-role="<?php echo esc_attr($target_role); ?>" data-role-label="<?php echo esc_attr($role_label); ?>">
+              <?php foreach ($users as $user): $has_role = in_array($target_role, (array) $user->roles); ?>
+                <option value="<?php echo esc_attr($user->ID); ?>" <?php echo $has_role ? 'data-has-role="true"' : ''; ?>><?php echo esc_html($user->display_name . ' (' . $user->user_email . ')'); ?><?php if ($has_role): ?> ✓<?php endif; ?></option>
+              <?php endforeach; ?>
+            </select>
+            <p class="mailpn-font-size-small mailpn-color-gray mailpn-mt-5"><?php esc_html_e('Hold Ctrl (Windows) or Cmd (Mac) to select multiple users. Users with ✓ already have this role.', 'mailpn'); ?></p>
+          </div>
+          <div class="mailpn-role-actions mailpn-mb-20">
+            <input type="hidden" class="mailpn-role-nonce" value="<?php echo esc_attr(wp_create_nonce('mailpn-role-assignment')); ?>">
+            <div class="mailpn-display-inline-block mailpn-mr-10"><button type="button" class="mailpn-btn mailpn-btn-mini mailpn-assign-role-btn" data-input-id="<?php echo esc_attr($mailpn_input['id']); ?>"><i class="material-icons-outlined mailpn-vertical-align-middle">person_add</i> <?php echo esc_html(sprintf(__('Assign %s Role', 'mailpn'), $role_label)); ?></button></div>
+            <div class="mailpn-display-inline-block"><button type="button" class="mailpn-btn mailpn-btn-mini mailpn-remove-role-btn" data-input-id="<?php echo esc_attr($mailpn_input['id']); ?>"><i class="material-icons-outlined mailpn-vertical-align-middle">person_remove</i> <?php echo esc_html(sprintf(__('Remove %s Role', 'mailpn'), $role_label)); ?></button></div>
+          </div>
+          <div class="mailpn-role-message mailpn-mt-20 mailpn-display-none-soft"></div>
+        </div>
+        <?php
+        break;
     }
   }
 
@@ -431,7 +476,7 @@ class MAILPN_Forms {
     ?>
       <?php if (array_key_exists('section', $input_array) && !empty($input_array['section'])): ?>      
         <?php if ($input_array['section'] == 'start'): ?>
-          <div class="mailpn-toggle-wrapper mailpn-section-wrapper mailpn-position-relative mailpn-mb-30 <?php echo array_key_exists('class', $input_array) ? esc_attr($input_array['class']) : ''; ?>" id="<?php echo array_key_exists('id', $input_array) ? esc_attr($input_array['id']) : ''; ?>">
+          <div class="mailpn-toggle-wrapper mailpn-section-wrapper mailpn-position-relative <?php echo array_key_exists('class', $input_array) ? esc_attr($input_array['class']) : ''; ?>" id="<?php echo array_key_exists('id', $input_array) ? esc_attr($input_array['id']) : ''; ?>">
             <a href="#" class="mailpn-toggle mailpn-width-100-percent mailpn-text-decoration-none">
               <div class="mailpn-display-table mailpn-width-100-percent mailpn-mb-20">
                 <div class="mailpn-display-inline-table mailpn-width-90-percent">
@@ -496,7 +541,7 @@ class MAILPN_Forms {
     ?>
     <?php if (array_key_exists('section', $input_array) && !empty($input_array['section'])): ?>      
       <?php if ($input_array['section'] == 'start'): ?>
-        <div class="mailpn-toggle-wrapper mailpn-section-wrapper mailpn-position-relative mailpn-mb-30 <?php echo array_key_exists('class', $input_array) ? esc_attr($input_array['class']) : ''; ?>" id="<?php echo array_key_exists('id', $input_array) ? esc_attr($input_array['id']) : ''; ?>">
+        <div class="mailpn-toggle-wrapper mailpn-section-wrapper mailpn-position-relative <?php echo array_key_exists('class', $input_array) ? esc_attr($input_array['class']) : ''; ?>" id="<?php echo array_key_exists('id', $input_array) ? esc_attr($input_array['id']) : ''; ?>">
           <a href="#" class="mailpn-toggle mailpn-width-100-percent mailpn-text-decoration-none">
             <div class="mailpn-display-table mailpn-width-100-percent mailpn-mb-20">
               <div class="mailpn-display-inline-table mailpn-width-90-percent">
@@ -520,7 +565,7 @@ class MAILPN_Forms {
         </div>
       <?php endif ?>
     <?php else: ?>
-      <div class="mailpn-input-wrapper <?php echo esc_attr($input_array['id']); ?> mailpn-input-display-<?php echo esc_attr($input_array['input']); ?> <?php echo (!empty($input_array['required']) && $input_array['required'] == true) ? 'mailpn-input-field-required' : ''; ?> mailpn-mb-30">
+      <div class="mailpn-input-wrapper <?php echo esc_attr($input_array['id']); ?> mailpn-input-display-<?php echo esc_attr($input_array['input']); ?> <?php echo (!empty($input_array['required']) && $input_array['required'] == true) ? 'mailpn-input-field-required' : ''; ?>">
         <?php if (array_key_exists('label', $input_array) && !empty($input_array['label'])): ?>
           <div class="mailpn-display-inline-table <?php echo ($mailpn_format == 'half' ? 'mailpn-width-40-percent' : 'mailpn-width-100-percent'); ?> mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-vertical-align-top">
             <div class="mailpn-p-10 <?php echo (array_key_exists('parent', $input_array) && !empty($input_array['parent']) && $input_array['parent'] != 'this') ? 'mailpn-pl-30' : ''; ?>">
@@ -710,7 +755,7 @@ class MAILPN_Forms {
               <div class="mailpn-html-multi-content">
                 <?php if ($html_multi_fields_length): ?>
                   <?php foreach (range(0, ($html_multi_fields_length - 1)) as $length_index): ?>
-                    <div class="mailpn-html-multi-group mailpn-display-table mailpn-width-100-percent mailpn-mb-30">
+                    <div class="mailpn-html-multi-group mailpn-display-table mailpn-width-100-percent">
                       <?php foreach ($mailpn_input['html_multi_fields'] as $index => $html_multi_field): ?>
                           <div class="mailpn-display-inline-table mailpn-width-60-percent">
                             <label><?php echo esc_html($html_multi_field['label']); ?></label>

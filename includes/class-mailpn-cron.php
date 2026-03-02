@@ -198,6 +198,25 @@ class MAILPN_Cron {
         
         // Check if it's time to send this email
         if ($scheduled_email['scheduled_time'] <= $current_time) {
+          // Re-check if user still matches the distribution settings (role, user list, etc.)
+          if (!MAILPN_Mailing::mailpn_user_matches_distribution($scheduled_email['email_id'], $scheduled_email['user_id'])) {
+            // User no longer qualifies for this email
+            $this->mailpn_log_scheduled_welcome_email($scheduled_email, 'skipped_distribution_mismatch');
+
+            $cron_log = get_option('mailpn_cron_debug_log', []);
+            $cron_log[] = [
+              'timestamp' => time(),
+              'date' => date('Y-m-d H:i:s'),
+              'action' => 'email_skipped_distribution',
+              'email_id' => $scheduled_email['email_id'],
+              'user_id' => $scheduled_email['user_id']
+            ];
+            update_option('mailpn_cron_debug_log', $cron_log);
+
+            $emails_processed = true;
+            continue;
+          }
+
           // Check if user's email is in the exception lists
           if (!$settings_plugin->mailpn_is_email_excepted($scheduled_email['user_id'])) {
             // Add to queue for immediate sending
