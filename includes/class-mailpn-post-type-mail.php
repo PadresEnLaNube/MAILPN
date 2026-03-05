@@ -52,6 +52,7 @@ class MAILPN_Post_Type_Mail
         . '<span class="mailpn-sc-item"><span id="mailpn-sc-user-name" class="mailpn-sc-code">&#91;user-name&#93;</span><a href="#" class="mailpn-btn-copy" data-mailpn-copy-content="#mailpn-sc-user-name"><i class="material-icons-outlined">content_copy</i></a></span>'
         . '<span class="mailpn-sc-item"><span id="mailpn-sc-post-name" class="mailpn-sc-code">&#91;post-name&#93;</span><a href="#" class="mailpn-btn-copy" data-mailpn-copy-content="#mailpn-sc-post-name"><i class="material-icons-outlined">content_copy</i></a></span>'
         . '<span class="mailpn-sc-item"><span id="mailpn-sc-new-contents" class="mailpn-sc-code">&#91;new-contents&#93;</span><a href="#" class="mailpn-btn-copy" data-mailpn-copy-content="#mailpn-sc-new-contents"><i class="material-icons-outlined">content_copy</i></a></span>'
+        . apply_filters('mailpn_shortcode_ui_items', '')
         . '</div>'
         . '</div>',
     ];

@@ -152,7 +152,7 @@ class MAILPN_Ajax {
             exit();
           }
           
-          // Obtener el email del usuario
+          // Get the user's email
           $user_data = get_userdata($user_id);
           if (!$user_data) {
             echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('User not found', 'mailpn')]);
@@ -174,13 +174,13 @@ class MAILPN_Ajax {
           $subject = get_the_title($post_id);
           $content = $post->post_content;
           
-          // Limpiar errores anteriores
+          // Clear previous errors
           $GLOBALS['mailpn_last_error'] = null;
           
-          // Verificar configuración básica antes de intentar enviar
+          // Verify basic configuration before attempting to send
           $config_errors = [];
           
-          // Verificar configuración SMTP si está habilitado
+          // Verify SMTP configuration if enabled
           if (get_option('mailpn_smtp_enabled') === 'on') {
             $smtp_host = get_option('mailpn_smtp_host');
             $smtp_port = get_option('mailpn_smtp_port');
@@ -203,19 +203,19 @@ class MAILPN_Ajax {
               }
             }
           } else {
-            // Verificar configuración del servidor para envío sin SMTP
+            // Verify server configuration for sending without SMTP
             if (!ini_get('sendmail_path') && !function_exists('mail')) {
               $config_errors[] = 'No mail server configured (sendmail_path or mail() function)';
             }
           }
           
-          // Si hay errores de configuración, mostrarlos inmediatamente
+          // If there are configuration errors, show them immediately
           if (!empty($config_errors)) {
             $error_message = esc_html__('Email configuration error', 'mailpn') . ': ' . implode('; ', $config_errors);
             echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => $error_message]);exit();
           }
           
-          // Habilitar captura de errores de PHPMailer
+          // Enable PHPMailer error capturing
           $phpmailer_error = '';
           $original_error_handler = set_error_handler(function($severity, $message, $file, $line) use (&$phpmailer_error) {
             if (strpos($message, 'PHPMailer') !== false || strpos($message, 'SMTP') !== false || strpos($message, 'mail') !== false) {
@@ -224,11 +224,11 @@ class MAILPN_Ajax {
             return false; // Let PHP handle the error normally
           });
           
-          // Intentar envío directo primero para obtener errores más específicos
+          // Initialize test variables
           $test_result = false;
           $test_error = '';
           
-          // Configurar PHPMailer para SMTP si está habilitado
+          // Configure PHPMailer for SMTP if enabled
           if (get_option('mailpn_smtp_enabled') === 'on') {
             add_action('phpmailer_init', function($phpmailer) {
               $phpmailer->isSMTP();
@@ -240,28 +240,23 @@ class MAILPN_Ajax {
                 $phpmailer->Username = get_option('mailpn_smtp_username');
                 $phpmailer->Password = get_option('mailpn_smtp_password');
               }
-              $phpmailer->Timeout = 10; // Timeout corto para pruebas
+              $phpmailer->Timeout = 10; // Short timeout for test sends
             });
           }
           
-          // Intentar envío directo con wp_mail
-          $test_result = wp_mail($user_email, 'Test: ' . $subject, 'This is a test email from MAILPN plugin.');
-          
-          // Si el envío directo falla, capturar el error
-          if (!$test_result) {
+          // Send the actual email using the full template with mailpn_id so that
+          // content shortcodes ([new-books], [new-contents]) receive the period
+          // configuration from the mail template.
+          $result = do_shortcode('[mailpn-sender mailpn_user_to="' . $user_id . '" mailpn_id="' . $post_id . '"]');
+
+          // If it fails, capture the PHPMailer error
+          if (!$result) {
             if (isset($GLOBALS['phpmailer']) && is_object($GLOBALS['phpmailer'])) {
               $test_error = $GLOBALS['phpmailer']->ErrorInfo;
             }
           }
           
-          // Si el envío directo funciona, usar el shortcode completo
-          if ($test_result) {
-            $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $user_id . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
-          } else {
-            $result = false;
-          }
-          
-          // Restaurar el manejador de errores original
+          // Restore the original error handler
           if ($original_error_handler) {
             set_error_handler($original_error_handler);
           }
@@ -269,25 +264,25 @@ class MAILPN_Ajax {
           if ($result) {
             echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully to', 'mailpn') . ' ' . $user_email]);exit();
           } else {
-            // Construir mensaje de error detallado
+            // Build detailed error message
             $error_message = esc_html__('Failed to send test email', 'mailpn');
             
-            // Usar el error del test directo si está disponible
+            // Use the direct test error if available
             if (!empty($test_error)) {
               $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $test_error;
             } else {
-              // Verificar si hay errores capturados por el error handler
+              // Check for errors captured by the error handler
               if (!empty($phpmailer_error)) {
                 $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $phpmailer_error;
               } else {
-                // Verificar información de error almacenada globalmente
+                // Check globally stored error information
                 if (isset($GLOBALS['mailpn_last_error']) && is_array($GLOBALS['mailpn_last_error'])) {
                   $last_error = $GLOBALS['mailpn_last_error'];
                   if (!empty($last_error['message'])) {
                     $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $last_error['message'];
                   }
                 } else {
-                  // Verificar errores de PHPMailer directamente
+                  // Check PHPMailer errors directly
                   if (isset($GLOBALS['phpmailer']) && is_object($GLOBALS['phpmailer'])) {
                     $phpmailer_error_info = $GLOBALS['phpmailer']->ErrorInfo;
                     if (!empty($phpmailer_error_info)) {
@@ -298,7 +293,7 @@ class MAILPN_Ajax {
               }
             }
             
-            // Si no hay error específico, agregar información de diagnóstico
+            // If no specific error, add diagnostic information
             if ($error_message === esc_html__('Failed to send test email', 'mailpn')) {
               $error_message = esc_html__('Email sending failed', 'mailpn') . ': Check SMTP settings or server mail configuration';
             }

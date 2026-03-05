@@ -177,8 +177,8 @@ class MAILPN_Mailing {
       $content_filters = apply_filters('mailpn_content_filters', [
         '[user-name]' => '[user-name user_id="' . $mailpn_user_to . '"]',
         '[post-name]' => '[post-name post_id="' . $post_id . '"]',
-        '[new-contents]' => '[new-contents post_id="' . $post_id . '"]',
-      ], $post_id, $post_parent_id);
+        '[new-contents]' => '[new-contents post_id="' . $post_id . '" mail_id="' . $mailpn_id . '"]',
+      ], $post_id, $post_parent_id, $mailpn_id);
 
       foreach ($content_filters as $filter_base => $filter_final) {
         if (strpos($mailpn_content, $filter_base) !== false) {
@@ -655,40 +655,137 @@ class MAILPN_Mailing {
   }
 
   public function mailpn_new_contents($atts) {
-    $a = extract(shortcode_atts([
+    $atts = shortcode_atts([
       'post_id' => 0,
-    ], $atts));
+      'mail_id' => 0,
+    ], $atts);
 
-    if (!empty($post_id)) {
-      $post_type = !empty(get_post_meta($post_id, 'mailpn_updated_content_cpt', true)) ? get_post_meta($post_id, 'mailpn_updated_content_cpt', true) : 'post';
+    $post_id = $atts['post_id'];
+    $mail_id = intval($atts['mail_id']);
 
-      $posts_atts = [
-        'fields' => 'ids',
-        'numberposts' => 1,
-        'post_type' => $post_type,
-        'post_status' => 'publish',
-        'orderby' => 'publish_date',
-        'order' => 'DESC',
-      ];
-      
-      if (class_exists('Polylang')) {
-        $posts_atts['lang'] = pll_current_language('slug');
+    // Read CPT and period from the mail template (mail_id) or fallback to post_id.
+    $source_id = $mail_id ? $mail_id : $post_id;
+
+    if (empty($source_id)) {
+      return '';
+    }
+
+    $post_type = get_post_meta($source_id, 'mailpn_updated_content_cpt', true);
+    if (empty($post_type)) {
+      $post_type = 'post';
+    }
+
+    $posts_atts = [
+      'fields' => 'ids',
+      'numberposts' => 20,
+      'post_type' => $post_type,
+      'post_status' => 'publish',
+      'orderby' => 'publish_date',
+      'order' => 'DESC',
+    ];
+
+    // Apply date filter based on the mail template's period configuration.
+    if ($mail_id) {
+      $days = self::mailpn_get_period_days($mail_id);
+      if ($days > 0) {
+        $posts_atts['date_query'] = [['after' => $days . ' days ago']];
       }
-      
-      $posts = get_posts($posts_atts);
+    }
 
-      if (!empty($posts)) {
-        foreach ($posts as $mail_post_id) {
-          ob_start();
-          ?>
-            <a href="<?php echo esc_url(get_permalink($mail_post_id)); ?>"><strong><?php echo esc_html(get_the_title($mail_post_id)); ?></strong></a>
-          <?php
-        }
+    if (class_exists('Polylang')) {
+      $posts_atts['lang'] = pll_current_language('slug');
+    }
+
+    $posts = get_posts($posts_atts);
+
+    if (empty($posts)) {
+      return '';
+    }
+
+    ob_start();
+    foreach ($posts as $mail_post_id) {
+      ?>
+        <div style="padding:8px 0;border-bottom:1px solid #eee;">
+          <a href="<?php echo esc_url(get_permalink($mail_post_id)); ?>" style="color:#007cba;text-decoration:none;font-weight:bold;"><?php echo esc_html(get_the_title($mail_post_id)); ?></a>
+        </div>
+      <?php
+    }
+    return ob_get_clean();
+  }
+
+  /**
+   * Calculate how many days back to query based on a mail template's period config.
+   *
+   * @param int $mail_id The mail template post ID.
+   * @return int Number of days (0 means no filter).
+   */
+  public static function mailpn_get_period_days($mail_id) {
+    $mail_type = get_post_meta($mail_id, 'mailpn_type', true);
+
+    // Periodic emails: mailpn_periodic_period.
+    if ($mail_type === 'email_periodic') {
+      $period = get_post_meta($mail_id, 'mailpn_periodic_period', true);
+      return self::mailpn_period_to_days($period);
+    }
+
+    // Published content emails: mailpn_updated_content_period.
+    if ($mail_type === 'email_published_content') {
+      $when = get_post_meta($mail_id, 'mailpn_updated_content', true);
+
+      if ($when === 'email_published_content_period') {
+        $period = get_post_meta($mail_id, 'mailpn_updated_content_period', true);
+        return self::mailpn_period_to_days($period);
       }
 
-      $wph_return_string = ob_get_contents(); 
-      ob_end_clean(); 
-      return $wph_return_string;
+      // "Each new content" → no date filter (just the latest).
+      return 0;
+    }
+
+    // Welcome / delay-based: value + unit.
+    $delay_prefixes = [
+      'email_welcome'                    => 'mailpn_welcome_delay',
+      'email_woocommerce_purchase'       => 'mailpn_woocommerce_purchase_delay',
+      'email_woocommerce_abandoned_cart'  => 'mailpn_woocommerce_abandoned_cart_delay',
+    ];
+
+    if (isset($delay_prefixes[$mail_type])) {
+      $prefix = $delay_prefixes[$mail_type];
+      $value  = intval(get_post_meta($mail_id, $prefix . '_value', true));
+      $unit   = get_post_meta($mail_id, $prefix . '_unit', true);
+      if ($value > 0 && $unit) {
+        return self::mailpn_delay_to_days($value, $unit);
+      }
+    }
+
+    return 7; // Default: weekly.
+  }
+
+  /**
+   * Convert a period keyword (hourly/daily/weekly/monthly/yearly) to days.
+   */
+  private static function mailpn_period_to_days($period) {
+    switch ($period) {
+      case 'hourly':  return 1;
+      case 'daily':   return 1;
+      case 'weekly':  return 7;
+      case 'monthly': return 30;
+      case 'yearly':  return 365;
+      default:        return 7;
+    }
+  }
+
+  /**
+   * Convert a delay value + unit to days.
+   */
+  private static function mailpn_delay_to_days($value, $unit) {
+    switch ($unit) {
+      case 'minutes': return 1;
+      case 'hours':   return max(1, intval($value / 24));
+      case 'days':    return $value;
+      case 'weeks':   return $value * 7;
+      case 'months':  return $value * 30;
+      case 'years':   return $value * 365;
+      default:        return 7;
     }
   }
 
@@ -816,6 +913,18 @@ class MAILPN_Mailing {
               <i class="material-icons-outlined">drafts</i>
               <span class="mailpn-status-label"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></span>
             </div>
+            <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
+              <div class="mailpn-status-actions" style="margin-top:8px;">
+                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
+                  data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
+                  data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
+                  <?php esc_html_e('Send test email', 'mailpn'); ?>
+                </a>
+                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+                <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
+              </div>
+            <?php endif; ?>
           </div>
         <?php endif; ?>
 
@@ -855,9 +964,26 @@ class MAILPN_Mailing {
             <?php endif ?>
         <?php endif ?>
       <?php endif ?>
+
+      <?php if (!in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded'])): ?>
+        <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
+          <div class="mailpn-status-card" style="margin-top:8px;">
+            <div class="mailpn-status-actions">
+              <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
+                data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
+                data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
+                <?php esc_html_e('Send test email', 'mailpn'); ?>
+              </a>
+              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+              <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
+            </div>
+          </div>
+        <?php endif; ?>
+      <?php endif; ?>
     <?php
-    $mailpn_return_string = ob_get_contents(); 
-    ob_end_clean(); 
+    $mailpn_return_string = ob_get_contents();
+    ob_end_clean();
     return $mailpn_return_string;
   }
 
