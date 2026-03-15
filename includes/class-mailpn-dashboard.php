@@ -96,15 +96,17 @@ class MAILPN_Dashboard {
 			$user = get_userdata($user_id);
 			$mail_post = get_post($mail_id);
 
+			$fallback_email = !empty($rec_to_email) ? $rec_to_email : (filter_var($user_id, FILTER_VALIDATE_EMAIL) ? $user_id : '');
+
 			if ($user) {
 				$display_name = $user->display_name;
 				$display_email = $user->user_email;
-			} elseif (empty($user_id)) {
-				$display_name = !empty($rec_to_email) ? $rec_to_email : __('Email address', 'mailpn');
-				$display_email = !empty($rec_to_email) ? $rec_to_email : '';
+			} elseif (empty($user_id) || !is_numeric($user_id)) {
+				$display_name = !empty($fallback_email) ? $fallback_email : __('Email address', 'mailpn');
+				$display_email = $fallback_email;
 			} else {
 				$display_name = __('Deleted user', 'mailpn');
-				$display_email = !empty($rec_to_email) ? $rec_to_email : '';
+				$display_email = $fallback_email;
 			}
 
 			$emails_details[] = array(
