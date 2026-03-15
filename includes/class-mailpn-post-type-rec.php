@@ -473,6 +473,7 @@ class MAILPN_Post_Type_Rec
         break;
       case 'mailpn_rec_to':
         $user_id = get_post_meta($post_id, 'mailpn_rec_to', true);
+        $rec_to_email = get_post_meta($post_id, 'mailpn_rec_to_email', true);
 
         if (get_userdata($user_id) !== false) {
           $user_info = get_userdata($user_id);
@@ -485,11 +486,26 @@ class MAILPN_Post_Type_Rec
               href="mailto:<?php echo esc_html($user_info->user_email); ?>"
               target="_blank"><?php echo esc_html($user_info->user_email); ?></a>)</p>
           <?php
+        } elseif (empty($user_id)) {
+          ?>
+          <p><i
+              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0 mailpn-mr-10">alternate_email</i>
+            <?php if (!empty($rec_to_email)): ?>
+              <a href="mailto:<?php echo esc_attr($rec_to_email); ?>" target="_blank"><?php echo esc_html($rec_to_email); ?></a>
+            <?php else: ?>
+              <?php esc_html_e('Email sent by email address.', 'mailpn'); ?>
+            <?php endif; ?>
+          </p>
+          <?php
         } else {
           ?>
           <p><i
               class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">person_off</i>
-            <?php esc_html_e('User removed or email sent by email address.', 'mailpn'); ?></p>
+            <?php esc_html_e('Deleted user.', 'mailpn'); ?>
+            <?php if (!empty($rec_to_email)): ?>
+              (<a href="mailto:<?php echo esc_attr($rec_to_email); ?>" target="_blank"><?php echo esc_html($rec_to_email); ?></a>)
+            <?php endif; ?>
+          </p>
           <?php
         }
         break;

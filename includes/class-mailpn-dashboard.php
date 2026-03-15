@@ -91,15 +91,27 @@ class MAILPN_Dashboard {
 		
 		foreach ($recent_emails as $email) {
 			$user_id = get_post_meta($email->ID, 'mailpn_rec_to', true);
+			$rec_to_email = get_post_meta($email->ID, 'mailpn_rec_to_email', true);
 			$mail_id = get_post_meta($email->ID, 'mailpn_rec_mail', true);
 			$user = get_userdata($user_id);
 			$mail_post = get_post($mail_id);
-			
+
+			if ($user) {
+				$display_name = $user->display_name;
+				$display_email = $user->user_email;
+			} elseif (empty($user_id)) {
+				$display_name = !empty($rec_to_email) ? $rec_to_email : __('Email address', 'mailpn');
+				$display_email = !empty($rec_to_email) ? $rec_to_email : '';
+			} else {
+				$display_name = __('Deleted user', 'mailpn');
+				$display_email = !empty($rec_to_email) ? $rec_to_email : '';
+			}
+
 			$emails_details[] = array(
 				'id' => $email->ID,
 				'date' => $email->post_date,
-				'user_email' => $user ? $user->user_email : __('Unknown User', 'mailpn'),
-				'user_name' => $user ? $user->display_name : __('Unknown User', 'mailpn'),
+				'user_email' => $display_email,
+				'user_name' => $display_name,
 				'mail_subject' => $mail_post ? $mail_post->post_title : __('Unknown Email', 'mailpn'),
 				'mail_type' => $mail_post ? get_post_meta($mail_id, 'mailpn_type', true) : '',
 			);

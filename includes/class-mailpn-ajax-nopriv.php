@@ -102,6 +102,12 @@ class MAILPN_Ajax_Nopriv {
                     }
 
                     if (!empty($user_id)) {
+                      // Authorization: only the account owner or an admin may update user meta
+                      if (!is_user_logged_in() || (intval($user_id) !== get_current_user_id() && !MAILPN_Functions_User::is_user_admin(get_current_user_id()))) {
+                        echo wp_json_encode(['error_key' => 'mailpn_form_save_error_unauthorized', 'error_content' => esc_html(__('You are not authorized to perform this action.', 'mailpn'))]);
+                        exit;
+                      }
+
                       foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
                         // Skip action and ajax type keys
                         if (in_array($mailpn_key, ['action', 'mailpn_ajax_nopriv_type'])) {
@@ -133,6 +139,17 @@ class MAILPN_Ajax_Nopriv {
                     }
 
                     if (!empty($post_id)) {
+                      // Authorization: only post owner or admin may update post meta
+                      if (!is_user_logged_in()) {
+                        echo wp_json_encode(['error_key' => 'mailpn_form_save_error_unauthorized', 'error_content' => esc_html(__('You are not authorized to perform this action.', 'mailpn'))]);
+                        exit;
+                      }
+                      $post_author_id = intval(get_post_field('post_author', $post_id));
+                      if (get_current_user_id() !== $post_author_id && !MAILPN_Functions_User::is_user_admin(get_current_user_id())) {
+                        echo wp_json_encode(['error_key' => 'mailpn_form_save_error_unauthorized', 'error_content' => esc_html(__('You are not authorized to perform this action.', 'mailpn'))]);
+                        exit;
+                      }
+
                       foreach ($mailpn_key_value as $mailpn_key => $mailpn_value) {
                         if ($mailpn_key == $post_type . '_title') {
                           wp_update_post([

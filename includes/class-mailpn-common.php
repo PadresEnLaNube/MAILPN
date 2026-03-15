@@ -51,16 +51,16 @@ class MAILPN_Common
 	 */
 	public function mailpn_enqueue_styles()
 	{
-		if (!wp_style_is($this->plugin_name . '-material-icons-outlined', 'enqueued')) {
-			wp_enqueue_style($this->plugin_name . '-material-icons-outlined', MAILPN_URL . 'assets/css/material-icons-outlined.min.css', [], $this->version, 'all');
+		if (!wp_style_is('wph-material-icons-outlined', 'enqueued')) {
+			wp_enqueue_style('wph-material-icons-outlined', MAILPN_URL . 'assets/css/material-icons-outlined.min.css', [], $this->version, 'all');
 		}
 
 		if (!wp_style_is($this->plugin_name . '-selector', 'enqueued')) {
 			wp_enqueue_style($this->plugin_name . '-selector', MAILPN_URL . 'assets/css/mailpn-selector.css', [], $this->version, 'all');
 		}
 
-		if (!wp_style_is($this->plugin_name . '-trumbowyg', 'enqueued')) {
-			wp_enqueue_style($this->plugin_name . '-trumbowyg', MAILPN_URL . 'assets/css/trumbowyg.min.css', [], $this->version, 'all');
+		if (!wp_style_is('wph-trumbowyg', 'enqueued')) {
+			wp_enqueue_style('wph-trumbowyg', MAILPN_URL . 'assets/css/trumbowyg.min.css', [], $this->version, 'all');
 		}
 
 		if (!wp_style_is($this->plugin_name . '-popups', 'enqueued')) {
@@ -68,12 +68,12 @@ class MAILPN_Common
 		}
 
 
-		if (!wp_style_is($this->plugin_name . '-tooltipster', 'enqueued')) {
-			wp_enqueue_style($this->plugin_name . '-tooltipster', MAILPN_URL . 'assets/css/tooltipster.min.css', [], $this->version, 'all');
+		if (!wp_style_is('wph-tooltipster', 'enqueued')) {
+			wp_enqueue_style('wph-tooltipster', MAILPN_URL . 'assets/css/tooltipster.min.css', [], $this->version, 'all');
 		}
 
-		if (!wp_style_is($this->plugin_name . '-owl', 'enqueued')) {
-			wp_enqueue_style($this->plugin_name . '-owl', MAILPN_URL . 'assets/css/owl.min.css', [], $this->version, 'all');
+		if (!wp_style_is('wph-owl', 'enqueued')) {
+			wp_enqueue_style('wph-owl', MAILPN_URL . 'assets/css/owl.min.css', [], $this->version, 'all');
 		}
 
 		wp_enqueue_style($this->plugin_name, MAILPN_URL . 'assets/css/mailpn.css', [], $this->version, 'all');
@@ -94,26 +94,26 @@ class MAILPN_Common
 			wp_enqueue_script($this->plugin_name . '-selector', MAILPN_URL . 'assets/js/mailpn-selector.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		}
 
-		if (!wp_script_is($this->plugin_name . '-trumbowyg', 'enqueued')) {
-			wp_enqueue_script($this->plugin_name . '-trumbowyg', MAILPN_URL . 'assets/js/trumbowyg.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+		if (!wp_script_is('wph-trumbowyg', 'enqueued')) {
+			wp_enqueue_script('wph-trumbowyg', MAILPN_URL . 'assets/js/trumbowyg.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		}
 
 		if (!wp_script_is($this->plugin_name . '-popups', 'enqueued')) {
 			wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		}
 
-		if (!wp_script_is($this->plugin_name . '-tooltipster', 'enqueued')) {
-			wp_enqueue_script($this->plugin_name . '-tooltipster', MAILPN_URL . 'assets/js/tooltipster.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+		if (!wp_script_is('wph-tooltipster', 'enqueued')) {
+			wp_enqueue_script('wph-tooltipster', MAILPN_URL . 'assets/js/tooltipster.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		}
 
-		if (!wp_script_is($this->plugin_name . '-owl', 'enqueued')) {
-			wp_enqueue_script($this->plugin_name . '-owl', MAILPN_URL . 'assets/js/owl.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+		if (!wp_script_is('wph-owl', 'enqueued')) {
+			wp_enqueue_script('wph-owl', MAILPN_URL . 'assets/js/owl.min.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		}
 
 		wp_enqueue_script($this->plugin_name, MAILPN_URL . 'assets/js/mailpn.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		wp_enqueue_script($this->plugin_name . '-ajax', MAILPN_URL . 'assets/js/mailpn-ajax.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 		wp_enqueue_script($this->plugin_name . '-aux', MAILPN_URL . 'assets/js/mailpn-aux.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
-		wp_enqueue_script($this->plugin_name . '-forms', MAILPN_URL . 'assets/js/mailpn-forms.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
+		wp_enqueue_script($this->plugin_name . '-forms', MAILPN_URL . 'assets/js/mailpn-forms.js', ['jquery', 'jquery-ui-sortable'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
 
 		if (!wp_script_is($this->plugin_name . '-notifications', 'enqueued')) {
 			wp_enqueue_script($this->plugin_name . '-notifications', MAILPN_URL . 'assets/js/mailpn-notifications.js', ['jquery'], $this->version, false, ['in_footer' => true, 'strategy' => 'defer']);
