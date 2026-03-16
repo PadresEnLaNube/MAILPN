@@ -58,6 +58,11 @@ class MAILPN_Cron {
       foreach ($posts_user_removed as $post_id) {
         $user_id = get_post_meta($post_id, 'mailpn_rec_to', true);
 
+        // Skip records for valid email addresses (external recipients from campaigns)
+        if (filter_var($user_id, FILTER_VALIDATE_EMAIL)) {
+          continue;
+        }
+
         if (get_userdata($user_id) === false) {
           wp_trash_post($post_id);
         }
