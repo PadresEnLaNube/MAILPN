@@ -116,7 +116,10 @@ class MAILPN_Cron {
     if (class_exists('WooCommerce')) {
       $this->mailpn_process_woocommerce_automated_emails();
     }
-    
+
+    // Process periodic emails
+    $this->mailpn_process_periodic_emails();
+
     // Log cron completion
     $cron_log = get_option('mailpn_cron_debug_log', []);
     $cron_log[] = [
@@ -614,7 +617,7 @@ class MAILPN_Cron {
     if (!is_numeric($value) || $value <= 0) {
       return false;
     }
-    
+
     switch ($unit) {
       case 'minutes':
         return $value * 60;
@@ -625,5 +628,94 @@ class MAILPN_Cron {
       default:
         return false;
     }
+  }
+
+  /**
+   * Process periodic emails
+   *
+   * Checks all published email_periodic mails and queues them
+   * if the configured interval has elapsed since the last send.
+   *
+   * @since       1.0.0
+   */
+  public function mailpn_process_periodic_emails() {
+    $mailing_plugin = new MAILPN_Mailing();
+
+    $periodic_emails = get_posts([
+      'post_type'   => 'mailpn_mail',
+      'post_status' => 'publish',
+      'numberposts' => -1,
+      'meta_query'  => [
+        [
+          'key'     => 'mailpn_type',
+          'value'   => 'email_periodic',
+          'compare' => '='
+        ]
+      ]
+    ]);
+
+    foreach ($periodic_emails as $email_post) {
+      $mail_id = $email_post->ID;
+      $status  = get_post_meta($mail_id, 'mailpn_status', true);
+
+      // Skip if currently sending
+      if ($status === 'queue') {
+        continue;
+      }
+
+      $period          = get_post_meta($mail_id, 'mailpn_periodic_period', true);
+      $interval        = $this->mailpn_periodic_interval_seconds($period);
+      $timestamps_sent = get_post_meta($mail_id, 'mailpn_timestamp_sent', true);
+      $last_sent       = !empty($timestamps_sent) && is_array($timestamps_sent) ? end($timestamps_sent) : 0;
+      $current_time    = time();
+
+      // Send if never sent before or if the interval has elapsed
+      if (empty($last_sent) || ($last_sent + $interval) <= $current_time) {
+        $users_to = MAILPN_Mailing::mailpn_get_users_to($mail_id);
+
+        if (!empty($users_to)) {
+          foreach ($users_to as $user_id) {
+            $mailing_plugin->mailpn_queue_add($mail_id, $user_id);
+          }
+
+          update_post_meta($mail_id, 'mailpn_status', 'queue');
+        }
+      }
+    }
+  }
+
+  /**
+   * Convert a periodic period string to seconds (static version for UI use)
+   *
+   * @param string $period The period (hourly, daily, weekly, monthly, yearly)
+   * @return int Interval in seconds
+   * @since       1.0.0
+   */
+  public static function mailpn_periodic_interval_seconds_static($period) {
+    switch ($period) {
+      case 'hourly':
+        return HOUR_IN_SECONDS;
+      case 'daily':
+        return DAY_IN_SECONDS;
+      case 'weekly':
+        return WEEK_IN_SECONDS;
+      case 'monthly':
+        return 30 * DAY_IN_SECONDS;
+      case 'yearly':
+        return 365 * DAY_IN_SECONDS;
+      default:
+        return WEEK_IN_SECONDS;
+    }
+  }
+
+  /**
+   * Convert a periodic period string to seconds (instance wrapper)
+   *
+   * @param string $period The period (hourly, daily, weekly, monthly, yearly)
+   * @return int Interval in seconds
+   * @since       1.0.0
+   */
+  private function mailpn_periodic_interval_seconds($period) {
+    return self::mailpn_periodic_interval_seconds_static($period);
   }
 }

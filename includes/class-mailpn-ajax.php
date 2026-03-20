@@ -107,6 +107,33 @@ class MAILPN_Ajax {
 
           echo wp_json_encode(['error_key' => '', ]);exit();
           break;
+        case 'mailpn_force_send_periodic':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'unauthorized', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
+            exit();
+          }
+          if (!empty($mailpn_mail_id)) {
+            $mail_type = get_post_meta($mailpn_mail_id, 'mailpn_type', true);
+            if ($mail_type !== 'email_periodic') {
+              echo wp_json_encode(['error_key' => 'invalid_type', 'error_content' => esc_html__('This email is not a periodic email.', 'mailpn')]);
+              exit();
+            }
+            $plugin_mailing = new MAILPN_Mailing();
+            $users_to = MAILPN_Mailing::mailpn_get_users_to($mailpn_mail_id);
+            if (!empty($users_to)) {
+              foreach ($users_to as $user_id) {
+                $plugin_mailing->mailpn_queue_add($mailpn_mail_id, $user_id);
+              }
+              update_post_meta($mailpn_mail_id, 'mailpn_status', 'queue');
+              // Process queue immediately so emails start sending now
+              $plugin_mailing->mailpn_queue_process();
+            }
+            echo wp_json_encode(['error_key' => '']);
+          } else {
+            echo wp_json_encode(['error_key' => 'missing_id', 'error_content' => esc_html__('Missing email ID.', 'mailpn')]);
+          }
+          exit();
+          break;
         case 'mailpn_test_email_send':
           if (!current_user_can('manage_options')) {
             echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);

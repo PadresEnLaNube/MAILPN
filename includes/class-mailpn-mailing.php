@@ -215,8 +215,18 @@ class MAILPN_Mailing {
     $mailpn_legal_name = get_option('mailpn_legal_name');
     $mailpn_legal_address = get_option('mailpn_legal_address');
 
-    $headers[] = 'Content-Type:text/html;charset=UTF-8';
-    $headers[] = get_bloginfo('url');
+    $headers[] = 'Content-Type: text/html; charset=UTF-8';
+
+    // List-Unsubscribe header (required by Gmail/Outlook to avoid spam)
+    if (!filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL) && class_exists('USERSPN')) {
+      $unsubscribe_url = add_query_arg([
+        'mailpn_action' => 'subscription-unsubscribe',
+        'user' => $mailpn_user_to,
+      ], home_url());
+      $unsubscribe_url = wp_nonce_url($unsubscribe_url, 'subscription-unsubscribe', 'subscription-unsubscribe-nonce');
+      $headers[] = 'List-Unsubscribe: <' . esc_url($unsubscribe_url) . '>';
+      $headers[] = 'List-Unsubscribe-Post: List-Unsubscribe=One-Click';
+    }
 
     $mailpn_message = self::mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id);
 
@@ -803,7 +813,7 @@ class MAILPN_Mailing {
 
     ob_start();
     ?>
-      <?php if (in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded'])): ?>
+      <?php if (in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded', 'email_periodic'])): ?>
         <?php $mailpn_status = get_post_meta($post_id, 'mailpn_status', true); ?>
         
         <?php if ($mailpn_status == 'sent'): ?>
@@ -825,6 +835,23 @@ class MAILPN_Mailing {
                   <span class="mailpn-status-stat"><i class="material-icons-outlined">schedule</i> <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $last_sent)); ?></span>
                 <?php endif; ?>
                 <span class="mailpn-status-stat"><i class="material-icons-outlined">mail</i> <?php echo esc_html($emails_sent_count); ?> <?php esc_html_e('emails sent', 'mailpn'); ?></span>
+                <?php if ($mailpn_type === 'email_periodic' && !empty($last_sent)): ?>
+                  <?php
+                    $periodic_period = get_post_meta($post_id, 'mailpn_periodic_period', true);
+                    $periodic_interval = MAILPN_Cron::mailpn_periodic_interval_seconds_static($periodic_period);
+                    $next_send = $last_sent + $periodic_interval;
+                    $period_labels = [
+                      'hourly'  => __('Hourly', 'mailpn'),
+                      'daily'   => __('Daily', 'mailpn'),
+                      'weekly'  => __('Weekly', 'mailpn'),
+                      'monthly' => __('Monthly', 'mailpn'),
+                      'yearly'  => __('Yearly', 'mailpn'),
+                    ];
+                    $period_label = isset($period_labels[$periodic_period]) ? $period_labels[$periodic_period] : $period_labels['weekly'];
+                  ?>
+                  <span class="mailpn-status-stat"><i class="material-icons-outlined">update</i> <?php esc_html_e('Next send:', 'mailpn'); ?> <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_send)); ?></span>
+                  <span class="mailpn-status-stat"><i class="material-icons-outlined">repeat</i> <?php echo esc_html($period_label); ?></span>
+                <?php endif; ?>
               </div>
 
               <?php if ($has_errors): ?>
@@ -850,6 +877,12 @@ class MAILPN_Mailing {
             <div class="mailpn-status-actions">
               <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View submissions', 'mailpn'); ?></a>
               <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-resend-all"><?php esc_html_e('Resend to all', 'mailpn'); ?></a>
+              <?php if ($mailpn_type === 'email_periodic'): ?>
+                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-force-send-periodic">
+                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
+                  <?php esc_html_e('Force send now', 'mailpn'); ?>
+                </a>
+              <?php endif; ?>
               <?php if ($has_errors): ?>
                 <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend errors', 'mailpn'); ?></a>
               <?php endif; ?>
@@ -886,6 +919,23 @@ class MAILPN_Mailing {
               <div class="mailpn-status-stats">
                 <span class="mailpn-status-stat"><strong><?php echo esc_html($emails_sent); ?></strong> <?php esc_html_e('of', 'mailpn'); ?> <strong><?php echo esc_html($emails_total); ?></strong> <?php esc_html_e('emails sent', 'mailpn'); ?> (<?php echo esc_html($progress_pct); ?>%)</span>
                 <span class="mailpn-status-stat mailpn-status-rate"><i class="material-icons-outlined">speed</i> <?php echo esc_html($mails_sent_every_ten_minutes); ?> <?php esc_html_e('emails every ten minutes', 'mailpn'); ?></span>
+                <?php if ($mailpn_type === 'email_periodic'): ?>
+                  <?php
+                    $periodic_period_q = get_post_meta($post_id, 'mailpn_periodic_period', true);
+                    $periodic_interval_q = MAILPN_Cron::mailpn_periodic_interval_seconds_static($periodic_period_q);
+                    $next_send_q = time() + $periodic_interval_q;
+                    $period_labels_q = [
+                      'hourly'  => __('Hourly', 'mailpn'),
+                      'daily'   => __('Daily', 'mailpn'),
+                      'weekly'  => __('Weekly', 'mailpn'),
+                      'monthly' => __('Monthly', 'mailpn'),
+                      'yearly'  => __('Yearly', 'mailpn'),
+                    ];
+                    $period_label_q = isset($period_labels_q[$periodic_period_q]) ? $period_labels_q[$periodic_period_q] : $period_labels_q['weekly'];
+                  ?>
+                  <span class="mailpn-status-stat"><i class="material-icons-outlined">repeat</i> <?php echo esc_html($period_label_q); ?></span>
+                  <span class="mailpn-status-stat"><i class="material-icons-outlined">update</i> <?php esc_html_e('Next send:', 'mailpn'); ?> <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_send_q)); ?></span>
+                <?php endif; ?>
               </div>
             </div>
             <?php if (!empty(get_option('mailpn_queue_paused'))): ?>
@@ -895,6 +945,12 @@ class MAILPN_Mailing {
             <?php endif; ?>
             <div class="mailpn-status-actions">
               <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View submissions', 'mailpn'); ?></a>
+              <?php if ($mailpn_type === 'email_periodic'): ?>
+                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-force-send-periodic">
+                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
+                  <?php esc_html_e('Force send now', 'mailpn'); ?>
+                </a>
+              <?php endif; ?>
               <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
                 <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
                   data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
@@ -911,10 +967,38 @@ class MAILPN_Mailing {
           <div class="mailpn-status-card mailpn-status-draft">
             <div class="mailpn-status-header">
               <i class="material-icons-outlined">drafts</i>
-              <span class="mailpn-status-label"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></span>
+              <?php if ($mailpn_type === 'email_periodic' && get_post_status($post_id) === 'publish'): ?>
+                <span class="mailpn-status-label"><?php esc_html_e('Scheduled — will be sent on the next cron cycle.', 'mailpn'); ?></span>
+              <?php else: ?>
+                <span class="mailpn-status-label"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></span>
+              <?php endif; ?>
             </div>
+            <?php if ($mailpn_type === 'email_periodic' && get_post_status($post_id) === 'publish'): ?>
+              <?php
+                $periodic_period = get_post_meta($post_id, 'mailpn_periodic_period', true);
+                $period_labels = [
+                  'hourly'  => __('Hourly', 'mailpn'),
+                  'daily'   => __('Daily', 'mailpn'),
+                  'weekly'  => __('Weekly', 'mailpn'),
+                  'monthly' => __('Monthly', 'mailpn'),
+                  'yearly'  => __('Yearly', 'mailpn'),
+                ];
+                $period_label = isset($period_labels[$periodic_period]) ? $period_labels[$periodic_period] : $period_labels['weekly'];
+              ?>
+              <div class="mailpn-status-body">
+                <div class="mailpn-status-stats">
+                  <span class="mailpn-status-stat"><i class="material-icons-outlined">repeat</i> <?php echo esc_html($period_label); ?></span>
+                </div>
+              </div>
+            <?php endif; ?>
             <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
               <div class="mailpn-status-actions" style="margin-top:8px;">
+                <?php if ($mailpn_type === 'email_periodic' && get_post_status($post_id) === 'publish'): ?>
+                  <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-force-send-periodic">
+                    <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
+                    <?php esc_html_e('Force send now', 'mailpn'); ?>
+                  </a>
+                <?php endif; ?>
                 <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
                   data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
                   data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
@@ -965,7 +1049,7 @@ class MAILPN_Mailing {
         <?php endif ?>
       <?php endif ?>
 
-      <?php if (!in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded'])): ?>
+      <?php if (!in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded', 'email_periodic'])): ?>
         <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
           <div class="mailpn-status-card" style="margin-top:8px;">
             <div class="mailpn-status-actions">

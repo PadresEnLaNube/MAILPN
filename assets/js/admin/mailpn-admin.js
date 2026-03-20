@@ -55,6 +55,28 @@
     });
   });
 
+  $(document).on('click', '.mailpn-btn-force-send-periodic', function(e) {
+    e.preventDefault();
+    var mailpn_btn = $(this);
+    var post_id = $(this).data('mailpn-post-id');
+    mailpn_btn.addClass('mailpn-link-disabled').siblings('.mailpn-waiting').removeClass('mailpn-display-none');
+
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_force_send_periodic',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+      mailpn_mail_id: post_id,
+    }, function(response) {
+      var result = $.parseJSON(response);
+      if (result['error_key'] !== '') {
+        mailpn_get_main_message(result['error_content']);
+      } else {
+        location.reload();
+      }
+      mailpn_btn.removeClass('mailpn-link-disabled').siblings('.mailpn-waiting').addClass('mailpn-display-none');
+    });
+  });
+
   // Shortcodes help toggle
   $(document).on('click', '.mailpn-sc-toggle', function(e) {
     e.preventDefault();
