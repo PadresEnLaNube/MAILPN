@@ -373,6 +373,12 @@
       });
     }
 
+    if (typeof mailpn_notice !== 'undefined' && mailpn_notice.notice != '') {
+      $(window).on('load', function(e) {
+        MAILPN_Popups.open($('#mailpn-popup-notice'));
+      });
+    }
+
     if (mailpn_action.action != '') {
       if (mailpn_action.btn_id != '') {
         $(window).on('load', function(e) {

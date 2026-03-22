@@ -151,6 +151,12 @@ class MAILPN_Common
 			'tab' => $mailpn_tab,
 		]);
 
+		$mailpn_notice = !empty($_GET['mailpn_notice']) ? MAILPN_Forms::mailpn_sanitizer(wp_unslash($_GET['mailpn_notice'])) : '';
+
+		wp_localize_script($this->plugin_name, 'mailpn_notice', [
+			'notice' => $mailpn_notice,
+		]);
+
 		wp_localize_script($this->plugin_name, 'mailpn_trumbowyg', [
 			'path' => MAILPN_URL . 'assets/media/trumbowyg-icons.svg',
 		]);
