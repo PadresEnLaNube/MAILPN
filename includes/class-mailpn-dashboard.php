@@ -626,18 +626,12 @@ class MAILPN_Dashboard {
 						<?php printf(esc_html__('Click rate (%s)', 'mailpn'), esc_html($period_label)); ?>
 					</div>
 				</div>
-			</div>
 
-			<!-- Pending scheduled emails card -->
-			<div class="mailpn-dashboard-stats mailpn-mb-30">
-				<div class="mailpn-stats-grid">
-					<div class="mailpn-stat-card" id="pending-scheduled-emails-card">
-						<div class="mailpn-stat-icon"><span class="dashicons dashicons-clock"></span></div>
-						<div class="mailpn-stat-content">
-							<h3><?php esc_html_e('Pending Scheduled Emails', 'mailpn'); ?></h3>
-							<div class="mailpn-stat-number"><?php echo esc_html($pending_scheduled_count); ?></div>
-							<p><?php esc_html_e('Awaiting delivery', 'mailpn'); ?></p>
-						</div>
+				<div class="mailpn-stats-widget mailpn-stats-bg-pending" data-popup="mailpn-stats-popup-pending" data-widget="pending">
+					<div class="mailpn-stats-widget-icon"><span class="material-icons-outlined">schedule_send</span></div>
+					<div class="mailpn-stats-widget-value"><?php echo esc_html($pending_scheduled_count); ?></div>
+					<div class="mailpn-stats-widget-title">
+						<?php esc_html_e('Pending scheduled', 'mailpn'); ?>
 					</div>
 				</div>
 			</div>
@@ -667,48 +661,34 @@ class MAILPN_Dashboard {
 				</div>
 			</div>
 
-			<!-- Stats Popups (overlay + modals) -->
-			<div class="mailpn-stats-overlay" style="display:none;"></div>
-
-			<div id="mailpn-stats-popup-sent" class="mailpn-stats-popup" style="display:none;" data-popup-type="sent">
-				<div class="mailpn-stats-popup-content">
-					<button class="mailpn-stats-popup-close"><span class="material-icons-outlined">close</span></button>
-					<div class="mailpn-stats-popup-inner">
-						<h2><?php echo esc_html($popup_titles['sent']); ?></h2>
-						<div class="mailpn-stats-popup-body"><?php echo $sent['html']; ?></div>
-					</div>
+			<!-- Stats Popups -->
+			<div id="mailpn-stats-popup-sent" class="mailpn-popup mailpn-popup-size-large">
+				<div class="mailpn-popup-content mailpn-pt-0">
+					<div class="mailpn-popup-header"><h3><?php echo esc_html($popup_titles['sent']); ?></h3></div>
+					<div class="mailpn-popup-body"><?php echo $sent['html']; ?></div>
 				</div>
 			</div>
 
-			<div id="mailpn-stats-popup-opened" class="mailpn-stats-popup" style="display:none;" data-popup-type="opened">
-				<div class="mailpn-stats-popup-content">
-					<button class="mailpn-stats-popup-close"><span class="material-icons-outlined">close</span></button>
-					<div class="mailpn-stats-popup-inner">
-						<h2><?php echo esc_html($popup_titles['opened']); ?></h2>
-						<div class="mailpn-stats-popup-body"><?php echo $opened['html']; ?></div>
-					</div>
+			<div id="mailpn-stats-popup-opened" class="mailpn-popup mailpn-popup-size-large">
+				<div class="mailpn-popup-content mailpn-pt-0">
+					<div class="mailpn-popup-header"><h3><?php echo esc_html($popup_titles['opened']); ?></h3></div>
+					<div class="mailpn-popup-body"><?php echo $opened['html']; ?></div>
 				</div>
 			</div>
 
-			<div id="mailpn-stats-popup-clicked" class="mailpn-stats-popup" style="display:none;" data-popup-type="clicked">
-				<div class="mailpn-stats-popup-content">
-					<button class="mailpn-stats-popup-close"><span class="material-icons-outlined">close</span></button>
-					<div class="mailpn-stats-popup-inner">
-						<h2><?php echo esc_html($popup_titles['clicked']); ?></h2>
-						<div class="mailpn-stats-popup-body"><?php echo $clicked['html']; ?></div>
-					</div>
+			<div id="mailpn-stats-popup-clicked" class="mailpn-popup mailpn-popup-size-large">
+				<div class="mailpn-popup-content mailpn-pt-0">
+					<div class="mailpn-popup-header"><h3><?php echo esc_html($popup_titles['clicked']); ?></h3></div>
+					<div class="mailpn-popup-body"><?php echo $clicked['html']; ?></div>
 				</div>
 			</div>
 
-			<!-- Pending scheduled emails popup -->
-			<div id="pending-scheduled-emails-popup" class="mailpn-popup mailpn-popup-size-large">
+			<div id="mailpn-stats-popup-pending" class="mailpn-popup mailpn-popup-size-large">
 				<div class="mailpn-popup-content mailpn-pt-0">
 					<div class="mailpn-popup-header"><h3><?php esc_html_e('Pending Scheduled Emails', 'mailpn'); ?></h3></div>
-					<div class="mailpn-popup-body"><div id="pending-scheduled-emails-list"><?php echo $this->render_pending_scheduled_emails_list(); ?></div></div>
+					<div class="mailpn-popup-body"><?php echo $this->render_pending_scheduled_emails_list(); ?></div>
 				</div>
 			</div>
-
-			<div id="pending-scheduled-emails-list-content" style="display:none;"><?php echo $this->render_pending_scheduled_emails_list(); ?></div>
 		</div>
 		<?php
 	}
