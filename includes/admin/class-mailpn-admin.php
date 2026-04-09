@@ -83,22 +83,55 @@ class MAILPN_Admin {
 		
 		// Load dashboard scripts if on dashboard page
 		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_dashboard') {
+			// Load Chart.js for dashboard charts
+			wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js', [], '4.4.7', true);
+
 			// Load popups script first (dependency)
 			wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false);
-			
-			// Load dashboard script
-			wp_enqueue_script($this->plugin_name . '-dashboard', MAILPN_URL . 'assets/js/admin/mailpn-dashboard.js', ['jquery', $this->plugin_name . '-popups'], $this->version, false);
-			
+
+			// Load dashboard script (now depends on Chart.js too)
+			wp_enqueue_script($this->plugin_name . '-dashboard', MAILPN_URL . 'assets/js/admin/mailpn-dashboard.js', ['jquery', $this->plugin_name . '-popups', 'chartjs'], $this->version, true);
+
 			// Localize script for translations and data
 			wp_localize_script($this->plugin_name . '-dashboard', 'mailpn_dashboard', array(
 				'search_placeholder' => __('Search emails...', 'mailpn'),
 				'ajax_url' => admin_url('admin-ajax.php'),
 				'nonce' => wp_create_nonce('mailpn_dashboard_nonce'),
 			));
-			
+
 			// Localize MAILPN_Data for loader access
 			wp_localize_script($this->plugin_name . '-dashboard', 'MAILPN_Data', array(
 				'mailpn_loader' => MAILPN_Data::mailpn_loader(true),
+			));
+
+			// Localize stats data for Chart.js + period switching
+			$period = isset($_GET['period']) ? sanitize_text_field(wp_unslash($_GET['period'])) : 'week';
+			$dashboard_obj = new MAILPN_Dashboard();
+			$widget_labels = [
+				'sent'       => __('Emails sent (%s)', 'mailpn'),
+				'opened'     => __('Emails opened (%s)', 'mailpn'),
+				'clicked'    => __('Clicks (%s)', 'mailpn'),
+				'open_rate'  => __('Open rate (%s)', 'mailpn'),
+				'click_rate' => __('Click rate (%s)', 'mailpn'),
+			];
+
+			// We need to call the private method via a quick reflection or duplicate the chart query.
+			// Since get_charts_data is private static, we use the AJAX handler pattern: call a lightweight
+			// helper that the class exposes for enqueue purposes.
+			$charts_data = MAILPN_Dashboard::get_charts_data_for_enqueue($period);
+
+			wp_localize_script($this->plugin_name . '-dashboard', 'mailpnDashboardStats', array(
+				'ajaxUrl'      => admin_url('admin-ajax.php'),
+				'nonce'        => wp_create_nonce('mailpn-nonce'),
+				'chartsData'   => $charts_data,
+				'period'       => $period,
+				'widgetLabels' => $widget_labels,
+				'i18n'         => array(
+					'sent'    => __('Sent', 'mailpn'),
+					'opened'  => __('Opened', 'mailpn'),
+					'clicked' => __('Clicks', 'mailpn'),
+					'loading' => __('Loading...', 'mailpn'),
+				),
 			));
 		}
 		

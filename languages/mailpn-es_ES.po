@@ -695,7 +695,7 @@ msgstr "Habilitar envío diferido"
 
 #: includes/class-mailpn-settings.php:336
 msgid "Enable if your SMTP server requires authentication."
-msgstr "Habilite esta opción si su servidor SMTP requiere autenticación."
+msgstr "Habilita esta opción si tu servidor SMTP requiere autenticación."
 
 #: includes/class-mailpn-settings.php:285
 msgid "Enable SMTP"
@@ -712,7 +712,7 @@ msgstr ""
 #: includes/class-mailpn-post-type-mail.php:182
 #: includes/class-mailpn-post-type-mail.php:212
 msgid "Enter delay value"
-msgstr "Introduzca el valor de retardo"
+msgstr "Introduce el valor de retardo"
 
 #: includes/class-mailpn-settings.php:58 includes/class-mailpn-settings.php:59
 msgid "Enterprise legal name"
@@ -1433,11 +1433,11 @@ msgstr ""
 
 #: includes/class-mailpn-mailing.php:1121
 msgid "please report it"
-msgstr "Por favor repórtelo"
+msgstr "Por favor repórtalo"
 
 #: includes/class-mailpn-notifications.php:53
 msgid "Please, login to edit your preferences."
-msgstr "Por favor, inicie sesión para editar sus preferencias."
+msgstr "Por favor, inicia sesión para editar tus preferencias."
 
 #: includes/class-mailpn-settings.php:509
 #: includes/class-mailpn-dashboard.php:162
@@ -1583,7 +1583,7 @@ msgstr "Reenviar a todos"
 
 #: includes/class-mailpn-mailing.php:1115
 msgid "Reset your password"
-msgstr "Restablecer su contraseña"
+msgstr "Restablecer tu contraseña"
 
 #: includes/class-mailpn-post-type-rec.php:446
 msgid "Result"
@@ -1664,7 +1664,7 @@ msgstr "Error en la comprobación de seguridad: se requiere Nonce."
 
 #: includes/class-mailpn-forms.php:260
 msgid "Select an option"
-msgstr "Seleccione una opción"
+msgstr "Selecciona una opción"
 
 #: includes/class-mailpn-common.php:172
 msgid "Select audio"
@@ -1676,7 +1676,7 @@ msgstr "Seleccionar audios"
 
 #: includes/class-mailpn-common.php:176
 msgid "Select file"
-msgstr "Seleccione archivo"
+msgstr "Selecciona archivo"
 
 #: includes/class-mailpn-common.php:177
 msgid "Select files"
@@ -1803,7 +1803,7 @@ msgid ""
 "Set the email addresses or domains that will be excluded from the email "
 "sending."
 msgstr ""
-"Establezca las direcciones de correo electrónico o dominios que se excluirán "
+"Establece las direcciones de correo electrónico o dominios que se excluirán "
 "del envío de correo electrónico."
 
 #: includes/class-mailpn-settings.php:91
@@ -1811,12 +1811,12 @@ msgid ""
 "Set the number of emails that the system will send every 10 mimutes. Default "
 "emails sent will be 5."
 msgstr ""
-"Establezca la cantidad de correos electrónicos que el sistema enviará cada "
+"Establece la cantidad de correos electrónicos que el sistema enviará cada "
 "10 minutos. El número predeterminado de correos electrónicos enviados será 5."
 
 #: includes/class-mailpn-settings.php:83
 msgid "Set the way in which the emails will be sent."
-msgstr "Establezca la forma en que se enviarán los correos electrónicos."
+msgstr "Establece la forma en que se enviarán los correos electrónicos."
 
 #: includes/class-mailpn-settings.php:1847
 msgid "Settings"
@@ -1948,7 +1948,7 @@ msgstr ""
 
 #: includes/class-mailpn-settings.php:298
 msgid "The hostname of your SMTP server."
-msgstr "El nombre de host de su servidor SMTP."
+msgstr "El nombre de host de tu servidor SMTP."
 
 #: includes/class-mailpn-mailing.php:786
 msgid "The mail queue is paused. Please check the mail queue settings."
@@ -1984,12 +1984,12 @@ msgstr ""
 msgid ""
 "The port number of your SMTP server. Common ports: 587 (TLS), 465 (SSL)."
 msgstr ""
-"El número de puerto de su servidor SMTP. Puertos comunes: 587 (TLS), 465 "
+"El número de puerto de tu servidor SMTP. Puertos comunes: 587 (TLS), 465 "
 "(SSL)."
 
 #: includes/class-mailpn-settings.php:325
 msgid "The security type for your SMTP connection."
-msgstr "El tipo de seguridad para su conexión SMTP."
+msgstr "El tipo de seguridad para tu conexión SMTP."
 
 #: includes/class-mailpn-post-type-mail.php:109
 #: includes/class-mailpn-post-type-mail.php:199
@@ -2346,7 +2346,7 @@ msgstr ""
 
 #: includes/class-mailpn-settings.php:348
 msgid "Your SMTP username or email address."
-msgstr "Su nombre de usuario SMTP o dirección de correo electrónico."
+msgstr "Tu nombre de usuario SMTP o dirección de correo electrónico."
 
 #: includes/class-mailpn-settings.php:347
 #: includes/class-mailpn-settings.php:372

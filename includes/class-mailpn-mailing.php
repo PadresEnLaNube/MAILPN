@@ -95,6 +95,12 @@ class MAILPN_Mailing {
 
   public function mailpn_sender($atts, $mailpn_content = null) {
     /* echo do_shortcode('[mailpn-sender mailpn_type="email_welcome" mailpn_user_to="1" mailpn_subject="Mail Subject"]<h2 class="mailpn_h2_styles">Title</h2><p class="mailpn_p_styles">Paragraph</p>[/mailpn-sender]'); */
+
+    // Repair attributes potentially broken by square brackets in values
+    // WordPress shortcode parser uses ] to close tags, so values like
+    // mailpn_subject="New guest - [Sea Suite Spain]" break parsing
+    $atts = self::repair_shortcode_atts( $atts, $mailpn_content );
+
     $atts = shortcode_atts([
       'mailpn_user_to' => 1,
       'mailpn_id' => 0,
@@ -366,6 +372,82 @@ class MAILPN_Mailing {
 
       return false;
     }
+  }
+
+  /**
+   * Repair shortcode attributes broken by square brackets in values.
+   *
+   * WordPress shortcode parser uses ] to close tags. If attribute values
+   * contain square brackets (e.g., site names like "[Sea Suite Spain]"),
+   * the parser breaks: attributes become numeric-indexed orphans and
+   * remaining attribute text spills into $content.
+   *
+   * This method detects breakage and recovers attributes from both the
+   * orphaned array entries and the spilled content.
+   *
+   * @param array|string $raw_atts Raw attributes from shortcode parser.
+   * @param string|null  $content  Shortcode content (passed by reference, cleaned of spillover).
+   * @return array Repaired attributes array.
+   */
+  private static function repair_shortcode_atts( $raw_atts, &$content ) {
+    if ( ! is_array( $raw_atts ) ) {
+      return $raw_atts;
+    }
+
+    // Detect broken parsing: numeric-indexed values indicate shortcode_parse_atts
+    // could not parse them as key="value" pairs
+    $has_numeric_keys = false;
+    foreach ( $raw_atts as $key => $value ) {
+      if ( is_int( $key ) ) {
+        $has_numeric_keys = true;
+        break;
+      }
+    }
+
+    if ( ! $has_numeric_keys ) {
+      // No breakage detected — just strip stray brackets from existing values as safety net
+      foreach ( $raw_atts as $key => $value ) {
+        if ( is_string( $value ) ) {
+          $raw_atts[ $key ] = str_replace( [ '[', ']' ], '', $value );
+        }
+      }
+      return $raw_atts;
+    }
+
+    // Broken parsing detected — try to recover attributes from content
+    $known_attrs = [
+      'mailpn_type', 'mailpn_subject', 'mailpn_user_to',
+      'mailpn_id', 'post_id', 'post_parent_id', 'mailpn_once',
+    ];
+
+    if ( ! empty( $content ) ) {
+      foreach ( $known_attrs as $attr_name ) {
+        if ( preg_match( '/' . preg_quote( $attr_name, '/' ) . '=["\']([^"\']*)["\']/', $content, $match ) ) {
+          $raw_atts[ $attr_name ] = str_replace( [ '[', ']' ], '', $match[1] );
+          $content = str_replace( $match[0], '', $content );
+        }
+      }
+
+      // Clean spillover characters: leading ], ", [, whitespace
+      $content = preg_replace( '/^[\s"\]\[]+/', '', $content );
+      $content = preg_replace( '/[\]\[\s"]+$/', '', $content );
+    }
+
+    // Remove numeric-indexed orphan entries (broken fragments)
+    foreach ( $raw_atts as $key => $value ) {
+      if ( is_int( $key ) ) {
+        unset( $raw_atts[ $key ] );
+      }
+    }
+
+    // Strip brackets from all remaining attribute values
+    foreach ( $raw_atts as $key => $value ) {
+      if ( is_string( $value ) ) {
+        $raw_atts[ $key ] = str_replace( [ '[', ']' ], '', $value );
+      }
+    }
+
+    return $raw_atts;
   }
 
   /**

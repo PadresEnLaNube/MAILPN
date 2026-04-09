@@ -472,13 +472,6 @@ class MAILPN_Settings {
       'section' => 'end',
     ];
 
-    $mailpn_options['mailpn_submit'] = [
-      'id' => 'mailpn_submit',
-      'input' => 'input',
-      'type' => 'submit',
-      'value' => __('Save options', 'mailpn'),
-    ];
-
     return $mailpn_options;
   }
 
@@ -498,10 +491,10 @@ class MAILPN_Settings {
     );
 
     add_submenu_page(
-      'mailpn_options', 
-      esc_html__('Dashboard', 'mailpn'), 
-      esc_html__('Dashboard', 'mailpn'), 
-      'manage_options', 
+      'mailpn_options',
+      esc_html__('Statistics', 'mailpn'),
+      esc_html__('Statistics', 'mailpn'),
+      'manage_options',
       'mailpn_dashboard',
       [$this, 'mailpn_dashboard_page']
     );
@@ -566,18 +559,63 @@ class MAILPN_Settings {
           </div>
         </div>
 
-        <div class="mailpn-options-fields mailpn-mb-30">
+        <div class="mailpn-options-fields mailpn-mb-30 mailpn-settings-pb-80">
           <form action="" method="post" id="mailpn_form" class="mailpn-form mailpn-p-30">
-            <?php 
+            <?php
               $options = $this->mailpn_get_options();
-              
-              foreach ($options as $mailpn_option): 
+
+              foreach ($options as $mailpn_option):
                 MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half');
-              endforeach; 
+              endforeach;
             ?>
-          </form> 
+            <input type="submit" name="mailpn_submit" id="mailpn_submit" class="mailpn-settings-hidden-submit" data-mailpn-type="option" value="<?php esc_attr_e('Save options', 'mailpn'); ?>">
+          </form>
         </div>
       </div>
+
+      <!-- Sticky settings footer bar -->
+      <div id="mailpn-settings-footer" class="mailpn-settings-footer">
+        <div class="mailpn-settings-footer-inner">
+          <div class="mailpn-settings-footer-left">
+            <span class="mailpn-settings-footer-plugin-name">Mailing Manager</span>
+            <span class="mailpn-settings-footer-version">v<?php echo esc_html(MAILPN_VERSION); ?></span>
+          </div>
+          <div class="mailpn-settings-footer-right">
+            <input type="file" id="mailpn-settings-import-file" class="mailpn-settings-hidden-input" accept=".json">
+            <button type="button" id="mailpn-settings-import" class="mailpn-settings-footer-icon-btn" title="<?php esc_attr_e('Import settings', 'mailpn'); ?>">
+              <span class="material-icons-outlined">file_upload</span>
+            </button>
+            <button type="button" id="mailpn-settings-export" class="mailpn-settings-footer-icon-btn" title="<?php esc_attr_e('Export settings', 'mailpn'); ?>">
+              <span class="material-icons-outlined">file_download</span>
+            </button>
+            <button type="button" id="mailpn-settings-save" class="mailpn-btn mailpn-btn-mini">
+              <?php esc_html_e('Save options', 'mailpn'); ?>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <?php
+      wp_enqueue_script(
+        'mailpn-settings-footer',
+        MAILPN_URL . 'assets/js/admin/mailpn-settings-footer.js',
+        [],
+        MAILPN_VERSION,
+        true
+      );
+
+      wp_localize_script('mailpn-settings-footer', 'mailpnSettingsFooter', [
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce'   => wp_create_nonce('mailpn-nonce'),
+        'i18n'    => [
+          'confirmImport'  => __('This will overwrite your current settings. Continue?', 'mailpn'),
+          'importSuccess'  => __('Settings imported successfully. Reloading...', 'mailpn'),
+          'importError'    => __('Error importing settings.', 'mailpn'),
+          'invalidFile'    => __('Invalid JSON file.', 'mailpn'),
+          'exportError'    => __('Error exporting settings.', 'mailpn'),
+        ],
+      ]);
+	  ?>
 	  <?php
 	}
 

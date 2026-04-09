@@ -4,7 +4,7 @@ Donate link: https://padresenlanube.com/
 Tags: email, mailing, notifications, sender, mail address
 Requires at least: 3.0
 Tested up to: 6.9.1
-Stable tag: 1.0.21
+Stable tag: 1.0.23
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Effortlessly manage your email campaigns. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
@@ -164,13 +164,6 @@ Perfect for bloggers, small businesses, e-commerce stores, and marketers who nee
 == Credits ==
 This plugin stands on the shoulders of giants
 
-Tooltipster v4.2.8 - A rockin' custom tooltip jQuery plugin
-Developed by Caleb Jacob and Louis Ameline
-MIT license
-https://calebjacob.github.io/tooltipster/
-https://github.com/calebjacob/tooltipster/blob/master/dist/js/tooltipster.main.js
-https://github.com/calebjacob/tooltipster/blob/master/dist/css/tooltipster.main.css
-
 Owl Carousel v2.3.4
 Licensed under: SEE LICENSE IN https://github.com/OwlCarousel2/OwlCarousel2/blob/master/LICENSE
 Copyright 2013-2018 David Deutsch
@@ -252,7 +245,7 @@ This section provides comprehensive documentation for developers who want to int
 === Plugin Structure ===
 
 * **Main File**: `mailpn.php`
-* **Version**: 1.0.21
+* **Version**: 1.0.23
 * **Constants**: `MAILPN_VERSION`, `MAILPN_DIR`, `MAILPN_URL`, `MAILPN_CPTS`
 * **Custom Post Types**: `mailpn_mail` (emails), `mailpn_rec` (records)
 

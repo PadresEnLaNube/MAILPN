@@ -2,9 +2,7 @@
 	'use strict';
 
   $(document).ready(function() {
-    if($('.mailpn-tooltip').length && $.fn.tooltipster) {
-      $('.mailpn-tooltip').tooltipster({maxWidth: 300, delayTouch:[0, 4000], customClass: 'mailpn-tooltip'});
-    }
+    if (window.MAILPN_Tooltips) { MAILPN_Tooltips.init(); }
 
     if ($('.mailpn-select').length && $.fn.MAILPN_Selector) {
       $('.mailpn-select').each(function(index) {

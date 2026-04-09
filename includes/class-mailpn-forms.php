@@ -491,7 +491,7 @@ class MAILPN_Forms {
             <div class="mailpn-content mailpn-pl-10 mailpn-toggle-content mailpn-mb-20 mailpn-display-none-soft">
               <?php if (array_key_exists('description', $input_array) && !empty($input_array['description'])): ?>
                 <div class="mailpn-section-info-block mailpn-mb-20">
-                  <i class="material-icons-outlined mailpn-section-info-icon">info_outline</i>
+                  <i class="material-icons-outlined mailpn-section-info-icon">info</i>
                   <small><?php echo wp_kses_post($input_array['description']); ?></small>
                 </div>
               <?php endif ?>
@@ -556,7 +556,7 @@ class MAILPN_Forms {
           <div class="mailpn-content mailpn-pl-10 mailpn-toggle-content mailpn-mb-20 mailpn-display-none-soft">
             <?php if (array_key_exists('description', $input_array) && !empty($input_array['description'])): ?>
               <div class="mailpn-section-info-block mailpn-mb-20">
-                <i class="material-icons-outlined mailpn-section-info-icon">info_outline</i>
+                <i class="material-icons-outlined mailpn-section-info-icon">info</i>
                 <small><?php echo wp_kses_post($input_array['description']); ?></small>
               </div>
             <?php endif ?>

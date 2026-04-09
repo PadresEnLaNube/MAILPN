@@ -124,7 +124,7 @@ class MAILPN_Ajax_Nopriv {
                     }
                   }
 
-                  do_action('mailpn_form_save', $user_id, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype);
+                  do_action('mailpn_form_save', $user_id, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype, '');
                   break;
                 case 'post':
                   if (empty($mailpn_form_subtype) || in_array($mailpn_form_subtype, ['post_new', 'post_edit'])) {
@@ -180,7 +180,7 @@ class MAILPN_Ajax_Nopriv {
                     }
                   }
 
-                  do_action('mailpn_form_save', $post_id, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype);
+                  do_action('mailpn_form_save', $post_id, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype, $post_type);
                   break;
                 case 'option':
                   if (MAILPN_Functions_User::is_user_admin(get_current_user_id())) {
@@ -189,7 +189,7 @@ class MAILPN_Ajax_Nopriv {
                     $mailpn_allowed_options = array_keys($mailpn_options);
                     
                     foreach ($mailpn_options as $mailpn_option) {
-                      if ($mailpn_option['input'] == 'html_multi') {
+                      if (!empty($mailpn_option['input']) && $mailpn_option['input'] == 'html_multi') {
                         foreach ($mailpn_option['html_multi_fields'] as $mailpn_multi_field) {
                           $mailpn_allowed_options[] = $mailpn_multi_field['id'];
                         }
@@ -213,7 +213,7 @@ class MAILPN_Ajax_Nopriv {
                       }
                     }
                     
-                    do_action('mailpn_form_save', 0, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype);
+                    do_action('mailpn_form_save', 0, $mailpn_key_value, $mailpn_form_type, $mailpn_form_subtype, '');
                   }
                   
                   break;
