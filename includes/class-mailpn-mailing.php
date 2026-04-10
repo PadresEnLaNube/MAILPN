@@ -96,6 +96,24 @@ class MAILPN_Mailing {
   public function mailpn_sender($atts, $mailpn_content = null) {
     /* echo do_shortcode('[mailpn-sender mailpn_type="email_welcome" mailpn_user_to="1" mailpn_subject="Mail Subject"]<h2 class="mailpn_h2_styles">Title</h2><p class="mailpn_p_styles">Paragraph</p>[/mailpn-sender]'); */
 
+    // Recursion guard: prevent nested [mailpn-sender] shortcodes embedded
+    // inside email content from firing during do_shortcode() processing.
+    // Without this, an inner shortcode without mailpn_id/mailpn_type would
+    // generate a ghost record with a random hex type at line ~141.
+    static $mailpn_sender_processing = false;
+    if ($mailpn_sender_processing) {
+      return false;
+    }
+    $mailpn_sender_processing = true;
+
+    try {
+      return $this->mailpn_sender_run($atts, $mailpn_content);
+    } finally {
+      $mailpn_sender_processing = false;
+    }
+  }
+
+  private function mailpn_sender_run($atts, $mailpn_content = null) {
     // Repair attributes potentially broken by square brackets in values
     // WordPress shortcode parser uses ] to close tags, so values like
     // mailpn_subject="New guest - [Sea Suite Spain]" break parsing
