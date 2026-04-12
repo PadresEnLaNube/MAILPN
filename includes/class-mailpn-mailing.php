@@ -1245,27 +1245,42 @@ class MAILPN_Mailing {
       if (empty($mailpn_queue_paused)) {
         foreach ($mailpn_queue as $mail_id => $mail_users) {
           if (!empty($mail_users)) {
-            foreach ($mail_users as $index => $user_id) {
+            foreach ($mail_users as $user_id) {
+              // Log debug info before sending
+              self::mailpn_log_send_attempt($mail_id, $user_id, 'queue_process');
+
               $mail_result = do_shortcode('[mailpn-sender mailpn_user_to="' . $user_id . '" mailpn_id="' . $mail_id . '"]');
 
-              unset($mailpn_queue[$mail_id][array_search($user_id, $mailpn_queue[$mail_id])]);
+              // Remove this user from the queue
+              $user_key = array_search($user_id, $mailpn_queue[$mail_id]);
+              if ($user_key !== false) {
+                unset($mailpn_queue[$mail_id][$user_key]);
+              }
+
+              // If the queue for this mail_id is now empty, mark the mail as sent
+              // and update the timestamp. This is the correct place to do it
+              // (after unset) because the previous "$index == count - 1" check
+              // was broken: foreach $index is the array KEY, not position, so
+              // after unsets keys become sparse and the check never matched.
+              if (empty($mailpn_queue[$mail_id])) {
+                unset($mailpn_queue[$mail_id]);
+
+                update_post_meta($mail_id, 'mailpn_status', 'sent');
+
+                $mailpn_meta_value = current_time('timestamp');
+                $existing_timestamps = get_post_meta($mail_id, 'mailpn_timestamp_sent', true);
+                if (empty($existing_timestamps) || !is_array($existing_timestamps)) {
+                  update_post_meta($mail_id, 'mailpn_timestamp_sent', [$mailpn_meta_value]);
+                } else {
+                  $existing_timestamps[] = $mailpn_meta_value;
+                  update_post_meta($mail_id, 'mailpn_timestamp_sent', $existing_timestamps);
+                }
+              }
+
               update_option('mailpn_queue', $mailpn_queue);
 
               if ($mail_result) {
                 $mailing_counter++;
-              }
-
-              if ($index == (count($mail_users) - 1)) {
-                update_post_meta($mail_id, 'mailpn_status', 'sent');
-
-                $mailpn_meta_value = current_time('timestamp');
-                if(empty(get_post_meta($mail_id, 'mailpn_timestamp_sent', true))) {
-                  update_post_meta($mail_id, 'mailpn_timestamp_sent', [$mailpn_meta_value]);
-                }else{
-                  $wph_post_meta_new = get_post_meta($mail_id, 'mailpn_timestamp_sent', true);
-                  $wph_post_meta_new[] = $mailpn_meta_value;
-                  update_post_meta($mail_id, 'mailpn_timestamp_sent', $wph_post_meta_new);
-                }
               }
 
               if ($mailing_counter >= $mails_sent_every_ten_minutes) {
@@ -1280,7 +1295,31 @@ class MAILPN_Mailing {
               }
             }
           }else{
-            update_post_meta($mail_id, 'mailpn_status', 'sent');
+            // Empty queue entry for this mail_id: clean it up and mark as sent
+            // if the status was still 'queue' (meaning it was in progress).
+            // Do NOT append a new timestamp if one was already added in the
+            // same processing cycle (prevents duplicate timestamps that
+            // otherwise would cause periodic emails to re-fire immediately).
+            unset($mailpn_queue[$mail_id]);
+            update_option('mailpn_queue', $mailpn_queue);
+
+            $current_status = get_post_meta($mail_id, 'mailpn_status', true);
+            if ($current_status === 'queue') {
+              update_post_meta($mail_id, 'mailpn_status', 'sent');
+
+              $existing_timestamps = get_post_meta($mail_id, 'mailpn_timestamp_sent', true);
+              $last_ts = (!empty($existing_timestamps) && is_array($existing_timestamps)) ? end($existing_timestamps) : 0;
+              // Only append a timestamp if none exists or the last one is older than 1 hour
+              if (empty($last_ts) || (time() - $last_ts) > HOUR_IN_SECONDS) {
+                $mailpn_meta_value = current_time('timestamp');
+                if (empty($existing_timestamps) || !is_array($existing_timestamps)) {
+                  update_post_meta($mail_id, 'mailpn_timestamp_sent', [$mailpn_meta_value]);
+                } else {
+                  $existing_timestamps[] = $mailpn_meta_value;
+                  update_post_meta($mail_id, 'mailpn_timestamp_sent', $existing_timestamps);
+                }
+              }
+            }
           }
         }
       }else{
@@ -1292,6 +1331,83 @@ class MAILPN_Mailing {
     }else{
       return false;
     }
+  }
+
+  /**
+   * Log a send attempt for debugging purposes.
+   *
+   * Stores a rolling log entry with: why/source of send, timestamp, template
+   * info, recipient info and history of previous sends of the same template
+   * to the same user. Used to diagnose duplicate or unexpected sends.
+   *
+   * @param int|string $mail_id Mail template ID (0 for direct sends)
+   * @param int|string $user_id Recipient user ID or raw email address
+   * @param string     $source  Context describing why the send happened
+   * @since 1.0.0
+   */
+  public static function mailpn_log_send_attempt($mail_id, $user_id, $source = 'unknown') {
+    $log = get_option('mailpn_send_debug_log', []);
+
+    if (!is_array($log)) {
+      $log = [];
+    }
+
+    $user         = is_numeric($user_id) ? get_userdata(intval($user_id)) : null;
+    $user_email   = $user ? $user->user_email : (filter_var($user_id, FILTER_VALIDATE_EMAIL) ? $user_id : 'unknown');
+    $mail_type    = !empty($mail_id) ? get_post_meta($mail_id, 'mailpn_type', true) : 'direct';
+    $mail_title   = !empty($mail_id) ? get_the_title($mail_id) : '';
+    $mail_post_status = !empty($mail_id) ? get_post_status($mail_id) : '';
+
+    // Look up previous successful sends of this mail_id to this user
+    $previous_count = 0;
+    $previous_dates = [];
+    if (!empty($mail_id) && is_numeric($user_id)) {
+      $previous_recs = get_posts([
+        'fields'      => 'ids',
+        'numberposts' => -1,
+        'post_type'   => 'mailpn_rec',
+        'post_status' => 'publish',
+        'meta_query'  => [
+          'relation' => 'AND',
+          ['key' => 'mailpn_rec_mail_id', 'value' => $mail_id],
+          ['key' => 'mailpn_rec_to',      'value' => $user_id],
+        ],
+        'orderby' => 'ID',
+        'order'   => 'DESC',
+      ]);
+
+      $previous_count = count($previous_recs);
+
+      // Capture up to 5 most recent send datetimes for context
+      $slice = array_slice($previous_recs, 0, 5);
+      foreach ($slice as $rec_id) {
+        $dt = get_post_meta($rec_id, 'mailpn_rec_sent_datetime', true);
+        if (!empty($dt)) {
+          $previous_dates[] = $dt;
+        }
+      }
+    }
+
+    $log[] = [
+      'timestamp'        => time(),
+      'date'             => current_time('Y-m-d H:i:s'),
+      'source'           => $source,
+      'mail_id'          => $mail_id,
+      'mail_type'        => $mail_type,
+      'mail_title'       => $mail_title,
+      'mail_post_status' => $mail_post_status,
+      'user_id'          => $user_id,
+      'user_email'       => $user_email,
+      'previous_count'   => $previous_count,
+      'previous_dates'   => $previous_dates,
+    ];
+
+    // Keep only the last 1000 entries to avoid unbounded growth
+    if (count($log) > 1000) {
+      $log = array_slice($log, -1000);
+    }
+
+    update_option('mailpn_send_debug_log', $log);
   }
 
   public function mailpn_queue_add($mail_id, $user_id) {

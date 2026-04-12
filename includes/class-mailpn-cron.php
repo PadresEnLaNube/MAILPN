@@ -227,6 +227,13 @@ class MAILPN_Cron {
 
           // Check if user's email is in the exception lists
           if (!$settings_plugin->mailpn_is_email_excepted($scheduled_email['user_id'])) {
+            // Log the scheduled welcome email being queued
+            MAILPN_Mailing::mailpn_log_send_attempt(
+              $scheduled_email['email_id'],
+              $scheduled_email['user_id'],
+              'scheduled_welcome_email'
+            );
+
             // Add to queue for immediate sending
             $queue_result = $mailing_plugin->mailpn_queue_add($scheduled_email['email_id'], $scheduled_email['user_id']);
             
@@ -669,11 +676,23 @@ class MAILPN_Cron {
       $last_sent       = !empty($timestamps_sent) && is_array($timestamps_sent) ? end($timestamps_sent) : 0;
       $current_time    = time();
 
+      // Defensive check: if the status is 'sent' but no timestamp was ever
+      // recorded, stamp it now to prevent an immediate re-queue.  This can
+      // happen after a data reset or if a previous bug prevented the
+      // timestamp from being written.
+      if ($status === 'sent' && empty($last_sent)) {
+        update_post_meta($mail_id, 'mailpn_timestamp_sent', [$current_time]);
+        continue;
+      }
+
       // Send if never sent before or if the interval has elapsed
       if (empty($last_sent) || ($last_sent + $interval) <= $current_time) {
         $users_to = MAILPN_Mailing::mailpn_get_users_to($mail_id);
 
         if (!empty($users_to)) {
+          // Log the periodic queue event
+          MAILPN_Mailing::mailpn_log_send_attempt($mail_id, 0, 'periodic_queue_start_' . count($users_to) . '_users');
+
           foreach ($users_to as $user_id) {
             $mailing_plugin->mailpn_queue_add($mail_id, $user_id);
           }

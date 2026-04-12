@@ -535,6 +535,16 @@ class MAILPN_Settings {
       [$this, 'mailpn_email_queue_page']
     );
 
+    // Add submenu for send debug log
+    add_submenu_page(
+      'mailpn_options',
+      esc_html__('Send Debug Log', 'mailpn'),
+      esc_html__('Send Debug Log', 'mailpn'),
+      'manage_options',
+      'mailpn-send-debug-log',
+      [$this, 'mailpn_send_debug_log_page']
+    );
+
     global $menu;
     if (!empty($menu)) {
       foreach ($menu as $menu_index => $menu_item) {
@@ -1104,6 +1114,89 @@ class MAILPN_Settings {
 		<?php
 	}
 
+  /**
+   * Send Debug Log page
+   *
+   * Displays a rolling log of every email send attempt with context: source,
+   * template, recipient, previous sends count, etc.
+   *
+   * @since 1.0.0
+   */
+  public function mailpn_send_debug_log_page() {
+    // Handle clearing the log
+    if (isset($_POST['mailpn_clear_send_debug_log']) && wp_verify_nonce($_POST['mailpn_clear_send_debug_log_nonce'], 'mailpn_clear_send_debug_log')) {
+      update_option('mailpn_send_debug_log', []);
+      echo '<div class="notice notice-success"><p>' . esc_html__('Send debug log cleared successfully.', 'mailpn') . '</p></div>';
+    }
+
+    $log = get_option('mailpn_send_debug_log', []);
+    if (!is_array($log)) {
+      $log = [];
+    }
+    ?>
+    <div class="mailpn-options mailpn-max-width-1000 mailpn-margin-auto mailpn-mt-50 mailpn-mb-50">
+      <div class="mailpn-display-table mailpn-width-100-percent">
+        <div class="mailpn-display-inline-table mailpn-width-70-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent">
+          <h1 class="mailpn-mb-30"><?php esc_html_e('Send Debug Log', 'mailpn'); ?></h1>
+          <p><?php echo esc_html(sprintf(__('%d entries (max 1000)', 'mailpn'), count($log))); ?></p>
+        </div>
+        <div class="mailpn-display-inline-table mailpn-width-30-percent mailpn-tablet-display-block mailpn-tablet-width-100-percent mailpn-text-align-center">
+          <form method="post" style="display: inline;">
+            <?php wp_nonce_field('mailpn_clear_send_debug_log', 'mailpn_clear_send_debug_log_nonce'); ?>
+            <input type="submit" name="mailpn_clear_send_debug_log" class="button button-secondary" value="<?php esc_attr_e('Clear Log', 'mailpn'); ?>" onclick="return confirm('<?php esc_attr_e('Clear the entire send debug log?', 'mailpn'); ?>')">
+          </form>
+        </div>
+      </div>
+
+      <?php if (empty($log)): ?>
+        <p><em><?php esc_html_e('No send debug log entries yet. Entries are created automatically when emails are queued or sent.', 'mailpn'); ?></em></p>
+      <?php else: ?>
+        <table class="wp-list-table widefat fixed striped mailpn-table">
+          <thead>
+            <tr>
+              <th style="width:140px"><?php esc_html_e('Date', 'mailpn'); ?></th>
+              <th style="width:150px"><?php esc_html_e('Source', 'mailpn'); ?></th>
+              <th><?php esc_html_e('Template', 'mailpn'); ?></th>
+              <th><?php esc_html_e('Recipient', 'mailpn'); ?></th>
+              <th style="width:80px"><?php esc_html_e('Prev.', 'mailpn'); ?></th>
+            </tr>
+          </thead>
+          <tbody>
+          <?php
+          // Show most recent first, limit to 200 displayed rows
+          $display_log = array_slice(array_reverse($log), 0, 200);
+          foreach ($display_log as $entry):
+            $prev_style = '';
+            if (!empty($entry['previous_count']) && $entry['previous_count'] > 0) {
+              $prev_style = ' style="color:#d63638;font-weight:bold"';
+            }
+          ?>
+            <tr>
+              <td><small><?php echo esc_html($entry['date'] ?? ''); ?></small></td>
+              <td><code><?php echo esc_html($entry['source'] ?? 'unknown'); ?></code></td>
+              <td>
+                <strong><?php echo esc_html($entry['mail_title'] ?? ''); ?></strong><br>
+                <small>ID <?php echo esc_html($entry['mail_id'] ?? ''); ?> &middot; <?php echo esc_html($entry['mail_type'] ?? ''); ?> &middot; <?php echo esc_html($entry['mail_post_status'] ?? ''); ?></small>
+              </td>
+              <td>
+                <?php echo esc_html($entry['user_email'] ?? ''); ?><br>
+                <small>ID <?php echo esc_html($entry['user_id'] ?? ''); ?></small>
+              </td>
+              <td<?php echo $prev_style; ?>>
+                <?php echo esc_html($entry['previous_count'] ?? 0); ?>
+                <?php if (!empty($entry['previous_dates'])): ?>
+                  <br><small><?php echo esc_html(implode(', ', array_slice($entry['previous_dates'], 0, 3))); ?></small>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
+    </div>
+    <?php
+  }
+
   public function mailpn_activated_plugin($plugin) {
     if($plugin == 'mailpn/mailpn.php') {
       // Check if this is a fresh activation using transient
@@ -1422,12 +1515,13 @@ class MAILPN_Settings {
       return false;
     }
     
-    // Get all welcome email templates
+    // Get all welcome email templates (include 'draft' so that templates
+    // saved as WP drafts still schedule delayed welcome emails)
     $welcome_emails = get_posts([
       'fields' => 'ids',
       'numberposts' => -1,
       'post_type' => 'mailpn_mail',
-      'post_status' => 'publish',
+      'post_status' => ['publish', 'draft'],
       'meta_query' => [
         [
           'key' => 'mailpn_type',
