@@ -66,4 +66,125 @@
     };
     reader.readAsText(file);
   });
+
+  // ── Recommended plugins ──────────────────────────────────────
+
+  var rpBtn   = document.getElementById('mailpn-settings-recommended');
+  var rpPopup = document.getElementById('mailpn-recommended-plugins');
+
+  if (rpBtn && rpPopup) {
+    // Open popup
+    rpBtn.addEventListener('click', function () {
+      if (window.MAILPN_Popups) {
+        MAILPN_Popups.open('mailpn-recommended-plugins');
+      }
+    });
+
+    // Event delegation for install / activate buttons inside the popup
+    rpPopup.addEventListener('click', function (e) {
+      var installBtn  = e.target.closest('.pn-cm-rp-install');
+      var activateBtn = e.target.closest('.pn-cm-rp-activate');
+
+      if (installBtn)  handleRpInstall(installBtn);
+      if (activateBtn) handleRpActivate(activateBtn);
+    });
+  }
+
+  function handleRpInstall(btn) {
+    var slug      = btn.getAttribute('data-slug');
+    var card      = btn.closest('.pn-cm-rp-card');
+    var actionDiv = card.querySelector('.pn-cm-rp-action');
+    var i18n      = mailpnSettingsFooter.i18n;
+
+    btn.disabled    = true;
+    btn.textContent = i18n.installing;
+
+    var fd = new FormData();
+    fd.append('action', 'mailpn_ajax');
+    fd.append('mailpn_ajax_type', 'mailpn_install_plugin');
+    fd.append('mailpn_ajax_nonce', mailpnSettingsFooter.nonce);
+    fd.append('slug', slug);
+
+    fetch(mailpnSettingsFooter.ajaxUrl, { method: 'POST', body: fd })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res.error_key) {
+          btn.disabled    = false;
+          btn.textContent = 'Install';
+          if (typeof mailpn_get_main_message === 'function') {
+            mailpn_get_main_message(res.error_content || i18n.installError, 'red');
+          }
+          return;
+        }
+
+        // Replace with Activate button
+        actionDiv.innerHTML = '<button type="button" class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent pn-cm-rp-activate" data-slug="' + slug + '">' + i18n.activate + '</button>';
+
+        // Update badge
+        updateRpBadge(-1);
+      })
+      .catch(function () {
+        btn.disabled    = false;
+        btn.textContent = 'Install';
+        if (typeof mailpn_get_main_message === 'function') {
+          mailpn_get_main_message(i18n.installError, 'red');
+        }
+      });
+  }
+
+  function handleRpActivate(btn) {
+    var slug      = btn.getAttribute('data-slug');
+    var card      = btn.closest('.pn-cm-rp-card');
+    var actionDiv = card.querySelector('.pn-cm-rp-action');
+    var i18n      = mailpnSettingsFooter.i18n;
+
+    btn.disabled    = true;
+    btn.textContent = i18n.activating;
+
+    var fd = new FormData();
+    fd.append('action', 'mailpn_ajax');
+    fd.append('mailpn_ajax_type', 'mailpn_activate_plugin');
+    fd.append('mailpn_ajax_nonce', mailpnSettingsFooter.nonce);
+    fd.append('slug', slug);
+
+    fetch(mailpnSettingsFooter.ajaxUrl, { method: 'POST', body: fd })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res.error_key) {
+          btn.disabled    = false;
+          btn.textContent = i18n.activate;
+          if (typeof mailpn_get_main_message === 'function') {
+            mailpn_get_main_message(res.error_content || i18n.activateError, 'red');
+          }
+          return;
+        }
+
+        // Show Active badge
+        actionDiv.innerHTML = '<span class="pn-cm-rp-active-badge">' + i18n.active + '</span>';
+
+        // Open settings page in new tab
+        var settingsUrl = (mailpnSettingsFooter.settingsPages || {})[slug];
+        if (settingsUrl) {
+          window.open(settingsUrl, '_blank');
+        }
+      })
+      .catch(function () {
+        btn.disabled    = false;
+        btn.textContent = i18n.activate;
+        if (typeof mailpn_get_main_message === 'function') {
+          mailpn_get_main_message(i18n.activateError, 'red');
+        }
+      });
+  }
+
+  function updateRpBadge(delta) {
+    var badge = document.querySelector('.pn-cm-rp-badge');
+    if (!badge) return;
+    var count = parseInt(badge.textContent, 10) + delta;
+    if (count <= 0) {
+      badge.remove();
+    } else {
+      badge.textContent = count;
+    }
+  }
 })();
