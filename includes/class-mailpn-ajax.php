@@ -391,6 +391,23 @@ class MAILPN_Ajax {
           exit();
           break;
 
+        case 'mailpn_status_details':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'no_permission', 'error_content' => esc_html__('You do not have permission.', 'mailpn')]);
+            exit();
+          }
+          $detail_post_id = !empty($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+          if (empty($detail_post_id)) {
+            echo wp_json_encode(['error_key' => 'missing_id', 'error_content' => esc_html__('Missing email ID.', 'mailpn')]);
+            exit();
+          }
+          echo wp_json_encode([
+            'error_key' => '',
+            'html' => MAILPN_Post_Type_Mail::mailpn_get_status_popup_html($detail_post_id),
+          ]);
+          exit();
+          break;
+
         case 'mailpn_settings_export':
           if (!current_user_can('manage_options')) {
             echo wp_json_encode(['error_key' => 'permission_denied']);

@@ -62,6 +62,11 @@ class MAILPN_Admin {
 			wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');
 			wp_enqueue_style($this->plugin_name . '-statistics', MAILPN_URL . 'assets/css/mailpn-statistics.css', [], $this->version, 'all');
 		}
+
+		// Load popup styles on mail template listing page
+		if ($typenow === 'mailpn_mail') {
+			wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');
+		}
 	}
 
 	/**
@@ -135,8 +140,56 @@ class MAILPN_Admin {
 			));
 		}
 		
-		// Load statistics scripts if on mail records page
+		// Load popup scripts on mail template listing page
 		global $typenow;
+		if ($typenow === 'mailpn_mail') {
+			wp_enqueue_script($this->plugin_name . '-popups', MAILPN_URL . 'assets/js/mailpn-popups.js', ['jquery'], $this->version, false);
+
+			$status_popup_js = "
+				jQuery(document).ready(function($) {
+					// Popup container
+					if (!$('#mailpn-status-detail-popup').length) {
+						$('body').append(
+							'<div id=\"mailpn-status-detail-popup\" class=\"mailpn-popup mailpn-popup-size-medium\" style=\"display:none;\">' +
+								'<div class=\"mailpn-popup-content mailpn-pt-0\">' +
+									'<div class=\"mailpn-popup-body\" id=\"mailpn-status-detail-body\">' +
+										'<p style=\"text-align:center;padding:30px;\"><i class=\"material-icons-outlined\" style=\"font-size:32px;animation:spin 1s linear infinite;\">autorenew</i></p>' +
+									'</div>' +
+								'</div>' +
+							'</div>'
+						);
+					}
+
+					$(document).on('click', '.mailpn-status-clickable', function(e) {
+						e.preventDefault();
+						var postId = $(this).data('post-id');
+						if (!postId) return;
+
+						$('#mailpn-status-detail-body').html('<p style=\"text-align:center;padding:30px;\"><i class=\"material-icons-outlined\" style=\"font-size:32px;\">hourglass_top</i></p>');
+						MAILPN_Popups.open('mailpn-status-detail-popup');
+
+						$.post(mailpn_ajax.ajax_url, {
+							action: 'mailpn_ajax',
+							mailpn_ajax_type: 'mailpn_status_details',
+							mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+							post_id: postId
+						}, function(raw) {
+							var res = typeof raw === 'string' ? JSON.parse(raw) : raw;
+							if (res.error_key === '') {
+								$('#mailpn-status-detail-body').html(res.html);
+							} else {
+								$('#mailpn-status-detail-body').html('<p>' + (res.error_content || 'Error') + '</p>');
+							}
+						}).fail(function() {
+							$('#mailpn-status-detail-body').html('<p>Connection error</p>');
+						});
+					});
+				});
+			";
+			wp_add_inline_script($this->plugin_name . '-popups', $status_popup_js);
+		}
+
+		// Load statistics scripts if on mail records page
 		if ($typenow === 'mailpn_rec') {
 			// Load Chart.js for charts
 			wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js', [], '3.9.1', false);

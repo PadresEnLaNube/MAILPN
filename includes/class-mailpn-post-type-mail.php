@@ -322,6 +322,14 @@ class MAILPN_Post_Type_Mail
       'placeholder' => __('Mail attachments', 'mailpn'),
       'description' => __('You can include several files to be sent with this email as attachments. To see the files here, please upload them in the library and then refresh this page.', 'mailpn'),
     ];
+
+    // Schedule preview section
+    $mailpn_fields_meta['mailpn_schedule_preview'] = [
+      'id' => 'mailpn_schedule_preview',
+      'input' => 'html',
+      'html_content' => self::mailpn_get_schedule_preview_html($post_id),
+    ];
+
     $mailpn_fields_meta['mailpn_ajax_nonce'] = [
       'id' => 'mailpn_ajax_nonce',
       'input' => 'input',
@@ -658,34 +666,120 @@ class MAILPN_Post_Type_Mail
 
       case 'mailpn_mail_status':
         $mailpn_status = get_post_meta($post_id, 'mailpn_status', true);
+        $mail_type = get_post_meta($post_id, 'mailpn_type', true);
+        $wp_post_status = get_post_status($post_id);
+        $sent_count = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id]));
+        $mailpn_timestamps = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
+        $last_sent = !empty($mailpn_timestamps) && is_array($mailpn_timestamps) ? end($mailpn_timestamps) : '';
+        $send_count_label = $sent_count > 0 ? sprintf(__('%d sent', 'mailpn'), $sent_count) : '';
 
-        if ($mailpn_status === 'sent') {
-          $mailpn_timestamps = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
-          $last_sent = !empty($mailpn_timestamps) && is_array($mailpn_timestamps) ? end($mailpn_timestamps) : '';
-          ?>
-          <span class="mailpn-column-status-badge mailpn-column-status-sent">
-            <i class="material-icons-outlined mailpn-vertical-align-middle">check_circle</i>
-            <?php esc_html_e('Sent', 'mailpn'); ?>
-          </span>
-          <?php if (!empty($last_sent)): ?>
-            <span class="mailpn-column-status-detail"><?php echo esc_html(date_i18n(get_option('date_format'), $last_sent)); ?></span>
-          <?php endif; ?>
-          <?php
-        } elseif ($mailpn_status === 'queue') {
+        if ($mailpn_status === 'queue') {
+          // Currently sending
           $mailpn_queue_data = get_option('mailpn_queue');
           $emails_pending = !empty($mailpn_queue_data[$post_id]) ? count($mailpn_queue_data[$post_id]) : 0;
-          $emails_sent = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id]));
-          $emails_total = $emails_pending + $emails_sent;
+          $emails_total = $emails_pending + $sent_count;
           ?>
-          <span class="mailpn-column-status-badge mailpn-column-status-queue">
+          <span class="mailpn-column-status-badge mailpn-column-status-queue mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
             <i class="material-icons-outlined mailpn-vertical-align-middle">send</i>
             <?php esc_html_e('Sending...', 'mailpn'); ?>
           </span>
           <?php if ($emails_total > 0): ?>
-            <span class="mailpn-column-status-detail"><?php echo esc_html($emails_sent); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?></span>
+            <span class="mailpn-column-status-detail"><?php echo esc_html($sent_count); ?> <?php esc_html_e('of', 'mailpn'); ?> <?php echo esc_html($emails_total); ?></span>
           <?php endif; ?>
           <?php
+
+        } elseif ($mailpn_status === 'sent' && $mail_type === 'email_periodic') {
+          // Periodic email — sent at least once, will send again
+          $period = get_post_meta($post_id, 'mailpn_periodic_period', true);
+          $next_send = !empty($last_sent) && !empty($period)
+            ? $last_sent + MAILPN_Cron::mailpn_periodic_interval_seconds_static($period)
+            : 0;
+          ?>
+          <span class="mailpn-column-status-badge mailpn-column-status-active mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
+            <i class="material-icons-outlined mailpn-vertical-align-middle">autorenew</i>
+            <?php esc_html_e('Active', 'mailpn'); ?>
+          </span>
+          <span class="mailpn-column-status-detail">
+            <?php echo esc_html($send_count_label); ?>
+            <?php if ($next_send > 0): ?>
+              · <?php echo esc_html(sprintf(__('Next: %s', 'mailpn'), date_i18n(get_option('date_format') . ' H:i', $next_send))); ?>
+            <?php endif; ?>
+          </span>
+          <?php
+
+        } elseif ($mailpn_status === 'sent') {
+          // Non-periodic sent email
+          ?>
+          <span class="mailpn-column-status-badge mailpn-column-status-sent mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
+            <i class="material-icons-outlined mailpn-vertical-align-middle">check_circle</i>
+            <?php esc_html_e('Sent', 'mailpn'); ?>
+          </span>
+          <span class="mailpn-column-status-detail">
+            <?php if ($sent_count > 0): ?>
+              <?php echo esc_html(sprintf(__('%d recipients', 'mailpn'), $sent_count)); ?>
+            <?php endif; ?>
+            <?php if (!empty($last_sent)): ?>
+              · <?php echo esc_html(date_i18n(get_option('date_format'), $last_sent)); ?>
+            <?php endif; ?>
+          </span>
+          <?php
+
+        } elseif ($wp_post_status === 'publish') {
+          // Published template with no explicit status
+          if ($mail_type === 'email_periodic') {
+            // Periodic waiting for first send
+            ?>
+            <span class="mailpn-column-status-badge mailpn-column-status-scheduled mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
+              <i class="material-icons-outlined mailpn-vertical-align-middle">schedule_send</i>
+              <?php esc_html_e('Scheduled', 'mailpn'); ?>
+            </span>
+            <span class="mailpn-column-status-detail"><?php esc_html_e('Waiting for first send', 'mailpn'); ?></span>
+            <?php
+          } elseif (in_array($mail_type, ['email_welcome', 'newsletter_welcome', 'email_verify_code', 'email_password_reset', 'email_coded', 'email_published_content', 'email_woocommerce_purchase', 'email_woocommerce_abandoned_cart'])) {
+            // Event-triggered email
+            ?>
+            <span class="mailpn-column-status-badge mailpn-column-status-active mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
+              <i class="material-icons-outlined mailpn-vertical-align-middle">bolt</i>
+              <?php esc_html_e('Active', 'mailpn'); ?>
+            </span>
+            <?php if ($sent_count > 0): ?>
+              <span class="mailpn-column-status-detail"><?php echo esc_html($send_count_label); ?></span>
+            <?php else: ?>
+              <span class="mailpn-column-status-detail"><?php esc_html_e('Waiting for trigger', 'mailpn'); ?></span>
+            <?php endif; ?>
+            <?php
+          } elseif ($mail_type === 'email_one_time' && $sent_count > 0) {
+            // One-time already sent (status meta may have been lost)
+            ?>
+            <span class="mailpn-column-status-badge mailpn-column-status-sent mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
+              <i class="material-icons-outlined mailpn-vertical-align-middle">check_circle</i>
+              <?php esc_html_e('Sent', 'mailpn'); ?>
+            </span>
+            <span class="mailpn-column-status-detail"><?php echo esc_html(sprintf(__('%d recipients', 'mailpn'), $sent_count)); ?></span>
+            <?php
+          } elseif ($mail_type === 'email_one_time') {
+            // One-time ready to send
+            ?>
+            <span class="mailpn-column-status-badge mailpn-column-status-ready mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
+              <i class="material-icons-outlined mailpn-vertical-align-middle">pending</i>
+              <?php esc_html_e('Ready', 'mailpn'); ?>
+            </span>
+            <?php
+          } else {
+            // Other published types
+            ?>
+            <span class="mailpn-column-status-badge mailpn-column-status-active mailpn-status-clickable" data-post-id="<?php echo esc_attr($post_id); ?>">
+              <i class="material-icons-outlined mailpn-vertical-align-middle">check_circle</i>
+              <?php esc_html_e('Active', 'mailpn'); ?>
+            </span>
+            <?php if ($sent_count > 0): ?>
+              <span class="mailpn-column-status-detail"><?php echo esc_html($send_count_label); ?></span>
+            <?php endif; ?>
+            <?php
+          }
+
         } else {
+          // WordPress draft
           ?>
           <span class="mailpn-column-status-badge mailpn-column-status-draft">
             <i class="material-icons-outlined mailpn-vertical-align-middle">drafts</i>
@@ -738,5 +832,348 @@ class MAILPN_Post_Type_Mail
           break;
       }
     }
+  }
+
+  /**
+   * Build the schedule preview HTML for the meta box.
+   *
+   * @param int $post_id The mail template post ID.
+   * @return string HTML content.
+   */
+  public static function mailpn_get_schedule_preview_html($post_id) {
+    if (empty($post_id) || get_post_type($post_id) !== 'mailpn_mail') {
+      return '';
+    }
+
+    $mail_type       = get_post_meta($post_id, 'mailpn_type', true);
+    $mailpn_status   = get_post_meta($post_id, 'mailpn_status', true);
+    $wp_post_status  = get_post_status($post_id);
+    $timestamps_sent = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
+    $last_sent       = !empty($timestamps_sent) && is_array($timestamps_sent) ? end($timestamps_sent) : 0;
+
+    // Count sent emails
+    $sent_count = count(get_posts([
+      'fields'      => 'ids',
+      'numberposts' => -1,
+      'post_type'   => 'mailpn_rec',
+      'post_status' => ['any'],
+      'meta_key'    => 'mailpn_rec_mail_id',
+      'meta_value'  => $post_id,
+    ]));
+
+    // Queue info
+    $queue_data     = get_option('mailpn_queue');
+    $queue_pending  = !empty($queue_data[$post_id]) ? count($queue_data[$post_id]) : 0;
+
+    ob_start();
+    ?>
+    <div class="mailpn-schedule-preview">
+      <h4 style="margin:20px 0 10px;display:flex;align-items:center;gap:6px;">
+        <i class="material-icons-outlined" style="font-size:20px;">insights</i>
+        <?php esc_html_e('Send overview', 'mailpn'); ?>
+      </h4>
+      <div class="mailpn-schedule-preview-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px;">
+        <div class="mailpn-sp-card" style="background:#f0f6fc;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:24px;font-weight:600;color:#2271b1;"><?php echo esc_html($sent_count); ?></div>
+          <div style="font-size:12px;color:#50575e;"><?php esc_html_e('Emails sent', 'mailpn'); ?></div>
+        </div>
+        <?php if ($queue_pending > 0): ?>
+        <div class="mailpn-sp-card" style="background:#fef8ee;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:24px;font-weight:600;color:#dba617;"><?php echo esc_html($queue_pending); ?></div>
+          <div style="font-size:12px;color:#50575e;"><?php esc_html_e('In queue', 'mailpn'); ?></div>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($last_sent)): ?>
+        <div class="mailpn-sp-card" style="background:#f0faf0;border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:14px;font-weight:600;color:#00a32a;"><?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', $last_sent)); ?></div>
+          <div style="font-size:12px;color:#50575e;"><?php esc_html_e('Last sent', 'mailpn'); ?></div>
+        </div>
+        <?php endif; ?>
+      </div>
+
+      <?php
+      // Upcoming sends for periodic emails
+      if ($mail_type === 'email_periodic' && $wp_post_status === 'publish') {
+        $period     = get_post_meta($post_id, 'mailpn_periodic_period', true);
+        $interval   = !empty($period) ? MAILPN_Cron::mailpn_periodic_interval_seconds_static($period) : 0;
+        $period_labels = [
+          'hourly'  => __('Each hour', 'mailpn'),
+          'daily'   => __('Each day', 'mailpn'),
+          'weekly'  => __('Each week', 'mailpn'),
+          'monthly' => __('Each month', 'mailpn'),
+          'yearly'  => __('Each year', 'mailpn'),
+        ];
+        $period_label = isset($period_labels[$period]) ? $period_labels[$period] : $period;
+
+        if ($interval > 0) {
+          $base_time = !empty($last_sent) ? $last_sent : current_time('timestamp');
+          $now       = current_time('timestamp');
+          // Find the next occurrence after now
+          $next = $base_time + $interval;
+          while ($next < $now) {
+            $next += $interval;
+          }
+          ?>
+          <h4 style="margin:12px 0 8px;display:flex;align-items:center;gap:6px;">
+            <i class="material-icons-outlined" style="font-size:20px;">event_repeat</i>
+            <?php esc_html_e('Upcoming scheduled sends', 'mailpn'); ?>
+            <span style="font-weight:400;font-size:13px;color:#787c82;margin-left:4px;">(<?php echo esc_html($period_label); ?>)</span>
+          </h4>
+          <table class="mailpn-emails-table" style="width:100%;margin-bottom:10px;">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:6px 10px;">#</th>
+                <th style="text-align:left;padding:6px 10px;"><?php esc_html_e('Scheduled date', 'mailpn'); ?></th>
+                <th style="text-align:left;padding:6px 10px;"><?php esc_html_e('Time remaining', 'mailpn'); ?></th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php for ($i = 0; $i < 5; $i++):
+                $send_time = $next + ($i * $interval);
+                $diff      = $send_time - $now;
+                if ($diff < HOUR_IN_SECONDS) {
+                  $remaining = sprintf(__('%d min', 'mailpn'), max(1, intval($diff / 60)));
+                } elseif ($diff < DAY_IN_SECONDS) {
+                  $remaining = sprintf(__('%d hours', 'mailpn'), intval($diff / HOUR_IN_SECONDS));
+                } else {
+                  $remaining = sprintf(__('%d days', 'mailpn'), intval($diff / DAY_IN_SECONDS));
+                }
+              ?>
+              <tr>
+                <td style="padding:6px 10px;"><?php echo esc_html($i + 1); ?></td>
+                <td style="padding:6px 10px;">
+                  <i class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">schedule</i>
+                  <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', $send_time)); ?>
+                </td>
+                <td style="padding:6px 10px;"><?php echo esc_html($remaining); ?></td>
+              </tr>
+              <?php endfor; ?>
+            </tbody>
+          </table>
+          <?php
+        }
+      }
+
+      // Send history
+      if (!empty($timestamps_sent) && is_array($timestamps_sent) && count($timestamps_sent) > 0) {
+        ?>
+        <h4 style="margin:12px 0 8px;display:flex;align-items:center;gap:6px;">
+          <i class="material-icons-outlined" style="font-size:20px;">history</i>
+          <?php esc_html_e('Send history', 'mailpn'); ?>
+        </h4>
+        <table class="mailpn-emails-table" style="width:100%;margin-bottom:10px;">
+          <thead>
+            <tr>
+              <th style="text-align:left;padding:6px 10px;">#</th>
+              <th style="text-align:left;padding:6px 10px;"><?php esc_html_e('Date', 'mailpn'); ?></th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            $reversed = array_reverse($timestamps_sent);
+            $shown = array_slice($reversed, 0, 10);
+            foreach ($shown as $idx => $ts): ?>
+            <tr>
+              <td style="padding:6px 10px;"><?php echo esc_html(count($timestamps_sent) - $idx); ?></td>
+              <td style="padding:6px 10px;">
+                <i class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">check_circle</i>
+                <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i:s', $ts)); ?>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+            <?php if (count($timestamps_sent) > 10): ?>
+            <tr>
+              <td colspan="2" style="padding:6px 10px;color:#787c82;font-style:italic;">
+                <?php echo esc_html(sprintf(__('... and %d more', 'mailpn'), count($timestamps_sent) - 10)); ?>
+              </td>
+            </tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+        <?php
+      }
+      ?>
+    </div>
+    <?php
+    return ob_get_clean();
+  }
+
+  /**
+   * Build schedule detail HTML for the status popup (AJAX).
+   *
+   * @param int $post_id The mail template post ID.
+   * @return string HTML content.
+   */
+  public static function mailpn_get_status_popup_html($post_id) {
+    if (empty($post_id) || get_post_type($post_id) !== 'mailpn_mail') {
+      return '<p>' . esc_html__('Invalid email template.', 'mailpn') . '</p>';
+    }
+
+    $mail_type       = get_post_meta($post_id, 'mailpn_type', true);
+    $mailpn_status   = get_post_meta($post_id, 'mailpn_status', true);
+    $wp_post_status  = get_post_status($post_id);
+    $timestamps_sent = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
+    $last_sent       = !empty($timestamps_sent) && is_array($timestamps_sent) ? end($timestamps_sent) : 0;
+    $mail_types      = MAILPN_Data::mailpn_mail_types();
+    $type_label      = isset($mail_types[$mail_type]) ? $mail_types[$mail_type] : $mail_type;
+
+    $sent_count = count(get_posts([
+      'fields'      => 'ids',
+      'numberposts' => -1,
+      'post_type'   => 'mailpn_rec',
+      'post_status' => ['any'],
+      'meta_key'    => 'mailpn_rec_mail_id',
+      'meta_value'  => $post_id,
+    ]));
+
+    $queue_data    = get_option('mailpn_queue');
+    $queue_pending = !empty($queue_data[$post_id]) ? count($queue_data[$post_id]) : 0;
+
+    ob_start();
+    ?>
+    <div class="mailpn-status-popup-inner" style="min-width:380px;">
+      <h3 style="margin:0 0 16px;display:flex;align-items:center;gap:8px;">
+        <i class="material-icons-outlined">mail</i>
+        <?php echo esc_html(get_the_title($post_id)); ?>
+      </h3>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:#f0f6fc;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#50575e;text-transform:uppercase;"><?php esc_html_e('Type', 'mailpn'); ?></div>
+          <div style="font-size:14px;font-weight:600;color:#2271b1;"><?php echo esc_html($type_label); ?></div>
+        </div>
+        <div style="background:#f0f6fc;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#50575e;text-transform:uppercase;"><?php esc_html_e('Total sent', 'mailpn'); ?></div>
+          <div style="font-size:22px;font-weight:600;color:#2271b1;"><?php echo esc_html($sent_count); ?></div>
+        </div>
+      </div>
+
+      <?php if ($queue_pending > 0): ?>
+      <div style="background:#fef8ee;border-radius:8px;padding:10px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+        <i class="material-icons-outlined" style="color:#dba617;">hourglass_top</i>
+        <span><?php echo esc_html(sprintf(__('%d emails pending in queue', 'mailpn'), $queue_pending)); ?></span>
+      </div>
+      <?php endif; ?>
+
+      <?php if (!empty($last_sent)): ?>
+      <div style="margin-bottom:12px;color:#50575e;">
+        <i class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">schedule</i>
+        <?php echo esc_html(sprintf(__('Last sent: %s', 'mailpn'), date_i18n(get_option('date_format') . ' H:i', $last_sent))); ?>
+      </div>
+      <?php endif; ?>
+
+      <?php
+      // Upcoming sends for periodic emails
+      if ($mail_type === 'email_periodic' && $wp_post_status === 'publish') {
+        $period   = get_post_meta($post_id, 'mailpn_periodic_period', true);
+        $interval = !empty($period) ? MAILPN_Cron::mailpn_periodic_interval_seconds_static($period) : 0;
+        $period_labels = [
+          'hourly'  => __('Each hour', 'mailpn'),
+          'daily'   => __('Each day', 'mailpn'),
+          'weekly'  => __('Each week', 'mailpn'),
+          'monthly' => __('Each month', 'mailpn'),
+          'yearly'  => __('Each year', 'mailpn'),
+        ];
+        $period_label = isset($period_labels[$period]) ? $period_labels[$period] : $period;
+
+        if ($interval > 0) {
+          $base_time = !empty($last_sent) ? $last_sent : current_time('timestamp');
+          $now       = current_time('timestamp');
+          $next      = $base_time + $interval;
+          while ($next < $now) {
+            $next += $interval;
+          }
+          ?>
+          <h4 style="margin:12px 0 8px;font-size:14px;display:flex;align-items:center;gap:6px;">
+            <i class="material-icons-outlined" style="font-size:18px;">event_repeat</i>
+            <?php esc_html_e('Upcoming sends', 'mailpn'); ?>
+            <span style="font-weight:400;color:#787c82;">(<?php echo esc_html($period_label); ?>)</span>
+          </h4>
+          <table class="mailpn-emails-table" style="width:100%;">
+            <tbody>
+              <?php for ($i = 0; $i < 5; $i++):
+                $send_time = $next + ($i * $interval);
+                $diff = $send_time - $now;
+                if ($diff < HOUR_IN_SECONDS) {
+                  $remaining = sprintf(__('%d min', 'mailpn'), max(1, intval($diff / 60)));
+                } elseif ($diff < DAY_IN_SECONDS) {
+                  $remaining = sprintf(__('%d hours', 'mailpn'), intval($diff / HOUR_IN_SECONDS));
+                } else {
+                  $remaining = sprintf(__('%d days', 'mailpn'), intval($diff / DAY_IN_SECONDS));
+                }
+              ?>
+              <tr>
+                <td style="padding:5px 8px;">
+                  <i class="material-icons-outlined" style="font-size:16px;vertical-align:middle;color:#2271b1;">schedule</i>
+                  <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', $send_time)); ?>
+                </td>
+                <td style="padding:5px 8px;color:#787c82;text-align:right;"><?php echo esc_html($remaining); ?></td>
+              </tr>
+              <?php endfor; ?>
+            </tbody>
+          </table>
+          <?php
+        }
+      }
+
+      // Send history
+      if (!empty($timestamps_sent) && is_array($timestamps_sent) && count($timestamps_sent) > 0) {
+        ?>
+        <h4 style="margin:14px 0 8px;font-size:14px;display:flex;align-items:center;gap:6px;">
+          <i class="material-icons-outlined" style="font-size:18px;">history</i>
+          <?php esc_html_e('Send history', 'mailpn'); ?>
+        </h4>
+        <table class="mailpn-emails-table" style="width:100%;">
+          <tbody>
+            <?php
+            $reversed = array_reverse($timestamps_sent);
+            $shown = array_slice($reversed, 0, 10);
+            foreach ($shown as $idx => $ts): ?>
+            <tr>
+              <td style="padding:5px 8px;">
+                <i class="material-icons-outlined" style="font-size:16px;vertical-align:middle;color:#00a32a;">check_circle</i>
+                <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i:s', $ts)); ?>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+            <?php if (count($timestamps_sent) > 10): ?>
+            <tr>
+              <td style="padding:5px 8px;color:#787c82;font-style:italic;">
+                <?php echo esc_html(sprintf(__('... and %d more', 'mailpn'), count($timestamps_sent) - 10)); ?>
+              </td>
+            </tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+        <?php
+      }
+
+      // Resend info
+      if ($mail_type === 'email_periodic') {
+        ?>
+        <div style="margin-top:14px;padding:10px;background:#f0faf0;border-radius:8px;display:flex;align-items:center;gap:8px;">
+          <i class="material-icons-outlined" style="color:#00a32a;">autorenew</i>
+          <span style="font-size:13px;"><?php esc_html_e('This is a recurring email. It will be sent again automatically based on the configured period.', 'mailpn'); ?></span>
+        </div>
+        <?php
+      } elseif (in_array($mail_type, ['email_welcome', 'newsletter_welcome', 'email_published_content', 'email_coded', 'email_woocommerce_purchase', 'email_woocommerce_abandoned_cart'])) {
+        ?>
+        <div style="margin-top:14px;padding:10px;background:#f0f6fc;border-radius:8px;display:flex;align-items:center;gap:8px;">
+          <i class="material-icons-outlined" style="color:#2271b1;">bolt</i>
+          <span style="font-size:13px;"><?php esc_html_e('This email is triggered automatically by events (new users, purchases, etc.).', 'mailpn'); ?></span>
+        </div>
+        <?php
+      } elseif ($mail_type === 'email_one_time' && $mailpn_status === 'sent') {
+        ?>
+        <div style="margin-top:14px;padding:10px;background:#f0f6fc;border-radius:8px;display:flex;align-items:center;gap:8px;">
+          <i class="material-icons-outlined" style="color:#2271b1;">info</i>
+          <span style="font-size:13px;"><?php esc_html_e('This is a one-time email. Use "Resend All" from the tools to send it again.', 'mailpn'); ?></span>
+        </div>
+        <?php
+      }
+      ?>
+    </div>
+    <?php
+    return ob_get_clean();
   }
 }

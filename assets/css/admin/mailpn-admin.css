@@ -418,6 +418,25 @@
     background: #f0f0f1;
     color: #787c82;
 }
+.mailpn-column-status-active {
+    background: #e8f5e9;
+    color: #1b5e20;
+}
+.mailpn-column-status-scheduled {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+.mailpn-column-status-ready {
+    background: #fff3e0;
+    color: #e65100;
+}
+.mailpn-status-clickable {
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+.mailpn-status-clickable:hover {
+    opacity: 0.8;
+}
 .mailpn-column-status-detail {
     display: block;
     margin-top: 4px;
