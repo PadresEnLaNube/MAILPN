@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Filkers WooCommerce Marketing\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-31 14:12+0000\n"
-"PO-Revision-Date: 2026-04-09 10:52+0000\n"
+"PO-Revision-Date: 2026-04-18 11:36+0000\n"
 "Last-Translator: Relatia.es\n"
 "Language-Team: Español\n"
 "Language: es_ES\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.8.1; wp-6.9.1; php-8.3.28\n"
+"X-Loco-Version: 2.8.3; wp-6.9.4; php-8.3.30\n"
 "X-Domain: filkers"
 
 #: includes/class-mailpn-post-type-rec.php:570
@@ -21,7 +21,7 @@ msgid_plural "%d clicks"
 msgstr[0] "%d clic"
 msgstr[1] "%d clics"
 
-#: includes/class-mailpn-post-type-mail.php:630
+#: includes/class-mailpn-post-type-mail.php:648
 msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d día"
@@ -33,7 +33,17 @@ msgid_plural "%d days ago"
 msgstr[0] "Hace %d días"
 msgstr[1] "Hace %d días"
 
-#: includes/class-mailpn-post-type-mail.php:629
+#: includes/class-mailpn-post-type-mail.php:949
+#: includes/class-mailpn-post-type-mail.php:1112
+#: includes/class-mailpn-post-type-mail.php:1207
+msgid "%d days"
+msgstr "%d días"
+
+#: includes/class-mailpn-post-type-mail.php:1064
+msgid "%d emails pending in queue"
+msgstr "%d correos electrónicos pendientes en la cola"
+
+#: includes/class-mailpn-post-type-mail.php:647
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d hora"
@@ -45,19 +55,41 @@ msgid_plural "%d hours ago"
 msgstr[0] "Hace %d horas"
 msgstr[1] "Hace %d horas"
 
+#: includes/class-mailpn-post-type-mail.php:947
+#: includes/class-mailpn-post-type-mail.php:1110
+#: includes/class-mailpn-post-type-mail.php:1205
+msgid "%d hours"
+msgstr "%d horas"
+
+#: includes/class-mailpn-post-type-mail.php:945
+#: includes/class-mailpn-post-type-mail.php:1108
+#: includes/class-mailpn-post-type-mail.php:1203
+msgid "%d min"
+msgstr "%d min"
+
 #: includes/class-mailpn-notifications-manager.php:490
 msgid "%d minute ago"
 msgid_plural "%d minutes ago"
 msgstr[0] "Hace %d minutos"
 msgstr[1] "Hace %d minutos"
 
-#: includes/class-mailpn-post-type-mail.php:632
+#: includes/class-mailpn-post-type-mail.php:650
 msgid "%d month"
 msgid_plural "%d months"
 msgstr[0] "%d mes"
 msgstr[1] "%d meses"
 
-#: includes/class-mailpn-post-type-mail.php:611
+#: includes/class-mailpn-post-type-mail.php:729
+#: includes/class-mailpn-post-type-mail.php:768
+#| msgid "Recipients"
+msgid "%d recipients"
+msgstr "%d destinatarios"
+
+#: includes/class-mailpn-post-type-mail.php:684
+msgid "%d sent"
+msgstr "%d enviado"
+
+#: includes/class-mailpn-post-type-mail.php:629
 msgid "%d user"
 msgid_plural "%d users"
 msgstr[0] "%d usuario"
@@ -73,11 +105,18 @@ msgstr "%d usuario(s) se han asignado al rol %s."
 msgid "%d user(s) have been removed from the %s role."
 msgstr "Se han eliminado %d usuarios del rol %s."
 
-#: includes/class-mailpn-post-type-mail.php:631
+#: includes/class-mailpn-post-type-mail.php:649
 msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] "%d semana"
 msgstr[1] "%d semanas"
+
+#: includes/class-mailpn-post-type-mail.php:997
+#: includes/class-mailpn-post-type-mail.php:1152
+#: includes/class-mailpn-post-type-mail.php:1231
+#: includes/class-mailpn-post-type-mail.php:1279
+msgid "... and %d more"
+msgstr "... y %d más"
 
 #: includes/class-mailpn-dashboard.php:31
 msgid "1 year"
@@ -107,21 +146,25 @@ msgstr "Correo electrónico de carrito abandonado"
 msgid "Account verification code"
 msgstr "Código de verificación de cuenta"
 
-#: includes/class-mailpn-settings.php:910
-#: includes/class-mailpn-settings.php:1986
 #: includes/class-mailpn-dashboard.php:394
 msgid "Actions"
 msgstr "Comportamiento"
 
-#: includes/class-mailpn-settings.php:847
-msgid "Activate Cron Jobs"
-msgstr "Activar trabajos cron"
+#: includes/class-mailpn-settings.php:656
+#: includes/class-mailpn-settings.php:696
+#| msgid "ACTIVE"
+msgid "Activate"
+msgstr "Activar"
 
-#: includes/class-mailpn-settings.php:2071
-msgid "ACTIVE"
-msgstr "ACTIVO"
+#: includes/class-mailpn-settings.php:692
+msgid "Activating..."
+msgstr "Activando..."
 
-#: includes/class-mailpn-settings.php:831
+#: includes/class-mailpn-settings.php:654
+#: includes/class-mailpn-settings.php:695
+#: includes/class-mailpn-post-type-mail.php:710
+#: includes/class-mailpn-post-type-mail.php:753
+#: includes/class-mailpn-post-type-mail.php:783
 msgid "Active"
 msgstr "Activo"
 
@@ -167,8 +210,8 @@ msgstr "Agregar nuevo registro de correo"
 msgid "Add New Mail Record category"
 msgstr "Agregar nueva categoría de registro de correo"
 
-#: includes/class-mailpn-post-type-mail.php:348
-#: includes/class-mailpn-post-type-mail.php:349
+#: includes/class-mailpn-post-type-mail.php:366
+#: includes/class-mailpn-post-type-mail.php:367
 msgid "Add new Mail template"
 msgstr "Agregar nueva plantilla de correo"
 
@@ -180,11 +223,7 @@ msgstr "Agregar vídeo"
 msgid "Add videos"
 msgstr "Agregar vídeos"
 
-#: includes/class-mailpn-settings.php:826
-msgid "ago"
-msgstr "atrás"
-
-#: includes/class-mailpn-ajax.php:460
+#: includes/class-mailpn-ajax.php:553
 msgid "AJAX type not specified"
 msgstr "Tipo AJAX no especificado"
 
@@ -205,7 +244,7 @@ msgstr "Todas las categorías de registros de correo"
 msgid "All Mail records"
 msgstr "Todos los registros de correo"
 
-#: includes/class-mailpn-post-type-mail.php:346
+#: includes/class-mailpn-post-type-mail.php:364
 msgid "All Mail templates"
 msgstr "Todas las plantillas de correo"
 
@@ -217,7 +256,7 @@ msgstr "Todas las plantillas de correo"
 msgid "All mail types"
 msgstr "Todos los tipos de correo"
 
-#: includes/class-mailpn-mailing.php:604
+#: includes/class-mailpn-mailing.php:622
 msgid "All rights reserved"
 msgstr "Reservados todos los derechos"
 
@@ -227,8 +266,8 @@ msgid "All time"
 msgstr "Todos los tiempos"
 
 #: includes/class-mailpn-post-type-rec.php:721
-#: includes/class-mailpn-post-type-mail.php:614
-#: includes/class-mailpn-post-type-mail.php:616
+#: includes/class-mailpn-post-type-mail.php:632
+#: includes/class-mailpn-post-type-mail.php:634
 msgid "All users"
 msgstr "Todos los usuarios"
 
@@ -244,7 +283,7 @@ msgstr ""
 "Permitir que determinadas direcciones de correo electrónico reciban correos "
 "electrónicos aunque su dominio esté excluido."
 
-#: includes/class-mailpn-mailing.php:1119
+#: includes/class-mailpn-mailing.php:1175
 msgid ""
 "Also there are new contents to be published in the future and sent by email."
 msgstr ""
@@ -268,30 +307,11 @@ msgstr "Se produjo un error al reenviar los errores."
 msgid "An error occurred while resending the mail."
 msgstr "Se produjo un error al reenviar el correo."
 
-#: includes/class-mailpn-mailing.php:1116
+#: includes/class-mailpn-mailing.php:1172
 msgid "Any content you publish in the post type selected will be sent."
 msgstr ""
 "Cualquier contenido que publiques en el tipo de publicación seleccionado "
 "será enviado."
-
-#: includes/class-mailpn-settings.php:1949
-msgid "Are you sure you want to clear the entire email queue?"
-msgstr "¿Está seguro de que desea borrar toda la cola de correo electrónico?"
-
-#: includes/class-mailpn-settings.php:2043
-msgid ""
-"Are you sure you want to remove all emails for this template from the queue?"
-msgstr ""
-"¿Está seguro de que desea eliminar todos los correos electrónicos de esta "
-"plantilla de la cola?"
-
-#: includes/class-mailpn-settings.php:960
-msgid "Are you sure you want to remove this scheduled email?"
-msgstr "¿Está seguro de que desea eliminar este correo electrónico programado?"
-
-#: includes/class-mailpn-settings.php:955
-msgid "Are you sure you want to send this email now?"
-msgstr "¿Estás seguro que deseas enviar este correo electrónico ahora?"
 
 #: includes/class-mailpn-forms.php:464
 #, php-format
@@ -315,16 +335,8 @@ msgstr ""
 "Añade encabezado/pie de página, permite hacer clic en los enlaces, elimina "
 "[Nombre del sitio] de los asuntos y registra todos los envíos."
 
-#: includes/class-mailpn-settings.php:851
-msgid "Clear Debug Log"
-msgstr "Borrar el registro de depuración"
-
-#: includes/class-mailpn-settings.php:1949
-msgid "Clear Queue"
-msgstr "Limpiar cola"
-
 #: includes/class-mailpn-dashboard.php:626
-#: includes/admin/class-mailpn-admin.php:115
+#: includes/admin/class-mailpn-admin.php:120
 #, php-format
 msgid "Click rate (%s)"
 msgstr "Tasa de clics (%s)"
@@ -343,24 +355,24 @@ msgstr "URL en la que se hizo clic"
 
 #: includes/class-mailpn-post-type-rec.php:604
 #: includes/class-mailpn-dashboard.php:658
-#: includes/admin/class-mailpn-admin.php:132
-#: includes/admin/class-mailpn-admin.php:163
+#: includes/admin/class-mailpn-admin.php:137
+#: includes/admin/class-mailpn-admin.php:216
 msgid "Clicks"
 msgstr "Clics"
 
 #: includes/class-mailpn-dashboard.php:527
 #: includes/class-mailpn-dashboard.php:564
 #: includes/class-mailpn-dashboard.php:610
-#: includes/admin/class-mailpn-admin.php:113
+#: includes/admin/class-mailpn-admin.php:118
 #, php-format
 msgid "Clicks (%s)"
 msgstr "Clics (%s)"
 
-#: includes/admin/class-mailpn-admin.php:160
+#: includes/admin/class-mailpn-admin.php:213
 msgid "Clicks by URL"
 msgstr "Clics por URL"
 
-#: includes/admin/class-mailpn-admin.php:161
+#: includes/admin/class-mailpn-admin.php:214
 msgid "Clicks Details"
 msgstr "Detalles de clics"
 
@@ -392,7 +404,11 @@ msgstr ""
 "como remitente. Después de la configuración, pruebe la configuración "
 "enviando un correo electrónico de prueba."
 
-#: includes/class-mailpn-mailing.php:1552
+#: includes/class-mailpn-settings.php:585
+msgid "Cookie consent and GDPR compliance."
+msgstr "Consentimiento de cookies y cumplimiento del RGPD."
+
+#: includes/class-mailpn-mailing.php:1724
 msgid "Create new password"
 msgstr "Crear nueva contraseña"
 
@@ -400,33 +416,9 @@ msgstr "Crear nueva contraseña"
 msgid "Created Date"
 msgstr "Fecha de creación"
 
-#: includes/class-mailpn-settings.php:908
-msgid "Created Time"
-msgstr "Tiempo creado"
-
-#: includes/class-mailpn-settings.php:857
-msgid "Cron Debug Log"
-msgstr "Registro de depuración de Cron"
-
-#: includes/class-mailpn-settings.php:653
-msgid "Cron jobs activated successfully."
-msgstr "Trabajos cron activados exitosamente."
-
-#: includes/class-mailpn-settings.php:808
-msgid "Cron Status Information"
-msgstr "Información del estado de Cron"
-
-#: includes/class-mailpn-settings.php:829
-msgid "Cron Status:"
-msgstr "Estado de Cron:"
-
-#: includes/class-mailpn-settings.php:1068
-msgid "Current Time"
-msgstr "Hora actual"
-
-#: includes/class-mailpn-settings.php:822
-msgid "Current Time:"
-msgstr "Hora actual:"
+#: includes/class-mailpn-settings.php:564
+msgid "CRM with AI-powered WhatsApp and Instagram chat."
+msgstr "CRM con chat de WhatsApp e Instagram impulsado por IA."
 
 #: includes/class-mailpn-notifications-manager.php:467
 msgid "Custom Email"
@@ -441,14 +433,15 @@ msgstr "Correo electrónico de restablecimiento de contraseña personalizado"
 msgid "Custom reasons to receive email block"
 msgstr "Motivos personalizados para recibir el bloqueo de correo electrónico"
 
-#: includes/class-mailpn-mailing.php:927 includes/class-mailpn-mailing.php:1011
-#: includes/class-mailpn-mailing.php:1063
+#: includes/class-mailpn-mailing.php:945 includes/class-mailpn-mailing.php:1048
+#: includes/class-mailpn-mailing.php:1113
 msgid "Daily"
 msgstr "A diario"
 
 #: includes/class-mailpn-dashboard.php:392
 #: includes/class-mailpn-dashboard.php:453
 #: includes/class-mailpn-dashboard.php:709
+#: includes/class-mailpn-post-type-mail.php:978
 msgid "Date"
 msgstr "Fecha"
 
@@ -470,18 +463,6 @@ msgstr "Fecha de envío"
 msgid "Days"
 msgstr "Días"
 
-#: includes/class-mailpn-settings.php:1027
-msgid "days"
-msgstr "días"
-
-#: includes/class-mailpn-settings.php:659
-msgid "Debug log cleared successfully."
-msgstr "El registro de depuración se borró correctamente."
-
-#: includes/class-mailpn-settings.php:1000
-msgid "Delay"
-msgstr "Demora"
-
 #: includes/class-mailpn-post-type-mail.php:108
 #: includes/class-mailpn-post-type-mail.php:198
 #: includes/class-mailpn-post-type-mail.php:228
@@ -502,22 +483,28 @@ msgstr "Usuario eliminado"
 msgid "Deleted user."
 msgstr "Usuario eliminado."
 
-#: includes/class-mailpn-post-type-mail.php:692
+#: includes/class-mailpn-post-type-mail.php:796
 msgid "Draft"
 msgstr "Borrador"
 
 #: includes/class-mailpn-post-type-mail.php:117
 #: includes/class-mailpn-post-type-mail.php:147
+#: includes/class-mailpn-post-type-mail.php:911
+#: includes/class-mailpn-post-type-mail.php:1082
 msgid "Each day"
 msgstr "Cada día"
 
 #: includes/class-mailpn-post-type-mail.php:117
 #: includes/class-mailpn-post-type-mail.php:147
+#: includes/class-mailpn-post-type-mail.php:910
+#: includes/class-mailpn-post-type-mail.php:1081
 msgid "Each hour"
 msgstr "Cada hora"
 
 #: includes/class-mailpn-post-type-mail.php:117
 #: includes/class-mailpn-post-type-mail.php:147
+#: includes/class-mailpn-post-type-mail.php:913
+#: includes/class-mailpn-post-type-mail.php:1084
 msgid "Each month"
 msgstr "Cada mes"
 
@@ -527,11 +514,15 @@ msgstr "Cada nuevo contenido"
 
 #: includes/class-mailpn-post-type-mail.php:117
 #: includes/class-mailpn-post-type-mail.php:147
+#: includes/class-mailpn-post-type-mail.php:912
+#: includes/class-mailpn-post-type-mail.php:1083
 msgid "Each week"
 msgstr "Cada semana"
 
 #: includes/class-mailpn-post-type-mail.php:117
 #: includes/class-mailpn-post-type-mail.php:147
+#: includes/class-mailpn-post-type-mail.php:914
+#: includes/class-mailpn-post-type-mail.php:1085
 msgid "Each year"
 msgstr "Cada año"
 
@@ -572,7 +563,7 @@ msgstr "Editar registro de correo"
 msgid "Edit Mail Record category"
 msgstr "Editar categoría de registro de correo"
 
-#: includes/class-mailpn-post-type-mail.php:350
+#: includes/class-mailpn-post-type-mail.php:368
 msgid "Edit Mail template"
 msgstr "Editar plantilla de correo"
 
@@ -595,8 +586,7 @@ msgstr ""
 "emails directamente desde tu panel de control para conectar con tu audiencia "
 "como nunca antes."
 
-#: includes/class-mailpn-mailing.php:1548
-#: includes/class-mailpn-settings.php:748
+#: includes/class-mailpn-mailing.php:1720
 #: includes/class-mailpn-dashboard.php:451
 msgid "Email"
 msgstr "Correo electrónico"
@@ -689,27 +679,6 @@ msgstr "Notificaciones por correo electrónico"
 msgid "Email plain text content"
 msgstr "Contenido de texto sin formato del correo electrónico"
 
-#: includes/class-mailpn-settings.php:531
-#: includes/class-mailpn-settings.php:532
-msgid "Email Queue"
-msgstr "Cola de correo electrónico"
-
-#: includes/class-mailpn-settings.php:1913
-msgid "Email queue cleared successfully."
-msgstr "La cola de correo electrónico se borró correctamente."
-
-#: includes/class-mailpn-settings.php:1940
-msgid "Email Queue Management"
-msgstr "Gestión de colas de correo electrónico"
-
-#: includes/class-mailpn-settings.php:1907
-msgid "Email queue processed successfully."
-msgstr "Cola de correo electrónico procesada exitosamente."
-
-#: includes/class-mailpn-settings.php:1932
-msgid "Email removed from queue successfully."
-msgstr "Correo electrónico eliminado de la cola correctamente."
-
 #: includes/class-mailpn-ajax.php:299 includes/class-mailpn-ajax.php:303
 #: includes/class-mailpn-ajax.php:309 includes/class-mailpn-ajax.php:316
 #: includes/class-mailpn-ajax.php:325
@@ -723,17 +692,6 @@ msgstr "Correo electrónico enviado desde la dirección de correo electrónico."
 #: includes/class-mailpn-data.php:80
 msgid "Email sent from code"
 msgstr "Correo electrónico enviado desde el código"
-
-#: includes/class-mailpn-settings.php:683
-msgid "Email sent immediately and removed from scheduled list."
-msgstr ""
-"Correo electrónico enviado de inmediato y eliminado de la lista programada."
-
-#: includes/class-mailpn-settings.php:485
-#: includes/class-mailpn-settings.php:486
-#| msgid "Mail Settings"
-msgid "Email Settings"
-msgstr "Configuración de correo electrónico"
 
 #: includes/class-mailpn-post-type-rec.php:928
 msgid "Email Statistics"
@@ -749,14 +707,8 @@ msgstr "Asunto del correo electrónico"
 msgid "Email subject line"
 msgstr "Línea de asunto del correo electrónico"
 
-#: includes/class-mailpn-settings.php:905
-#: includes/class-mailpn-settings.php:996
-#: includes/class-mailpn-settings.php:1983
-msgid "Email Template"
-msgstr "Plantilla de correo electrónico"
-
-#: includes/class-mailpn-settings.php:504
-#: includes/class-mailpn-settings.php:505
+#: includes/class-mailpn-settings.php:495
+#: includes/class-mailpn-settings.php:496
 #| msgid "Mail Templates"
 msgid "Email Templates"
 msgstr "Plantillas de correo electrónico"
@@ -772,11 +724,7 @@ msgstr "Contenido del texto del correo electrónico"
 msgid "Email type"
 msgstr "Tipo de correo electrónico"
 
-#: includes/class-mailpn-settings.php:2036
-msgid "emails"
-msgstr "correos electrónicos"
-
-#: includes/class-mailpn-mailing.php:1003
+#: includes/class-mailpn-mailing.php:1040
 msgid "emails every ten minutes"
 msgstr "correos electrónicos cada diez minutos"
 
@@ -787,29 +735,26 @@ msgstr "Correos electrónicos abiertos"
 #: includes/class-mailpn-dashboard.php:523
 #: includes/class-mailpn-dashboard.php:563
 #: includes/class-mailpn-dashboard.php:602
-#: includes/admin/class-mailpn-admin.php:112
+#: includes/admin/class-mailpn-admin.php:117
 #, php-format
 msgid "Emails opened (%s)"
 msgstr "Correos electrónicos abiertos (%s)"
 
-#: includes/class-mailpn-settings.php:2078
-msgid "Emails Per Batch"
-msgstr "Correos electrónicos por lote"
-
-#: includes/class-mailpn-settings.php:512
-#: includes/class-mailpn-settings.php:513
+#: includes/class-mailpn-settings.php:503
+#: includes/class-mailpn-settings.php:504
 #: includes/class-mailpn-dashboard.php:650
+#: includes/class-mailpn-post-type-mail.php:888
 msgid "Emails sent"
 msgstr "Correos electrónicos enviados"
 
-#: includes/class-mailpn-mailing.php:919 includes/class-mailpn-mailing.php:1002
+#: includes/class-mailpn-mailing.php:937 includes/class-mailpn-mailing.php:1039
 msgid "emails sent"
 msgstr "correos electrónicos enviados"
 
 #: includes/class-mailpn-dashboard.php:519
 #: includes/class-mailpn-dashboard.php:562
 #: includes/class-mailpn-dashboard.php:594
-#: includes/admin/class-mailpn-admin.php:111
+#: includes/admin/class-mailpn-admin.php:116
 #, php-format
 msgid "Emails sent (%s)"
 msgstr "Correos electrónicos enviados (%s)"
@@ -821,10 +766,6 @@ msgstr "Correos electrónicos enviados todos los días"
 #: includes/class-mailpn-settings.php:90
 msgid "Emails sent every ten minutes"
 msgstr "Correos electrónicos enviados cada diez minutos"
-
-#: includes/class-mailpn-settings.php:2074
-msgid "Emails Sent Today"
-msgstr "Correos electrónicos enviados hoy"
 
 #: includes/class-mailpn-settings.php:115
 msgid "Enable click tracking"
@@ -849,6 +790,10 @@ msgstr ""
 "Habilite SMTP para enviar correos electrónicos en lugar de utilizar la "
 "función mail() predeterminada."
 
+#: includes/class-mailpn-settings.php:634
+msgid "Enhance your workflow with these companion plugins."
+msgstr "Optimiza tu flujo de trabajo con estos plugins complementarios."
+
 #: includes/class-mailpn-post-type-mail.php:91
 #: includes/class-mailpn-post-type-mail.php:183
 #: includes/class-mailpn-post-type-mail.php:213
@@ -859,13 +804,21 @@ msgstr "Introduce el valor de retardo"
 msgid "Enterprise legal name"
 msgstr "Nombre legal de la empresa"
 
-#: includes/class-mailpn-settings.php:615
+#: includes/class-mailpn-settings.php:694
+msgid "Error activating plugin."
+msgstr "Error al activar el complemento."
+
+#: includes/class-mailpn-settings.php:690
 msgid "Error exporting settings."
 msgstr "Error al exportar la configuración."
 
-#: includes/class-mailpn-settings.php:613
+#: includes/class-mailpn-settings.php:688
 msgid "Error importing settings."
 msgstr "Error al importar la configuración."
+
+#: includes/class-mailpn-settings.php:693
+msgid "Error installing plugin."
+msgstr "Error al instalar el complemento."
 
 #: includes/class-mailpn-post-type-rec.php:82
 msgid "Error Message"
@@ -882,10 +835,6 @@ msgstr "Error al guardar el formulario."
 #: includes/class-mailpn-cron.php:36
 msgid "Every 10 minutes"
 msgstr "Cada 10 minutos"
-
-#: includes/class-mailpn-settings.php:2083
-msgid "Every 10 minutes via cron job"
-msgstr "Cada 10 minutos a través de un trabajo cron"
 
 #: includes/class-mailpn-post-type-mail.php:237
 msgid "Everybody will receive"
@@ -916,7 +865,7 @@ msgstr "Dominios de correos electrónicos de excepción"
 msgid "Exception emails domains list"
 msgstr "Lista de dominios de correos electrónicos de excepción"
 
-#: includes/class-mailpn-settings.php:588
+#: includes/class-mailpn-settings.php:619
 msgid "Export settings"
 msgstr "Exportar configuración"
 
@@ -924,27 +873,23 @@ msgstr "Exportar configuración"
 msgid "Failed to send"
 msgstr "No se pudo enviar"
 
-#: includes/class-mailpn-settings.php:685
-msgid "Failed to send email."
-msgstr "Error al enviar el correo electrónico."
-
 #: includes/class-mailpn-ajax.php:164 includes/class-mailpn-ajax.php:295
 #: includes/class-mailpn-ajax.php:324
 msgid "Failed to send test email"
 msgstr "No se pudo enviar el correo electrónico de prueba"
 
-#: includes/class-mailpn-mailing.php:1543
+#: includes/class-mailpn-mailing.php:1715
 msgid "First of all, access the url below and use any of these credentials:"
 msgstr ""
 "En primer lugar, acceda a la siguiente URL y utilice cualquiera de estas "
 "credenciales:"
 
-#: includes/class-mailpn-mailing.php:573
+#: includes/class-mailpn-mailing.php:591
 msgid "Follow us to keep in touch."
 msgstr "Síguenos para mantenernos en contacto."
 
-#: includes/class-mailpn-mailing.php:965 includes/class-mailpn-mailing.php:1033
-#: includes/class-mailpn-mailing.php:1081
+#: includes/class-mailpn-mailing.php:990 includes/class-mailpn-mailing.php:1078
+#: includes/class-mailpn-mailing.php:1133
 msgid "Force send now"
 msgstr "Enviar ahora"
 
@@ -960,10 +905,6 @@ msgstr "Desde correo electrónico (SMTP)"
 msgid "From Name (SMTP)"
 msgstr "Nombre del remitente (SMTP)"
 
-#: includes/class-mailpn-settings.php:817
-msgid "from now"
-msgstr "a partir de ahora"
-
 #: includes/class-mailpn-post-type-mail.php:137
 msgid "From time to time"
 msgstr "De vez en cuando"
@@ -972,10 +913,14 @@ msgstr "De vez en cuando"
 msgid "Go to MailPN templates"
 msgstr "Ir a las plantillas de MailPN"
 
-#: includes/class-mailpn-mailing.php:1505
-#: includes/class-mailpn-mailing.php:1540 includes/class-mailpn-ajax.php:153
+#: includes/class-mailpn-mailing.php:1677
+#: includes/class-mailpn-mailing.php:1712 includes/class-mailpn-ajax.php:153
 msgid "Hello"
 msgstr "Hola"
+
+#: includes/class-mailpn-mailing.php:979 includes/class-mailpn-mailing.php:1067
+msgid "History"
+msgstr ""
 
 #: includes/class-mailpn-forms.php:460
 msgid ""
@@ -985,8 +930,8 @@ msgstr ""
 "Mantén pulsada la tecla Ctrl (Windows) o Cmd (Mac) para seleccionar varios "
 "usuarios. Los usuarios marcados con ✓ ya tienen este rol."
 
-#: includes/class-mailpn-mailing.php:926 includes/class-mailpn-mailing.php:1010
-#: includes/class-mailpn-mailing.php:1062
+#: includes/class-mailpn-mailing.php:944 includes/class-mailpn-mailing.php:1047
+#: includes/class-mailpn-mailing.php:1112
 msgid "Hourly"
 msgstr "Cada hora"
 
@@ -995,10 +940,6 @@ msgstr "Cada hora"
 #: includes/class-mailpn-post-type-mail.php:223
 msgid "Hours"
 msgstr "Horas"
-
-#: includes/class-mailpn-settings.php:1029
-msgid "hours"
-msgstr "horas"
 
 #. Author URI of the plugin
 msgid "https://padresenlanube.com/"
@@ -1020,6 +961,13 @@ msgstr ""
 "Si está habilitado, el correo electrónico de bienvenida se enviará después "
 "de un retraso específico en lugar de inmediatamente después del registro del "
 "usuario."
+
+#: includes/class-mailpn-post-type-mail.php:261
+msgid ""
+"If multiple welcome emails target the same user through different roles, "
+"only the first priority email will be sent. This prevents users with "
+"multiple roles from receiving duplicate welcome sequences."
+msgstr ""
 
 #: includes/class-mailpn-settings.php:143
 msgid ""
@@ -1053,11 +1001,11 @@ msgstr ""
 "Si completa este campo, el contenido antes del enlace de restablecimiento de "
 "contraseña del correo electrónico se personalizará con su información."
 
-#: includes/class-mailpn-mailing.php:1517
+#: includes/class-mailpn-mailing.php:1689
 msgid "If you didn't make this request, ignore this email or"
 msgstr "Si no realizó esta solicitud, ignore este correo electrónico o"
 
-#: includes/class-mailpn-post-type-mail.php:273
+#: includes/class-mailpn-post-type-mail.php:283
 msgid ""
 "If you select this option, the email will be active only in the temporal "
 "frame selected, after the date and time start, and before the date and time "
@@ -1080,11 +1028,11 @@ msgstr ""
 "cuenta. Tenga en cuenta que debe añadir esta función en sus páginas de "
 "políticas."
 
-#: includes/class-mailpn-settings.php:1034
-msgid "Immediate"
-msgstr "Inmediato"
+#: includes/class-mailpn-post-type-mail.php:1201
+msgid "Imminent"
+msgstr ""
 
-#: includes/class-mailpn-settings.php:585
+#: includes/class-mailpn-settings.php:616
 msgid "Import settings"
 msgstr "Importar configuración"
 
@@ -1116,11 +1064,23 @@ msgstr "En un mes específico cada año"
 msgid "In a specific week each year"
 msgstr "En una semana específica cada año"
 
-#: includes/class-mailpn-settings.php:833
-msgid "Inactive or needs attention"
-msgstr "Inactivo o necesita atención"
+#: includes/class-mailpn-post-type-mail.php:893
+msgid "In queue"
+msgstr "En cola"
 
-#: includes/class-mailpn-settings.php:614
+#: includes/class-mailpn-settings.php:658
+msgid "Install"
+msgstr "Instalar"
+
+#: includes/class-mailpn-settings.php:691
+msgid "Installing..."
+msgstr "Instalando..."
+
+#: includes/class-mailpn-post-type-mail.php:1019
+msgid "Invalid email template."
+msgstr "Plantilla de correo electrónico no válida."
+
+#: includes/class-mailpn-settings.php:689
 msgid "Invalid JSON file."
 msgstr "Archivo JSON no válido."
 
@@ -1168,9 +1128,14 @@ msgstr "Últimos 7 días"
 msgid "Last 7 days trend"
 msgstr "Tendencia de los últimos 7 días"
 
-#: includes/class-mailpn-settings.php:824
-msgid "Last Cron Run:"
-msgstr "Última ejecución de Cron:"
+#: includes/class-mailpn-post-type-mail.php:899
+msgid "Last sent"
+msgstr "Último enviado"
+
+#: includes/class-mailpn-post-type-mail.php:1071
+#, php-format
+msgid "Last sent: %s"
+msgstr "Último envío: %s"
 
 #: includes/class-mailpn-dashboard.php:41
 msgid "Last year"
@@ -1188,7 +1153,7 @@ msgstr "Nombre legal"
 msgid "Loading statistics..."
 msgstr "Cargando estadísticas..."
 
-#: includes/admin/class-mailpn-admin.php:133
+#: includes/admin/class-mailpn-admin.php:138
 msgid "Loading..."
 msgstr "Cargando..."
 
@@ -1207,8 +1172,8 @@ msgstr "Destinatario del correo"
 
 #: includes/class-mailpn-post-type-rec.php:141
 #: includes/class-mailpn-post-type-rec.php:142
-#: includes/class-mailpn-post-type-mail.php:321
-#: includes/class-mailpn-post-type-mail.php:322
+#: includes/class-mailpn-post-type-mail.php:331
+#: includes/class-mailpn-post-type-mail.php:332
 msgid "Mail attachments"
 msgstr "Archivos adjuntos de correo"
 
@@ -1241,27 +1206,27 @@ msgstr "Descripción del registro de correo"
 msgid "Mail records"
 msgstr "Registros de correo"
 
-#: includes/class-mailpn-post-type-mail.php:302
-#: includes/class-mailpn-post-type-mail.php:303
+#: includes/class-mailpn-post-type-mail.php:312
+#: includes/class-mailpn-post-type-mail.php:313
 msgid "Mail sending end date"
 msgstr "Fecha de finalización del envío de correo"
 
-#: includes/class-mailpn-post-type-mail.php:312
-#: includes/class-mailpn-post-type-mail.php:313
+#: includes/class-mailpn-post-type-mail.php:322
+#: includes/class-mailpn-post-type-mail.php:323
 msgid "Mail sending end time"
 msgstr "Hora de finalización del envío de correo"
 
-#: includes/class-mailpn-post-type-mail.php:282
-#: includes/class-mailpn-post-type-mail.php:283
+#: includes/class-mailpn-post-type-mail.php:292
+#: includes/class-mailpn-post-type-mail.php:293
 msgid "Mail sending start date"
 msgstr "Fecha de inicio del envío de correo"
 
-#: includes/class-mailpn-post-type-mail.php:292
-#: includes/class-mailpn-post-type-mail.php:293
+#: includes/class-mailpn-post-type-mail.php:302
+#: includes/class-mailpn-post-type-mail.php:303
 msgid "Mail sending start time"
 msgstr "Hora de inicio del envío de correo"
 
-#: includes/class-mailpn-mailing.php:178 includes/class-mailpn-mailing.php:204
+#: includes/class-mailpn-mailing.php:196 includes/class-mailpn-mailing.php:222
 msgid "Mail subject"
 msgstr "Asunto del correo"
 
@@ -1269,31 +1234,31 @@ msgstr "Asunto del correo"
 msgid "Mail Template"
 msgstr "Plantilla de correo"
 
-#: includes/class-mailpn-post-type-mail.php:360
+#: includes/class-mailpn-post-type-mail.php:378
 msgid "Mail template"
 msgstr "Plantilla de correo"
 
-#: includes/class-mailpn-post-type-mail.php:361
+#: includes/class-mailpn-post-type-mail.php:379
 msgid "Mail template description"
 msgstr "Descripción de la plantilla de correo"
 
-#: includes/class-mailpn-post-type-mail.php:421
+#: includes/class-mailpn-post-type-mail.php:439
 msgid "Mail template details"
 msgstr "Detalles de la plantilla de correo"
 
-#: includes/class-mailpn-post-type-mail.php:344
+#: includes/class-mailpn-post-type-mail.php:362
 msgid "Mail templates"
 msgstr "Plantillas de correo"
 
-#: includes/class-mailpn-post-type-mail.php:561
+#: includes/class-mailpn-post-type-mail.php:579
 msgid "Mail Type"
 msgstr "Tipo de correo"
 
-#: includes/class-mailpn-settings.php:542
+#: includes/class-mailpn-settings.php:522
 msgid "Mailing Manager"
 msgstr "Administrador de correo"
 
-#: includes/class-mailpn-settings.php:555
+#: includes/class-mailpn-settings.php:535
 msgid "Mailing Manager - MAILPN Settings"
 msgstr "Administrador de correo - Configuración de MAILPN"
 
@@ -1312,7 +1277,7 @@ msgstr "Gestor de correo - Puesto PN"
 msgid "MAILPN Test email"
 msgstr "Correo electrónico de prueba MAILPN"
 
-#: includes/class-mailpn-mailing.php:616
+#: includes/class-mailpn-mailing.php:634
 msgid "Manage subscription"
 msgstr "Administrar suscripción"
 
@@ -1347,11 +1312,7 @@ msgstr "Marcar como no leído"
 msgid "Minutes"
 msgstr "Minutos"
 
-#: includes/class-mailpn-settings.php:1031
-msgid "minutes"
-msgstr "minutos"
-
-#: includes/class-mailpn-ajax.php:133
+#: includes/class-mailpn-ajax.php:133 includes/class-mailpn-ajax.php:401
 msgid "Missing email ID."
 msgstr "Falta la dirección de correo electrónico."
 
@@ -1359,19 +1320,14 @@ msgstr "Falta la dirección de correo electrónico."
 msgid "Missing required parameters"
 msgstr "Faltan parámetros requeridos"
 
-#: includes/class-mailpn-mailing.php:929 includes/class-mailpn-mailing.php:1013
-#: includes/class-mailpn-mailing.php:1065
+#: includes/class-mailpn-mailing.php:947 includes/class-mailpn-mailing.php:1050
+#: includes/class-mailpn-mailing.php:1115
 msgid "Monthly"
 msgstr "Mensual"
 
 #: includes/class-mailpn-post-type-mail.php:103
 msgid "Months"
 msgstr "Meses"
-
-#: includes/class-mailpn-settings.php:769
-#: includes/class-mailpn-settings.php:770
-msgid "N/A"
-msgstr "N / A"
 
 #: includes/class-mailpn-taxonomies-mail.php:31
 msgid "New Mail category"
@@ -1381,8 +1337,8 @@ msgstr "Categoría de correo nuevo"
 msgid "New Mail Record category"
 msgstr "Nueva categoría de registro de correo"
 
-#: includes/class-mailpn-mailing.php:1569
-#: includes/class-mailpn-mailing.php:1571
+#: includes/class-mailpn-mailing.php:1741
+#: includes/class-mailpn-mailing.php:1743
 msgid "New user"
 msgstr "Nuevo usuario"
 
@@ -1402,21 +1358,14 @@ msgstr "Hoja informativa"
 msgid "Newsletter welcome email"
 msgstr "Correo electrónico de bienvenida al boletín informativo"
 
-#: includes/class-mailpn-settings.php:1076
-msgid "Next 10-minute Cron"
-msgstr "Próximos 10 minutos de Cron"
-
-#: includes/class-mailpn-settings.php:814
-msgid "Next Cron Execution:"
-msgstr "Próxima ejecución de Cron:"
-
-#: includes/class-mailpn-settings.php:2082
-msgid "Next Processing"
-msgstr "Siguiente procesamiento"
-
-#: includes/class-mailpn-mailing.php:934 includes/class-mailpn-mailing.php:1019
+#: includes/class-mailpn-mailing.php:952 includes/class-mailpn-mailing.php:1056
 msgid "Next send:"
 msgstr "Siguiente envío:"
+
+#: includes/class-mailpn-post-type-mail.php:715
+#, php-format
+msgid "Next: %s"
+msgstr "Siguiente: %s"
 
 #: includes/class-mailpn-forms.php:644
 msgid "No"
@@ -1430,14 +1379,6 @@ msgstr "No hay contenido disponible"
 #: includes/class-mailpn-dashboard.php:443
 msgid "No data for this period."
 msgstr "No hay datos para este período."
-
-#: includes/class-mailpn-settings.php:861
-msgid "No debug logs available yet."
-msgstr "Todavía no hay registros de depuración disponibles."
-
-#: includes/class-mailpn-settings.php:1971
-msgid "No emails in queue."
-msgstr "No hay correos electrónicos en cola."
 
 #: includes/class-mailpn-dashboard.php:703
 msgid "No emails sent in the last 7 days."
@@ -1471,22 +1412,10 @@ msgstr "No se encontraron notificaciones."
 msgid "No pending scheduled emails."
 msgstr "No hay correos electrónicos programados pendientes."
 
-#: includes/class-mailpn-settings.php:895
-msgid "No pending scheduled welcome emails."
-msgstr "No hay correos electrónicos de bienvenida programados pendientes."
-
-#: includes/class-mailpn-settings.php:741
-msgid "No pending welcome registrations."
-msgstr "No hay registros de bienvenida pendientes."
-
-#: includes/class-mailpn-settings.php:986
-msgid "No recently sent scheduled welcome emails."
+#: includes/class-mailpn-post-type-mail.php:1293
+msgid ""
+"No scheduled sends at this time. Emails will be sent when new users register."
 msgstr ""
-"No hay correos electrónicos de bienvenida programados enviados recientemente."
-
-#: includes/class-mailpn-settings.php:776
-msgid "No roles"
-msgstr "Sin roles"
 
 #: includes/class-mailpn-forms.php:451
 #, php-format
@@ -1496,10 +1425,6 @@ msgstr "Actualmente ningún usuario tiene el rol %s."
 #: includes/class-mailpn-ajax.php:357
 msgid "No users selected."
 msgstr "No se ha seleccionado ningún usuario."
-
-#: includes/class-mailpn-settings.php:2032
-msgid "No valid recipients"
-msgstr "No hay destinatarios válidos"
 
 #: includes/class-mailpn-settings.php:353
 msgid "None"
@@ -1513,11 +1438,11 @@ msgstr "No se encontró registro de correo"
 msgid "Not Mail record found in Trash"
 msgstr "No se encontró ningún registro de correo en la papelera"
 
-#: includes/class-mailpn-post-type-mail.php:353
+#: includes/class-mailpn-post-type-mail.php:371
 msgid "Not Mail template found"
 msgstr "No se encontró la plantilla de correo"
 
-#: includes/class-mailpn-post-type-mail.php:354
+#: includes/class-mailpn-post-type-mail.php:372
 msgid "Not Mail template found in Trash"
 msgstr "Plantilla de correo no encontrada en la papelera"
 
@@ -1525,22 +1450,6 @@ msgstr "Plantilla de correo no encontrada en la papelera"
 #: includes/class-mailpn-dashboard.php:406
 msgid "Not opened"
 msgstr "No abierto"
-
-#: includes/class-mailpn-settings.php:819
-#: includes/class-mailpn-settings.php:1083
-msgid "Not scheduled"
-msgstr "No programado"
-
-#: includes/class-mailpn-settings.php:836
-msgid ""
-"Note: Emails are automatically processed every 10 minutes via WordPress cron."
-" If cron is inactive, you can process them manually using the \"Process "
-"Scheduled Emails\" button below."
-msgstr ""
-"Nota: Los correos electrónicos se procesan automáticamente cada 10 minutos "
-"mediante el cron de WordPress. Si el cron está inactivo, puede procesarlos "
-"manualmente usando el botón \"Procesar correos electrónicos programados\" a "
-"continuación."
 
 #: includes/class-mailpn-notifications.php:50
 msgid "Notifications"
@@ -1550,8 +1459,8 @@ msgstr "Notificaciones"
 msgid "Number (0-9)"
 msgstr "Número (0-9)"
 
-#: includes/class-mailpn-mailing.php:1002
-#: includes/class-mailpn-post-type-mail.php:685
+#: includes/class-mailpn-mailing.php:1039
+#: includes/class-mailpn-post-type-mail.php:697
 msgid "of"
 msgstr "de"
 
@@ -1571,12 +1480,12 @@ msgstr "Sólo usuarios específicos recibirán"
 msgid "Only users with specific role will receive"
 msgstr "Sólo los usuarios con un rol específico recibirán"
 
-#: includes/admin/class-mailpn-admin.php:157
+#: includes/admin/class-mailpn-admin.php:210
 msgid "Open rate"
 msgstr "Tasa de apertura"
 
 #: includes/class-mailpn-dashboard.php:618
-#: includes/admin/class-mailpn-admin.php:114
+#: includes/admin/class-mailpn-admin.php:119
 #, php-format
 msgid "Open rate (%s)"
 msgstr "Tasa de apertura (%s)"
@@ -1585,11 +1494,11 @@ msgstr "Tasa de apertura (%s)"
 #: includes/class-mailpn-post-type-rec.php:554
 #: includes/class-mailpn-dashboard.php:406
 #: includes/class-mailpn-notifications-manager.php:177
-#: includes/admin/class-mailpn-admin.php:131
+#: includes/admin/class-mailpn-admin.php:136
 msgid "Opened"
 msgstr "Abierto"
 
-#: includes/admin/class-mailpn-admin.php:156
+#: includes/admin/class-mailpn-admin.php:209
 msgid "Opened emails"
 msgstr "Correos electrónicos abiertos"
 
@@ -1639,7 +1548,7 @@ msgstr "Categoría de registro de correo para padres"
 msgid "Parent Mail Record category:"
 msgstr "Categoría de registro de correo para padres:"
 
-#: includes/class-mailpn-post-type-mail.php:345
+#: includes/class-mailpn-post-type-mail.php:363
 msgid "Parent Mail template"
 msgstr "Plantilla de correo para padres"
 
@@ -1647,7 +1556,7 @@ msgstr "Plantilla de correo para padres"
 msgid "Password Reset"
 msgstr "Restablecer contraseña"
 
-#: includes/class-mailpn-mailing.php:1525
+#: includes/class-mailpn-mailing.php:1697
 msgid "Password reset"
 msgstr "Restablecer contraseña"
 
@@ -1659,21 +1568,9 @@ msgstr "Correo electrónico de restablecimiento de contraseña"
 msgid "Password strength checker"
 msgstr "Comprobador de la fortaleza de la contraseña"
 
-#: includes/class-mailpn-settings.php:2071
-msgid "PAUSED"
-msgstr "EN PAUSA"
-
-#: includes/class-mailpn-settings.php:782
-msgid "Pending"
-msgstr "Pendiente"
-
-#: includes/class-mailpn-settings.php:1956
-msgid "Pending Email Queue"
-msgstr "Cola de correo electrónico pendiente"
-
-#: includes/class-mailpn-settings.php:706
-msgid "Pending registrations processed successfully."
-msgstr "Registros pendientes procesados exitosamente."
+#: includes/class-mailpn-post-type-mail.php:1258
+msgid "Pending registrations (%d)"
+msgstr ""
 
 #: includes/class-mailpn-dashboard.php:634
 msgid "Pending scheduled"
@@ -1682,10 +1579,6 @@ msgstr "Pendiente de programación"
 #: includes/class-mailpn-dashboard.php:688
 msgid "Pending Scheduled Emails"
 msgstr "Correos electrónicos programados pendientes"
-
-#: includes/class-mailpn-settings.php:729
-msgid "Pending Welcome Registrations"
-msgstr "Inscripciones de bienvenida pendientes"
 
 #: includes/class-mailpn-dashboard.php:576
 msgid "Period:"
@@ -1700,7 +1593,7 @@ msgid "Please create a new user or login to save the information."
 msgstr ""
 "Por favor crea un nuevo usuario o inicia sesión para guardar la información."
 
-#: includes/class-mailpn-mailing.php:1517
+#: includes/class-mailpn-mailing.php:1689
 msgid "please report it"
 msgstr "Por favor repórtalo"
 
@@ -1708,7 +1601,7 @@ msgstr "Por favor repórtalo"
 msgid "Please, login to edit your preferences."
 msgstr "Por favor, inicia sesión para editar tus preferencias."
 
-#: includes/class-mailpn-settings.php:551
+#: includes/class-mailpn-settings.php:531
 #: includes/class-mailpn-dashboard.php:568
 #: includes/class-mailpn-dashboard.php:568
 msgid "Plugin main Banner"
@@ -1729,7 +1622,7 @@ msgctxt "Post Type general name"
 msgid "Mail records"
 msgstr "Registros de correo"
 
-#: includes/class-mailpn-post-type-mail.php:342
+#: includes/class-mailpn-post-type-mail.php:360
 msgctxt "Post Type general name"
 msgid "Mail templates"
 msgstr "Plantillas de correo"
@@ -1739,36 +1632,20 @@ msgctxt "Post Type singular name"
 msgid "Mail record"
 msgstr "Registro de correo"
 
-#: includes/class-mailpn-post-type-mail.php:343
+#: includes/class-mailpn-post-type-mail.php:361
 msgctxt "Post Type singular name"
 msgid "Mail template"
 msgstr "Plantilla de correo"
 
-#: includes/class-mailpn-settings.php:722
-msgid "Process Pending Registrations"
-msgstr "Proceso de Registros Pendientes"
-
-#: includes/class-mailpn-settings.php:1945
-msgid "Process Queue Now"
-msgstr "Cola de procesos ahora"
-
-#: includes/class-mailpn-settings.php:718
-msgid "Process Scheduled Emails"
-msgstr "Procesar correos electrónicos programados"
-
-#: includes/class-mailpn-settings.php:843
-msgid "Process Scheduled Emails Now"
-msgstr "Procesar correos electrónicos programados ahora"
-
-#: includes/class-mailpn-settings.php:781
-msgid "Processed"
-msgstr "Procesado"
+#: includes/class-mailpn-post-type-mail.php:260
+msgid "Priority welcome email"
+msgstr ""
 
 #: includes/class-mailpn-common.php:125
 msgid "Processing..."
 msgstr "Tratamiento..."
 
-#: includes/class-mailpn-mailing.php:1055
+#: includes/class-mailpn-mailing.php:1105
 msgid "Publish or update to begin sending."
 msgstr "Publicar o actualizar para comenzar a enviar."
 
@@ -1776,25 +1653,9 @@ msgstr "Publicar o actualizar para comenzar a enviar."
 msgid "Published content email"
 msgstr "Correo electrónico con contenido publicado"
 
-#: includes/class-mailpn-settings.php:1985
-msgid "Queue Count"
-msgstr "Conteo de cola"
-
-#: includes/class-mailpn-settings.php:2059
-msgid "Queue Statistics"
-msgstr "Estadísticas de cola"
-
-#: includes/class-mailpn-settings.php:2070
-msgid "Queue Status"
-msgstr "Estado de la cola"
-
-#: includes/class-mailpn-settings.php:934
-msgid "Ready to send"
-msgstr "Listo para enviar"
-
-#: includes/class-mailpn-settings.php:975
-msgid "Recently Sent Scheduled Emails"
-msgstr "Correos electrónicos programados enviados recientemente"
+#: includes/class-mailpn-post-type-mail.php:775
+msgid "Ready"
+msgstr "Listo"
 
 #: includes/class-mailpn-post-type-rec.php:445
 #: includes/class-mailpn-dashboard.php:710
@@ -1810,26 +1671,22 @@ msgstr "Correo electrónico del destinatario"
 msgid "Recipient email address"
 msgstr "Dirección de correo electrónico del destinatario"
 
-#: includes/class-mailpn-settings.php:1984
-msgid "Recipients"
-msgstr "Destinatarios"
+#: includes/class-mailpn-settings.php:647
+msgid "Recommended"
+msgstr "Recomendado"
 
-#: includes/class-mailpn-settings.php:749
-msgid "Registration Time"
-msgstr "Hora de registro"
+#: includes/class-mailpn-settings.php:633
+msgid "Recommended Plugins"
+msgstr "Plugins recomendados"
 
-#: includes/class-mailpn-settings.php:960
-msgid "Remove"
-msgstr "Eliminar"
+#: includes/class-mailpn-settings.php:609
+msgid "Recommended plugins"
+msgstr "Plugins recomendados"
 
 #: includes/class-mailpn-forms.php:465
 #, php-format
 msgid "Remove %s Role"
 msgstr "Eliminar el rol %s"
-
-#: includes/class-mailpn-settings.php:2043
-msgid "Remove All"
-msgstr "Eliminar todo"
 
 #: includes/class-mailpn-forms.php:399 includes/class-mailpn-forms.php:415
 msgid "Remove element"
@@ -1839,15 +1696,15 @@ msgstr "Eliminar elemento"
 msgid "Required field"
 msgstr "Campo obligatorio"
 
-#: includes/class-mailpn-mailing.php:969
+#: includes/class-mailpn-mailing.php:1000
 msgid "Resend errors"
 msgstr "Errores de reenvío"
 
-#: includes/class-mailpn-mailing.php:961
+#: includes/class-mailpn-mailing.php:995
 msgid "Resend to all"
 msgstr "Reenviar a todos"
 
-#: includes/class-mailpn-mailing.php:1511
+#: includes/class-mailpn-mailing.php:1683
 msgid "Reset your password"
 msgstr "Restablecer tu contraseña"
 
@@ -1860,12 +1717,12 @@ msgstr "Resultado"
 msgid "Roles receiving the email"
 msgstr "Roles que reciben el correo electrónico"
 
-#: includes/class-mailpn-post-type-mail.php:593
+#: includes/class-mailpn-post-type-mail.php:611
 msgid "Roles receiving this email"
 msgstr "Roles que reciben este correo electrónico"
 
-#: includes/class-mailpn-settings.php:571
-#: includes/class-mailpn-settings.php:592
+#: includes/class-mailpn-settings.php:551
+#: includes/class-mailpn-settings.php:623
 msgid "Save options"
 msgstr ""
 "Guardar opciones\n"
@@ -1874,7 +1731,7 @@ msgstr ""
 msgid "Saved successfully"
 msgstr "Guardado con éxito"
 
-#: includes/class-mailpn-settings.php:935
+#: includes/class-mailpn-post-type-mail.php:744
 msgid "Scheduled"
 msgstr "Programado"
 
@@ -1882,28 +1739,21 @@ msgstr "Programado"
 msgid "Scheduled Date"
 msgstr "Fecha programada"
 
-#: includes/class-mailpn-settings.php:699
-msgid "Scheduled email removed successfully."
-msgstr "Correo electrónico programado eliminado exitosamente."
+#: includes/class-mailpn-post-type-mail.php:936
+#: includes/class-mailpn-post-type-mail.php:1189
+#| msgid "Scheduled Time"
+msgid "Scheduled date"
+msgstr "Fecha programada"
 
-#: includes/class-mailpn-settings.php:646
-msgid "Scheduled emails processed successfully."
-msgstr "Correos electrónicos programados procesados exitosamente."
+#: includes/class-mailpn-post-type-mail.php:1183
+msgid "Scheduled sends (%d)"
+msgstr ""
 
-#: includes/class-mailpn-settings.php:907
-#: includes/class-mailpn-settings.php:998
-msgid "Scheduled Time"
-msgstr "Hora programada"
-
-#: includes/class-mailpn-settings.php:804
-msgid "Scheduled Welcome Emails"
-msgstr "Correos electrónicos de bienvenida programados"
-
-#: includes/class-mailpn-mailing.php:1053
+#: includes/class-mailpn-mailing.php:1103
 msgid "Scheduled — will be sent on the next cron cycle."
 msgstr "Programado: se enviará en el próximo ciclo de cron."
 
-#: includes/admin/class-mailpn-admin.php:97
+#: includes/admin/class-mailpn-admin.php:102
 msgid "Search emails..."
 msgstr "Buscar correos electrónicos..."
 
@@ -1920,7 +1770,7 @@ msgstr "Buscar categorías de registros de correo"
 msgid "Search Mail records"
 msgstr "Buscar registros de correo"
 
-#: includes/class-mailpn-post-type-mail.php:352
+#: includes/class-mailpn-post-type-mail.php:370
 msgid "Search Mail templates"
 msgstr "Buscar plantillas de correo"
 
@@ -1928,8 +1778,8 @@ msgstr "Buscar plantillas de correo"
 msgid "Security check failed."
 msgstr "Falló la comprobación de seguridad."
 
-#: includes/class-mailpn-settings.php:1818
-#: includes/class-mailpn-settings.php:1838
+#: includes/class-mailpn-settings.php:1447
+#: includes/class-mailpn-settings.php:1467
 msgid "Security check failed: invalid nonce"
 msgstr "Error en la comprobación de seguridad: nonce no válido"
 
@@ -1987,6 +1837,11 @@ msgstr "Seleccionar vídeo"
 msgid "Select videos"
 msgstr "Seleccionar vídeos"
 
+#: includes/class-mailpn-mailing.php:986 includes/class-mailpn-mailing.php:1075
+#: includes/class-mailpn-mailing.php:1130
+msgid "Send"
+msgstr ""
+
 #: includes/class-mailpn-settings.php:153
 msgid "Send a custom Password reset email instead of the WP template."
 msgstr ""
@@ -2012,18 +1867,24 @@ msgstr ""
 msgid "Send errors to admin account"
 msgstr "Enviar errores a la cuenta de administrador"
 
-#: includes/class-mailpn-settings.php:955
-msgid "Send Now"
-msgstr "Enviar ahora"
+#: includes/class-mailpn-post-type-mail.php:972
+#: includes/class-mailpn-post-type-mail.php:1134
+msgid "Send history"
+msgstr "Enviar historial"
 
-#: includes/class-mailpn-mailing.php:975 includes/class-mailpn-mailing.php:1040
-#: includes/class-mailpn-mailing.php:1088
-#: includes/class-mailpn-mailing.php:1142
-#: includes/class-mailpn-mailing.php:1585
+#: includes/class-mailpn-post-type-mail.php:883
+msgid "Send overview"
+msgstr "Enviar resumen"
+
+#: includes/class-mailpn-mailing.php:1011
+#: includes/class-mailpn-mailing.php:1089
+#: includes/class-mailpn-mailing.php:1143
+#: includes/class-mailpn-mailing.php:1198
+#: includes/class-mailpn-mailing.php:1757
 msgid "Send test email"
 msgstr "Enviar correo electrónico de prueba"
 
-#: includes/class-mailpn-post-type-mail.php:638
+#: includes/class-mailpn-post-type-mail.php:656
 msgid "Sending delay"
 msgstr "Retraso en el envío"
 
@@ -2036,19 +1897,26 @@ msgstr "Retraso en el envío"
 msgid "Sending period"
 msgstr "Periodo de envío"
 
-#: includes/class-mailpn-mailing.php:995
-#: includes/class-mailpn-post-type-mail.php:682
+#: includes/class-mailpn-mailing.php:1032
+#: includes/class-mailpn-post-type-mail.php:694
 #| msgid "Sending"
 msgid "Sending..."
 msgstr "Enviando..."
 
-#: includes/class-mailpn-mailing.php:912
-#: includes/class-mailpn-post-type-mail.php:668
-#: includes/admin/class-mailpn-admin.php:130
+#: includes/class-mailpn-mailing.php:1013
+#: includes/class-mailpn-mailing.php:1091
+#: includes/class-mailpn-mailing.php:1145
+msgid "Sends to your email, bypassing queue"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:930
+#: includes/class-mailpn-post-type-mail.php:725
+#: includes/class-mailpn-post-type-mail.php:766
+#: includes/admin/class-mailpn-admin.php:135
 msgid "Sent"
 msgstr "Enviado"
 
-#: includes/admin/class-mailpn-admin.php:164
+#: includes/admin/class-mailpn-admin.php:217
 msgid "Sent emails"
 msgstr "Correos electrónicos enviados"
 
@@ -2060,11 +1928,7 @@ msgstr "Enviado desde:"
 msgid "Sent successfully"
 msgstr "Enviado correctamente"
 
-#: includes/class-mailpn-settings.php:999
-msgid "Sent Time"
-msgstr "Hora de envío"
-
-#: includes/admin/class-mailpn-admin.php:159
+#: includes/admin/class-mailpn-admin.php:212
 msgid "Sent vs Opened"
 msgstr "Enviados vs. Abiertos"
 
@@ -2116,11 +1980,13 @@ msgstr ""
 msgid "Set the way in which the emails will be sent."
 msgstr "Establece la forma en que se enviarán los correos electrónicos."
 
-#: includes/class-mailpn-settings.php:1891
+#: includes/class-mailpn-settings.php:485
+#: includes/class-mailpn-settings.php:486
+#: includes/class-mailpn-settings.php:1520
 msgid "Settings"
 msgstr "Ajustes"
 
-#: includes/class-mailpn-settings.php:612
+#: includes/class-mailpn-settings.php:687
 msgid "Settings imported successfully. Reloading..."
 msgstr "Configuración importada correctamente. Recargando..."
 
@@ -2156,12 +2022,12 @@ msgstr "Seguridad SMTP"
 msgid "SMTP Username"
 msgstr "Nombre de usuario SMTP"
 
-#: includes/class-mailpn-mailing.php:941
+#: includes/class-mailpn-mailing.php:959
 msgid "Some errors occurred during sending."
 msgstr "Se produjeron algunos errores durante el envío."
 
 #: includes/class-mailpn-post-type-rec.php:231
-#: includes/class-mailpn-post-type-mail.php:405
+#: includes/class-mailpn-post-type-mail.php:423
 msgid "Sorry, you are not allowed to access this endpoint."
 msgstr "Lo sentimos, no tienes permiso para acceder a este punto final."
 
@@ -2173,7 +2039,7 @@ msgstr "ID de la publicación/página de origen"
 msgid "Special Character (!@#$%^&*)"
 msgstr "Carácter especial (!@#$%^&*)"
 
-#: includes/class-mailpn-post-type-mail.php:609
+#: includes/class-mailpn-post-type-mail.php:627
 msgid "Specific users"
 msgstr "Usuarios específicos"
 
@@ -2181,16 +2047,14 @@ msgstr "Usuarios específicos"
 msgid "SSL"
 msgstr "SSL"
 
-#: includes/class-mailpn-settings.php:495
-#: includes/class-mailpn-settings.php:496
+#: includes/class-mailpn-settings.php:511
+#: includes/class-mailpn-settings.php:512
 #: includes/class-mailpn-dashboard.php:572
 msgid "Statistics"
 msgstr "Estadística"
 
-#: includes/class-mailpn-settings.php:751
-#: includes/class-mailpn-settings.php:909
 #: includes/class-mailpn-dashboard.php:393
-#: includes/class-mailpn-post-type-mail.php:562
+#: includes/class-mailpn-post-type-mail.php:580
 msgid "Status"
 msgstr "Estado"
 
@@ -2206,9 +2070,9 @@ msgstr "Suscríbete de nuevo"
 msgid "Successfully sent."
 msgstr "Enviado exitosamente."
 
-#: includes/class-mailpn-settings.php:1064
-msgid "System Information"
-msgstr "Información del sistema"
+#: includes/class-mailpn-settings.php:578
+msgid "Task and project management."
+msgstr "Gestión de tareas y proyectos."
 
 #: includes/class-mailpn-taxonomies-mail.php:22
 #| msgid "Recipe categories"
@@ -2252,8 +2116,14 @@ msgstr "Correo electrónico de prueba enviado correctamente"
 msgid "Test email sent successfully to"
 msgstr "Correo electrónico de prueba enviado exitosamente a"
 
-#: includes/class-mailpn-mailing.php:1519
-#: includes/class-mailpn-mailing.php:1558
+#: includes/class-mailpn-mailing.php:1006
+#: includes/class-mailpn-mailing.php:1084
+#: includes/class-mailpn-mailing.php:1138
+msgid "Testing"
+msgstr ""
+
+#: includes/class-mailpn-mailing.php:1691
+#: includes/class-mailpn-mailing.php:1730
 msgid "Thank you!"
 msgstr "¡Gracias!"
 
@@ -2267,7 +2137,7 @@ msgstr ""
 msgid "The hostname of your SMTP server."
 msgstr "El nombre de host de tu servidor SMTP."
 
-#: includes/class-mailpn-mailing.php:1025
+#: includes/class-mailpn-mailing.php:1062
 msgid "The mail queue is paused. Please check the mail queue settings."
 msgstr ""
 "La cola de correo está en pausa. Por favor, revise la configuración de la "
@@ -2314,26 +2184,31 @@ msgstr "El tipo de seguridad para tu conexión SMTP."
 msgid "The time unit for the delay period."
 msgstr "La unidad de tiempo para el período de retraso."
 
-#: includes/class-mailpn-settings.php:1957
-msgid ""
-"These are emails waiting to be sent. They will be processed automatically "
-"every 10 minutes or you can process them manually."
-msgstr ""
-"Estos son correos electrónicos en espera de ser enviados. Se procesarán "
-"automáticamente cada 10 minutos o puedes procesarlos manualmente."
-
-#: includes/class-mailpn-settings.php:730
-msgid ""
-"These are user registrations waiting to be processed for welcome emails. "
-"They will be processed automatically when user roles are properly defined."
-msgstr ""
-"Estos son registros de usuario que esperan ser procesados para recibir "
-"correos electrónicos de bienvenida. Se procesarán automáticamente cuando se "
-"definan correctamente los roles de usuario."
-
 #: includes/class-mailpn-ajax.php:118
 msgid "This email is not a periodic email."
 msgstr "Este correo electrónico no es un correo electrónico periódico."
+
+#: includes/class-mailpn-post-type-mail.php:1311
+msgid ""
+"This email is triggered automatically by events (new users, purchases, etc.)."
+msgstr ""
+"Este correo electrónico se activa automáticamente en función de ciertos "
+"eventos (nuevos usuarios, compras, etc.)."
+
+#: includes/class-mailpn-post-type-mail.php:1318
+msgid ""
+"This is a one-time email. Use \"Resend All\" from the tools to send it again."
+msgstr ""
+"Este es un correo electrónico que se envía una sola vez. Utilice la opción "
+"\"Reenviar todo\" en las herramientas para enviarlo de nuevo."
+
+#: includes/class-mailpn-post-type-mail.php:1304
+msgid ""
+"This is a recurring email. It will be sent again automatically based on the "
+"configured period."
+msgstr ""
+"Este es un correo electrónico recurrente. Se enviará automáticamente de "
+"nuevo según el período configurado."
 
 #: includes/class-mailpn-ajax.php:154
 msgid "This is a test email sent from the MAILPN plugin."
@@ -2346,13 +2221,11 @@ msgstr ""
 "Esta sección de opciones establece la información que se mostrará en el "
 "correo electrónico."
 
-#: includes/class-mailpn-settings.php:611
+#: includes/class-mailpn-settings.php:686
 msgid "This will overwrite your current settings. Continue?"
 msgstr "Esto sobrescribirá tu configuración actual. ¿Continuar?"
 
-#: includes/class-mailpn-mailing.php:977 includes/class-mailpn-mailing.php:1042
-#: includes/class-mailpn-mailing.php:1090
-#: includes/class-mailpn-mailing.php:1144
+#: includes/class-mailpn-mailing.php:1200
 msgid ""
 "This will send a test email to your current email address using the same "
 "template and content as this mail campaign, bypassing all restrictions and "
@@ -2362,16 +2235,17 @@ msgstr ""
 "electrónico actual utilizando la misma plantilla y contenido que esta "
 "campaña de correo, omitiendo todas las restricciones y el sistema de cola."
 
-#: includes/class-mailpn-post-type-mail.php:271
-#: includes/class-mailpn-post-type-mail.php:272
+#: includes/class-mailpn-post-type-mail.php:281
+#: includes/class-mailpn-post-type-mail.php:282
 msgid "Time email"
 msgstr "Correo electrónico de tiempo"
 
-#: includes/class-mailpn-settings.php:1072
-msgid "Timezone"
-msgstr "Zona horaria"
+#: includes/class-mailpn-post-type-mail.php:937
+#: includes/class-mailpn-post-type-mail.php:1190
+msgid "Time remaining"
+msgstr "Tiempo restante"
 
-#: includes/class-mailpn-post-type-mail.php:560
+#: includes/class-mailpn-post-type-mail.php:578
 msgid "Title"
 msgstr "Título"
 
@@ -2379,7 +2253,7 @@ msgstr "Título"
 msgid "TLS"
 msgstr "TLS"
 
-#: includes/admin/class-mailpn-admin.php:158
+#: includes/admin/class-mailpn-admin.php:211
 msgid "Total clicks"
 msgstr "Total de clics"
 
@@ -2387,25 +2261,13 @@ msgstr "Total de clics"
 msgid "Total Clicks:"
 msgstr "Total de clics:"
 
-#: includes/admin/class-mailpn-admin.php:155
+#: includes/admin/class-mailpn-admin.php:208
 msgid "Total emails"
 msgstr "Total de correos electrónicos"
 
-#: includes/class-mailpn-settings.php:1978
-msgid "Total emails in queue: %d"
-msgstr "Total de correos electrónicos en cola: %d"
-
-#: includes/class-mailpn-settings.php:1097
-msgid "Total Pending Registrations"
-msgstr "Total de registros pendientes"
-
-#: includes/class-mailpn-settings.php:1089
-msgid "Total Scheduled Emails"
-msgstr "Total de correos electrónicos programados"
-
-#: includes/class-mailpn-settings.php:1093
-msgid "Total Sent Logs"
-msgstr "Total de registros enviados"
+#: includes/class-mailpn-post-type-mail.php:1056
+msgid "Total sent"
+msgstr "Total enviado"
 
 #: includes/class-mailpn-settings.php:116
 msgid ""
@@ -2415,6 +2277,7 @@ msgstr ""
 "electrónicos para recopilar estadísticas sobre la participación del usuario."
 
 #: includes/class-mailpn-dashboard.php:712
+#: includes/class-mailpn-post-type-mail.php:1052
 msgid "Type"
 msgstr "Tipo"
 
@@ -2431,18 +2294,7 @@ msgstr "Acceso no autorizado."
 msgid "Unique URLs:"
 msgstr "URL únicas:"
 
-#: includes/class-mailpn-settings.php:773
-#: includes/class-mailpn-settings.php:920
-#: includes/class-mailpn-settings.php:926
-#: includes/class-mailpn-settings.php:928
-#: includes/class-mailpn-settings.php:1010
-#: includes/class-mailpn-settings.php:1016
-#: includes/class-mailpn-settings.php:1018
-#: includes/class-mailpn-settings.php:2007
-msgid "Unknown"
-msgstr "Desconocido"
-
-#: includes/class-mailpn-ajax.php:452
+#: includes/class-mailpn-ajax.php:545
 msgid "Unknown AJAX type"
 msgstr "Tipo de AJAX desconocido"
 
@@ -2451,23 +2303,27 @@ msgstr "Tipo de AJAX desconocido"
 msgid "Unknown Email"
 msgstr "Correo electrónico desconocido"
 
-#: includes/class-mailpn-settings.php:1994
-msgid "Unknown Template"
-msgstr "Plantilla desconocida"
-
 #: includes/class-mailpn-dashboard.php:147
 #: includes/class-mailpn-dashboard.php:148
 msgid "Unknown User"
 msgstr "Usuario desconocido"
 
 #: includes/class-mailpn-post-type-rec.php:470
-#: includes/class-mailpn-post-type-mail.php:654
+#: includes/class-mailpn-post-type-mail.php:672
 msgid "Unset email type."
 msgstr "Tipo de correo electrónico no establecido."
 
-#: includes/class-mailpn-mailing.php:1211
+#: includes/class-mailpn-mailing.php:1267
 msgid "Unsubscribe"
 msgstr "Darse de baja"
+
+#: includes/class-mailpn-post-type-mail.php:929
+msgid "Upcoming scheduled sends"
+msgstr "Próximos envíos programados"
+
+#: includes/class-mailpn-post-type-mail.php:1099
+msgid "Upcoming sends"
+msgstr "Próximos envíos"
 
 #: includes/class-mailpn-taxonomies-mail.php:29
 #| msgid "Update Recipe category"
@@ -2482,12 +2338,12 @@ msgstr "Actualizar registro de correo"
 msgid "Update Mail Record category"
 msgstr "Actualizar categoría de registro de correo"
 
-#: includes/class-mailpn-post-type-mail.php:351
+#: includes/class-mailpn-post-type-mail.php:369
 msgid "Update Mail template"
 msgstr "Plantilla de correo de actualización"
 
 #: includes/class-mailpn-post-type-rec.php:603
-#: includes/admin/class-mailpn-admin.php:162
+#: includes/admin/class-mailpn-admin.php:215
 msgid "URL"
 msgstr "URL"
 
@@ -2495,13 +2351,19 @@ msgstr "URL"
 msgid "Use SMTP for native WordPress emails"
 msgstr "Utilice SMTP para correos electrónicos nativos de WordPress"
 
-#: includes/class-mailpn-settings.php:747
-#: includes/class-mailpn-settings.php:906
-#: includes/class-mailpn-settings.php:997
+#: includes/class-mailpn-post-type-mail.php:1188
 msgid "User"
-msgstr "Usuario"
+msgstr ""
 
-#: includes/class-mailpn-settings.php:767 includes/class-mailpn-ajax.php:185
+#: includes/class-mailpn-post-type-mail.php:1217
+msgid "User #%d (deleted)"
+msgstr ""
+
+#: includes/class-mailpn-settings.php:571
+msgid "User management and registration forms."
+msgstr "Formularios de gestión y registro de usuarios."
+
+#: includes/class-mailpn-ajax.php:185
 msgid "User not found"
 msgstr "Usuario no encontrado"
 
@@ -2509,16 +2371,12 @@ msgstr "Usuario no encontrado"
 msgid "User Role Management"
 msgstr "Gestión de roles de usuario"
 
-#: includes/class-mailpn-settings.php:750
-msgid "User Roles"
-msgstr "Roles de usuario"
-
-#: includes/class-mailpn-mailing.php:1547
+#: includes/class-mailpn-mailing.php:1719
 msgid "Username"
 msgstr "Nombre de usuario"
 
-#: includes/class-mailpn-post-type-mail.php:262
-#: includes/class-mailpn-post-type-mail.php:263
+#: includes/class-mailpn-post-type-mail.php:272
+#: includes/class-mailpn-post-type-mail.php:273
 msgid "Users receiving the email"
 msgstr "Usuarios que reciben el correo electrónico"
 
@@ -2531,7 +2389,7 @@ msgstr "Usuarios con el rol %s"
 msgid "View"
 msgstr "Vista"
 
-#: includes/class-mailpn-mailing.php:943
+#: includes/class-mailpn-mailing.php:961
 msgid "View affected users"
 msgstr "Ver usuarios afectados"
 
@@ -2544,7 +2402,7 @@ msgstr "Ver contenido"
 msgid "View Mail record"
 msgstr "Ver registro de correo"
 
-#: includes/class-mailpn-post-type-mail.php:347
+#: includes/class-mailpn-post-type-mail.php:365
 msgid "View Mail template"
 msgstr "Ver plantilla de correo"
 
@@ -2552,11 +2410,19 @@ msgstr "Ver plantilla de correo"
 msgid "View Statistics"
 msgstr "Ver estadísticas"
 
-#: includes/class-mailpn-mailing.php:960 includes/class-mailpn-mailing.php:1029
+#: includes/class-mailpn-mailing.php:982 includes/class-mailpn-mailing.php:1070
 msgid "View submissions"
 msgstr "Ver envíos"
 
-#: includes/class-mailpn-mailing.php:1507
+#: includes/class-mailpn-post-type-mail.php:746
+msgid "Waiting for first send"
+msgstr "Esperando el primer envío"
+
+#: includes/class-mailpn-post-type-mail.php:758
+msgid "Waiting for trigger"
+msgstr "Esperando el disparador"
+
+#: includes/class-mailpn-mailing.php:1679
 msgid ""
 "We have received a request to reset the password for your account. If you "
 "made this request, click the link below to change your password:"
@@ -2564,8 +2430,8 @@ msgstr ""
 "Hemos recibido una solicitud para restablecer la contraseña de su cuenta. Si "
 "ya la solicitó, haga clic en el enlace a continuación para cambiarla:"
 
-#: includes/class-mailpn-mailing.php:928 includes/class-mailpn-mailing.php:1012
-#: includes/class-mailpn-mailing.php:1064
+#: includes/class-mailpn-mailing.php:946 includes/class-mailpn-mailing.php:1049
+#: includes/class-mailpn-mailing.php:1114
 msgid "Weekly"
 msgstr "Semanalmente"
 
@@ -2580,12 +2446,6 @@ msgstr "Correo electrónico de bienvenida"
 #: includes/class-mailpn-data.php:77
 msgid "Welcome email"
 msgstr "Correo electrónico de bienvenida"
-
-#: includes/class-mailpn-settings.php:521
-#: includes/class-mailpn-settings.php:522
-#: includes/class-mailpn-settings.php:713
-msgid "Welcome Email Management"
-msgstr "Gestión de correo electrónico de bienvenida"
 
 #: includes/class-mailpn-settings.php:429
 msgid ""
@@ -2620,8 +2480,8 @@ msgstr "Incluya en la lista blanca las direcciones de dominios excluidos."
 msgid "Whitelisted email addresses"
 msgstr "Direcciones de correo electrónico incluidas en la lista blanca"
 
-#: includes/class-mailpn-mailing.php:930 includes/class-mailpn-mailing.php:1014
-#: includes/class-mailpn-mailing.php:1066
+#: includes/class-mailpn-mailing.php:948 includes/class-mailpn-mailing.php:1051
+#: includes/class-mailpn-mailing.php:1116
 msgid "Yearly"
 msgstr "Anual"
 
@@ -2639,7 +2499,7 @@ msgstr "Sí"
 msgid "You are not authorized to perform this action."
 msgstr "Usted no está autorizado a realizar esta acción."
 
-#: includes/class-mailpn-post-type-mail.php:323
+#: includes/class-mailpn-post-type-mail.php:333
 msgid ""
 "You can include several files to be sent with this email as attachments. To "
 "see the files here, please upload them in the library and then refresh this "
@@ -2676,7 +2536,7 @@ msgstr ""
 msgid "You do not have permission to manage user roles."
 msgstr "No tienes permiso para administrar los roles de usuario."
 
-#: includes/class-mailpn-ajax.php:387
+#: includes/class-mailpn-ajax.php:387 includes/class-mailpn-ajax.php:396
 msgid "You do not have permission."
 msgstr "No tienes permiso."
 
@@ -2686,7 +2546,7 @@ msgid_plural "You have %d unread email notifications"
 msgstr[0] "Tienes %d notificaciones de correo electrónico sin leer"
 msgstr[1] "Tienes %d notificaciones de correo electrónico sin leer"
 
-#: includes/class-mailpn-mailing.php:1542
+#: includes/class-mailpn-mailing.php:1714
 msgid ""
 "You have a new user created on our platform. Please create a strong password "
 "to login."
@@ -2698,7 +2558,7 @@ msgstr ""
 msgid "You must be logged in to view notifications."
 msgstr "Debes iniciar sesión para ver las notificaciones."
 
-#: includes/class-mailpn-mailing.php:609
+#: includes/class-mailpn-mailing.php:627
 msgid "You receive this email for your relationship with the project."
 msgstr "Recibirás este correo electrónico para tu relación con el proyecto."
 

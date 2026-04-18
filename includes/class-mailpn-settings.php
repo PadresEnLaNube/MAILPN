@@ -482,8 +482,8 @@ class MAILPN_Settings {
 	 */
 	public function mailpn_admin_menu() {
     add_menu_page(
-      esc_html__('Email Settings', 'mailpn'), 
-      esc_html__('Email Settings', 'mailpn'), 
+      esc_html__('Settings', 'mailpn'),
+      esc_html__('Settings', 'mailpn'),
       'manage_options', 
       'mailpn_options', 
       [$this, 'mailpn_options'], 
@@ -1055,15 +1055,35 @@ class MAILPN_Settings {
     $mailing_plugin = new MAILPN_Mailing();
     $email_queued = false;
 
+    // Collect all matching welcome emails for this user
+    $matching_emails = [];
     foreach ($welcome_emails as $email_id) {
-      // Check if user should receive this email based on distribution settings
       if (!MAILPN_Mailing::mailpn_user_matches_distribution($email_id, $user_id)) {
         continue;
       }
-      
+      $matching_emails[] = $email_id;
+    }
+
+    if (empty($matching_emails)) {
+      return false;
+    }
+
+    // Check if any matching email has the priority flag enabled
+    $priority_email_id = null;
+    foreach ($matching_emails as $email_id) {
+      if (get_post_meta($email_id, 'mailpn_welcome_priority', true) === 'on') {
+        $priority_email_id = $email_id;
+        break;
+      }
+    }
+
+    // If a priority email was found, only send that one
+    $emails_to_send = $priority_email_id ? [$priority_email_id] : $matching_emails;
+
+    foreach ($emails_to_send as $email_id) {
       // Check if delay is enabled for this welcome email
       $delay_enabled = get_post_meta($email_id, 'mailpn_welcome_delay_enabled', true);
-      
+
       if ($delay_enabled === 'on') {
         // Schedule the email for delayed sending
         $this->mailpn_schedule_delayed_welcome_email($email_id, $user_id);
@@ -1073,7 +1093,7 @@ class MAILPN_Settings {
       }
       $email_queued = true;
     }
-    
+
     return $email_queued;
   }
   

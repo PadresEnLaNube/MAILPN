@@ -975,24 +975,43 @@ class MAILPN_Mailing {
               <?php endif; ?>
             </div>
             <div class="mailpn-status-actions">
-              <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View submissions', 'mailpn'); ?></a>
-              <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-resend-all"><?php esc_html_e('Resend to all', 'mailpn'); ?></a>
-              <?php if ($mailpn_type === 'email_periodic'): ?>
-                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-force-send-periodic">
-                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
-                  <?php esc_html_e('Force send now', 'mailpn'); ?>
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('History', 'mailpn'); ?></span>
+                <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-action-link">
+                  <i class="material-icons-outlined">visibility</i>
+                  <?php esc_html_e('View submissions', 'mailpn'); ?>
                 </a>
-              <?php endif; ?>
-              <?php if ($has_errors): ?>
-                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-error-resend"><?php esc_html_e('Resend errors', 'mailpn'); ?></a>
-              <?php endif; ?>
+              </div>
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('Send', 'mailpn'); ?></span>
+                <?php if ($mailpn_type === 'email_periodic'): ?>
+                  <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-action-link mailpn-btn-force-send-periodic">
+                    <i class="material-icons-outlined">send</i>
+                    <?php esc_html_e('Force send now', 'mailpn'); ?>
+                  </a>
+                <?php endif; ?>
+                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-action-link mailpn-btn-resend-all">
+                  <i class="material-icons-outlined">replay</i>
+                  <?php esc_html_e('Resend to all', 'mailpn'); ?>
+                </a>
+                <?php if ($has_errors): ?>
+                  <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-action-link mailpn-btn-error-resend">
+                    <i class="material-icons-outlined">error_outline</i>
+                    <?php esc_html_e('Resend errors', 'mailpn'); ?>
+                  </a>
+                <?php endif; ?>
+              </div>
               <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
-                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('Testing', 'mailpn'); ?></span>
+                <a href="#" class="mailpn-action-link mailpn-btn-test-email"
                   data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
                   data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                  <i class="material-icons-outlined">science</i>
                   <?php esc_html_e('Send test email', 'mailpn'); ?>
                 </a>
-                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+                <span class="mailpn-action-link-desc"><?php esc_html_e('Sends to your email, bypassing queue', 'mailpn'); ?></span>
+              </div>
               <?php endif; ?>
               <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
             </div>
@@ -1044,20 +1063,33 @@ class MAILPN_Mailing {
               </div>
             <?php endif; ?>
             <div class="mailpn-status-actions">
-              <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-btn mailpn-btn-mini"><?php esc_html_e('View submissions', 'mailpn'); ?></a>
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('History', 'mailpn'); ?></span>
+                <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-action-link">
+                  <i class="material-icons-outlined">visibility</i>
+                  <?php esc_html_e('View submissions', 'mailpn'); ?>
+                </a>
+              </div>
               <?php if ($mailpn_type === 'email_periodic'): ?>
-                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-force-send-periodic">
-                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('Send', 'mailpn'); ?></span>
+                <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-action-link mailpn-btn-force-send-periodic">
+                  <i class="material-icons-outlined">send</i>
                   <?php esc_html_e('Force send now', 'mailpn'); ?>
                 </a>
+              </div>
               <?php endif; ?>
               <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
-                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('Testing', 'mailpn'); ?></span>
+                <a href="#" class="mailpn-action-link mailpn-btn-test-email"
                   data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
                   data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                  <i class="material-icons-outlined">science</i>
                   <?php esc_html_e('Send test email', 'mailpn'); ?>
                 </a>
-                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+                <span class="mailpn-action-link-desc"><?php esc_html_e('Sends to your email, bypassing queue', 'mailpn'); ?></span>
+              </div>
               <?php endif; ?>
               <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
             </div>
@@ -1094,18 +1126,24 @@ class MAILPN_Mailing {
             <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
               <div class="mailpn-status-actions" style="margin-top:8px;">
                 <?php if ($mailpn_type === 'email_periodic' && get_post_status($post_id) === 'publish'): ?>
-                  <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-btn mailpn-btn-mini mailpn-btn-force-send-periodic">
-                    <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
+                <div class="mailpn-actions-group">
+                  <span class="mailpn-actions-group-label"><?php esc_html_e('Send', 'mailpn'); ?></span>
+                  <a href="#" data-mailpn-post-id="<?php echo esc_attr($post_id); ?>" class="mailpn-action-link mailpn-btn-force-send-periodic">
+                    <i class="material-icons-outlined">send</i>
                     <?php esc_html_e('Force send now', 'mailpn'); ?>
                   </a>
+                </div>
                 <?php endif; ?>
-                <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
-                  data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
-                  data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
-                  <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
-                  <?php esc_html_e('Send test email', 'mailpn'); ?>
-                </a>
-                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
+                <div class="mailpn-actions-group">
+                  <span class="mailpn-actions-group-label"><?php esc_html_e('Testing', 'mailpn'); ?></span>
+                  <a href="#" class="mailpn-action-link mailpn-btn-test-email"
+                    data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
+                    data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                    <i class="material-icons-outlined">science</i>
+                    <?php esc_html_e('Send test email', 'mailpn'); ?>
+                  </a>
+                  <span class="mailpn-action-link-desc"><?php esc_html_e('Sends to your email, bypassing queue', 'mailpn'); ?></span>
+                </div>
                 <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
               </div>
             <?php endif; ?>

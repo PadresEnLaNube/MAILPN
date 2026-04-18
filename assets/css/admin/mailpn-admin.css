@@ -278,12 +278,60 @@
 }
 .mailpn-status-actions {
     display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 12px;
+    padding-top: 0;
+    border-top: none;
+}
+.mailpn-actions-group {
+    display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 10px;
-    border-top: 1px solid #f0f0f0;
+    gap: 4px;
+    padding: 8px 0;
+    border-top: 1px solid #f0f0f1;
+}
+.mailpn-actions-group:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+.mailpn-actions-group-label {
+    font-size: 11px;
+    color: #787c82;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    width: 100%;
+    margin-bottom: 2px;
+}
+.mailpn-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #2271b1;
+    text-decoration: none;
+    padding: 3px 10px;
+    border-radius: 3px;
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    line-height: 1.6;
+}
+.mailpn-action-link:hover {
+    background: #f0f6fc;
+    color: #135e96;
+    text-decoration: none;
+}
+.mailpn-action-link i {
+    font-size: 16px;
+}
+.mailpn-action-link-desc {
+    font-size: 11px;
+    color: #a7aaad;
+    margin-left: 2px;
 }
 
 /* Queue Progress Bar */
