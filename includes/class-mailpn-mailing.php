@@ -1188,20 +1188,192 @@ class MAILPN_Mailing {
       <?php endif ?>
 
       <?php if (!in_array($mailpn_type, ['email_one_time', 'email_published_content', 'email_coded', 'email_periodic'])): ?>
-        <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
-          <div class="mailpn-status-card" style="margin-top:8px;">
-            <div class="mailpn-status-actions">
-              <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-test-email"
-                data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
-                data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
-                <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">send</i>
-                <?php esc_html_e('Send test email', 'mailpn'); ?>
-              </a>
-              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16 mailpn-color-main-0 mailpn-cursor-pointer mailpn-tooltip" title="<?php esc_attr_e('This will send a test email to your current email address using the same template and content as this mail campaign, bypassing all restrictions and queue system.', 'mailpn'); ?>">info</i>
-              <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
+        <?php
+          $fallback_status = get_post_meta($post_id, 'mailpn_status', true);
+          $fallback_sent_count = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id]));
+          $fallback_timestamps = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
+          $fallback_last_sent = !empty($fallback_timestamps) && is_array($fallback_timestamps) ? end($fallback_timestamps) : '';
+          $fallback_wp_status = get_post_status($post_id);
+        ?>
+        <div class="mailpn-status-card <?php echo $fallback_wp_status === 'publish' ? 'mailpn-status-sent' : 'mailpn-status-draft'; ?>">
+          <div class="mailpn-status-header">
+            <?php if ($fallback_wp_status === 'publish'): ?>
+              <i class="material-icons-outlined">bolt</i>
+              <span class="mailpn-status-label"><?php esc_html_e('Active — triggered automatically by events.', 'mailpn'); ?></span>
+            <?php else: ?>
+              <i class="material-icons-outlined">drafts</i>
+              <span class="mailpn-status-label"><?php esc_html_e('Publish or update to begin sending.', 'mailpn'); ?></span>
+            <?php endif; ?>
+          </div>
+          <?php if ($fallback_sent_count > 0 || !empty($fallback_last_sent)): ?>
+          <div class="mailpn-status-body">
+            <div class="mailpn-status-stats">
+              <?php if ($fallback_sent_count > 0): ?>
+                <span class="mailpn-status-stat"><i class="material-icons-outlined">mail</i> <?php echo esc_html($fallback_sent_count); ?> <?php esc_html_e('emails sent', 'mailpn'); ?></span>
+              <?php endif; ?>
+              <?php if (!empty($fallback_last_sent)): ?>
+                <span class="mailpn-status-stat"><i class="material-icons-outlined">schedule</i> <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $fallback_last_sent)); ?></span>
+              <?php endif; ?>
             </div>
           </div>
-        <?php endif; ?>
+          <?php endif; ?>
+
+          <?php
+          // Scheduled welcome emails for this template
+          if (in_array($mailpn_type, ['email_welcome', 'newsletter_welcome'])) {
+            $scheduled_welcome = get_option('mailpn_scheduled_welcome_emails', []);
+            if (!is_array($scheduled_welcome)) {
+              $scheduled_welcome = [];
+            }
+            $pending_for_tpl = [];
+            foreach ($scheduled_welcome as $entry) {
+              if (!empty($entry['email_id']) && intval($entry['email_id']) === intval($post_id)) {
+                $pending_for_tpl[] = $entry;
+              }
+            }
+            usort($pending_for_tpl, function($a, $b) {
+              return ($a['scheduled_time'] ?? 0) - ($b['scheduled_time'] ?? 0);
+            });
+
+            if (!empty($pending_for_tpl)) {
+              $now_ts = current_time('timestamp');
+              ?>
+              <div class="mailpn-status-body" style="margin-top:12px;">
+                <h4 style="margin:0 0 8px;font-size:13px;display:flex;align-items:center;gap:6px;">
+                  <i class="material-icons-outlined" style="font-size:18px;">schedule_send</i>
+                  <?php echo esc_html(sprintf(__('Scheduled sends (%d)', 'mailpn'), count($pending_for_tpl))); ?>
+                </h4>
+                <table class="mailpn-emails-table" style="width:100%;border-collapse:separate;border-spacing:0 2px;">
+                  <thead>
+                    <tr>
+                      <th style="text-align:left;padding:6px 10px;font-size:12px;color:#787c82;"><?php esc_html_e('User', 'mailpn'); ?></th>
+                      <th style="text-align:left;padding:6px 10px;font-size:12px;color:#787c82;"><?php esc_html_e('Scheduled date', 'mailpn'); ?></th>
+                      <th style="text-align:left;padding:6px 10px;font-size:12px;color:#787c82;"><?php esc_html_e('Time remaining', 'mailpn'); ?></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach (array_slice($pending_for_tpl, 0, 10) as $sched_entry):
+                      $sched_user = get_userdata($sched_entry['user_id']);
+                      $sched_time = $sched_entry['scheduled_time'];
+                      $sched_diff = $sched_time - $now_ts;
+                      if ($sched_diff <= 0) {
+                        $sched_remaining = __('Imminent', 'mailpn');
+                      } elseif ($sched_diff < HOUR_IN_SECONDS) {
+                        $sched_remaining = sprintf(__('%d min', 'mailpn'), max(1, intval($sched_diff / 60)));
+                      } elseif ($sched_diff < DAY_IN_SECONDS) {
+                        $sched_remaining = sprintf(__('%d hours', 'mailpn'), intval($sched_diff / HOUR_IN_SECONDS));
+                      } else {
+                        $sched_remaining = sprintf(__('%d days', 'mailpn'), intval($sched_diff / DAY_IN_SECONDS));
+                      }
+                    ?>
+                    <tr>
+                      <td style="padding:6px 10px;font-size:13px;">
+                        <?php if ($sched_user): ?>
+                          <i class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#787c82;">person</i>
+                          <?php echo esc_html($sched_user->display_name); ?>
+                          <span style="color:#a7aaad;font-size:11px;">(<?php echo esc_html($sched_user->user_email); ?>)</span>
+                        <?php else: ?>
+                          <span style="color:#a7aaad;"><?php echo esc_html(sprintf(__('User #%d (deleted)', 'mailpn'), $sched_entry['user_id'])); ?></span>
+                        <?php endif; ?>
+                      </td>
+                      <td style="padding:6px 10px;font-size:13px;">
+                        <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', $sched_time)); ?>
+                      </td>
+                      <td style="padding:6px 10px;font-size:13px;color:#787c82;">
+                        <?php echo esc_html($sched_remaining); ?>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php if (count($pending_for_tpl) > 10): ?>
+                    <tr>
+                      <td colspan="3" style="padding:6px 10px;color:#787c82;font-style:italic;font-size:12px;">
+                        <?php echo esc_html(sprintf(__('... and %d more', 'mailpn'), count($pending_for_tpl) - 10)); ?>
+                      </td>
+                    </tr>
+                    <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
+              <?php
+            }
+
+            // Pending registrations
+            $pending_regs = get_option('mailpn_pending_welcome_registrations', []);
+            if (!is_array($pending_regs)) {
+              $pending_regs = [];
+            }
+            $unprocessed_regs = [];
+            foreach ($pending_regs as $reg) {
+              if (empty($reg['processed'])) {
+                $reg_u = get_userdata($reg['user_id']);
+                if ($reg_u && MAILPN_Mailing::mailpn_user_matches_distribution($post_id, $reg['user_id'])) {
+                  $unprocessed_regs[] = $reg;
+                }
+              }
+            }
+            if (!empty($unprocessed_regs)) {
+              ?>
+              <div class="mailpn-status-body" style="margin-top:12px;">
+                <h4 style="margin:0 0 8px;font-size:13px;display:flex;align-items:center;gap:6px;">
+                  <i class="material-icons-outlined" style="font-size:18px;">pending</i>
+                  <?php echo esc_html(sprintf(__('Pending registrations (%d)', 'mailpn'), count($unprocessed_regs))); ?>
+                </h4>
+                <table class="mailpn-emails-table" style="width:100%;border-collapse:separate;border-spacing:0 2px;">
+                  <tbody>
+                    <?php foreach (array_slice($unprocessed_regs, 0, 10) as $preg):
+                      $preg_user = get_userdata($preg['user_id']);
+                    ?>
+                    <tr>
+                      <td style="padding:6px 10px;font-size:13px;">
+                        <i class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#dba617;">person</i>
+                        <?php echo esc_html($preg_user->display_name); ?>
+                        <span style="color:#a7aaad;font-size:11px;">(<?php echo esc_html($preg_user->user_email); ?>)</span>
+                      </td>
+                      <td style="padding:6px 10px;font-size:13px;color:#787c82;">
+                        <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', $preg['registration_time'])); ?>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                    <?php if (count($unprocessed_regs) > 10): ?>
+                    <tr>
+                      <td colspan="2" style="padding:6px 10px;color:#787c82;font-style:italic;font-size:12px;">
+                        <?php echo esc_html(sprintf(__('... and %d more', 'mailpn'), count($unprocessed_regs) - 10)); ?>
+                      </td>
+                    </tr>
+                    <?php endif; ?>
+                  </tbody>
+                </table>
+              </div>
+              <?php
+            }
+          }
+          ?>
+
+          <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
+            <div class="mailpn-status-actions">
+              <?php if ($fallback_sent_count > 0): ?>
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('History', 'mailpn'); ?></span>
+                <a href="<?php echo esc_url(admin_url('edit.php?post_type=mailpn_rec&mailpn_type_filter=' . $mailpn_type)); ?>" target="_blank" class="mailpn-action-link">
+                  <i class="material-icons-outlined">visibility</i>
+                  <?php esc_html_e('View submissions', 'mailpn'); ?>
+                </a>
+              </div>
+              <?php endif; ?>
+              <div class="mailpn-actions-group">
+                <span class="mailpn-actions-group-label"><?php esc_html_e('Testing', 'mailpn'); ?></span>
+                <a href="#" class="mailpn-action-link mailpn-btn-test-email"
+                  data-mailpn-post-id="<?php echo esc_attr($post_id); ?>"
+                  data-mailpn-user-id="<?php echo esc_attr($current_user->ID); ?>">
+                  <i class="material-icons-outlined">science</i>
+                  <?php esc_html_e('Send test email', 'mailpn'); ?>
+                </a>
+                <span class="mailpn-action-link-desc"><?php esc_html_e('Sends to your email, bypassing queue', 'mailpn'); ?></span>
+              </div>
+              <?php esc_html(MAILPN_Data::mailpn_loader()); ?>
+            </div>
+          <?php endif; ?>
+        </div>
       <?php endif; ?>
     <?php
     $mailpn_return_string = ob_get_contents();

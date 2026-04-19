@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Filkers WooCommerce Marketing\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-31 14:12+0000\n"
-"PO-Revision-Date: 2026-04-18 11:36+0000\n"
+"PO-Revision-Date: 2026-04-18 11:38+0000\n"
 "Last-Translator: Relatia.es\n"
 "Language-Team: Español\n"
 "Language: es_ES\n"
@@ -920,7 +920,7 @@ msgstr "Hola"
 
 #: includes/class-mailpn-mailing.php:979 includes/class-mailpn-mailing.php:1067
 msgid "History"
-msgstr ""
+msgstr "Historia"
 
 #: includes/class-mailpn-forms.php:460
 msgid ""
@@ -968,6 +968,9 @@ msgid ""
 "only the first priority email will be sent. This prevents users with "
 "multiple roles from receiving duplicate welcome sequences."
 msgstr ""
+"Si varios correos electrónicos de bienvenida van dirigidos al mismo usuario "
+"con diferentes roles, solo se enviará el correo prioritario. Esto evita que "
+"los usuarios con múltiples roles reciban secuencias de bienvenida duplicadas."
 
 #: includes/class-mailpn-settings.php:143
 msgid ""
@@ -1030,7 +1033,7 @@ msgstr ""
 
 #: includes/class-mailpn-post-type-mail.php:1201
 msgid "Imminent"
-msgstr ""
+msgstr "Inminente"
 
 #: includes/class-mailpn-settings.php:616
 msgid "Import settings"
@@ -1416,6 +1419,8 @@ msgstr "No hay correos electrónicos programados pendientes."
 msgid ""
 "No scheduled sends at this time. Emails will be sent when new users register."
 msgstr ""
+"Por el momento, no hay envíos programados. Se enviarán correos electrónicos "
+"cuando se registren nuevos usuarios."
 
 #: includes/class-mailpn-forms.php:451
 #, php-format
@@ -1570,7 +1575,7 @@ msgstr "Comprobador de la fortaleza de la contraseña"
 
 #: includes/class-mailpn-post-type-mail.php:1258
 msgid "Pending registrations (%d)"
-msgstr ""
+msgstr "Registros pendientes (%d)"
 
 #: includes/class-mailpn-dashboard.php:634
 msgid "Pending scheduled"
@@ -1639,7 +1644,7 @@ msgstr "Plantilla de correo"
 
 #: includes/class-mailpn-post-type-mail.php:260
 msgid "Priority welcome email"
-msgstr ""
+msgstr "Correo electrónico de bienvenida prioritario"
 
 #: includes/class-mailpn-common.php:125
 msgid "Processing..."
@@ -1747,7 +1752,7 @@ msgstr "Fecha programada"
 
 #: includes/class-mailpn-post-type-mail.php:1183
 msgid "Scheduled sends (%d)"
-msgstr ""
+msgstr "Envíos programados (%d)"
 
 #: includes/class-mailpn-mailing.php:1103
 msgid "Scheduled — will be sent on the next cron cycle."
@@ -1840,7 +1845,7 @@ msgstr "Seleccionar vídeos"
 #: includes/class-mailpn-mailing.php:986 includes/class-mailpn-mailing.php:1075
 #: includes/class-mailpn-mailing.php:1130
 msgid "Send"
-msgstr ""
+msgstr "Enviar"
 
 #: includes/class-mailpn-settings.php:153
 msgid "Send a custom Password reset email instead of the WP template."
@@ -1908,6 +1913,8 @@ msgstr "Enviando..."
 #: includes/class-mailpn-mailing.php:1145
 msgid "Sends to your email, bypassing queue"
 msgstr ""
+"Envía el correo electrónico directamente a tu bandeja de entrada, sin pasar "
+"por la cola."
 
 #: includes/class-mailpn-mailing.php:930
 #: includes/class-mailpn-post-type-mail.php:725
@@ -2120,7 +2127,7 @@ msgstr "Correo electrónico de prueba enviado exitosamente a"
 #: includes/class-mailpn-mailing.php:1084
 #: includes/class-mailpn-mailing.php:1138
 msgid "Testing"
-msgstr ""
+msgstr "Pruebas"
 
 #: includes/class-mailpn-mailing.php:1691
 #: includes/class-mailpn-mailing.php:1730
@@ -2353,11 +2360,11 @@ msgstr "Utilice SMTP para correos electrónicos nativos de WordPress"
 
 #: includes/class-mailpn-post-type-mail.php:1188
 msgid "User"
-msgstr ""
+msgstr "Usuario"
 
 #: includes/class-mailpn-post-type-mail.php:1217
 msgid "User #%d (deleted)"
-msgstr ""
+msgstr "Usuario #%d (eliminado)"
 
 #: includes/class-mailpn-settings.php:571
 msgid "User management and registration forms."
