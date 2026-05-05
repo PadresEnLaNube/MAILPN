@@ -176,7 +176,8 @@ class MAILPN_Dashboard {
 		$count = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts} {$where}");
 
 		$rows = $wpdb->get_results(
-			"SELECT ID, post_title, post_date FROM {$wpdb->posts} {$where} ORDER BY post_date DESC LIMIT 50"
+			"SELECT p.ID, p.post_title, p.post_date, p.post_author
+			FROM {$wpdb->posts} p {$where} ORDER BY p.post_date DESC LIMIT 50"
 		);
 
 		return ['count' => $count, 'html' => self::build_emails_table($rows, 'sent')];
@@ -200,7 +201,7 @@ class MAILPN_Dashboard {
 		);
 
 		$rows = $wpdb->get_results(
-			"SELECT p.ID, p.post_title, p.post_date FROM {$wpdb->posts} p
+			"SELECT p.ID, p.post_title, p.post_date, p.post_author FROM {$wpdb->posts} p
 			INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
 			WHERE pm.meta_key = '_mailpn_opened' AND pm.meta_value = '1'
 			AND p.post_type = 'mailpn_rec' {$where_period}
@@ -385,55 +386,72 @@ class MAILPN_Dashboard {
 
 		ob_start();
 		?>
-		<table class="mailpn-emails-table">
-			<thead>
-				<tr>
-					<th><?php esc_html_e('Subject', 'mailpn'); ?></th>
-					<th><?php esc_html_e('Date', 'mailpn'); ?></th>
-					<th><?php esc_html_e('Status', 'mailpn'); ?></th>
-					<th><?php esc_html_e('Actions', 'mailpn'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach ($rows as $row):
-					$post_id  = is_object($row) ? ($row->ID ?? 0) : 0;
-					$title    = is_object($row) ? ($row->post_title ?? '—') : '—';
-					$date     = is_object($row) ? ($row->post_date ?? '') : '';
-					$edit_url = $post_id ? get_edit_post_link($post_id, 'raw') : '#';
+		<div class="mailpn-mobile-scrollable">
+			<table class="mailpn-emails-table">
+				<thead>
+					<tr>
+						<th><?php esc_html_e('Subject', 'mailpn'); ?></th>
+						<th><?php esc_html_e('Recipient', 'mailpn'); ?></th>
+						<th><?php esc_html_e('Date', 'mailpn'); ?></th>
+						<th><?php esc_html_e('Status', 'mailpn'); ?></th>
+						<th><?php esc_html_e('Actions', 'mailpn'); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ($rows as $row):
+						$post_id     = is_object($row) ? ($row->ID ?? 0) : 0;
+						$title       = is_object($row) ? ($row->post_title ?? '—') : '—';
+						$date        = is_object($row) ? ($row->post_date ?? '') : '';
+						$post_author = is_object($row) ? ($row->post_author ?? 0) : 0;
+						$edit_url    = $post_id ? get_edit_post_link($post_id, 'raw') : '#';
 
-					$is_opened    = $post_id ? get_post_meta($post_id, '_mailpn_opened', true) : false;
-					$status_icon  = $is_opened ? 'mark_email_read' : 'mark_email_unread';
-					$status_label = $is_opened ? __('Opened', 'mailpn') : __('Not opened', 'mailpn');
-					$status_class = $is_opened ? 'mailpn-badge-opened' : 'mailpn-badge-pending';
-				?>
-				<tr>
-					<td>
-						<a href="<?php echo esc_url($edit_url); ?>" target="_blank" class="mailpn-stats-link">
-							<span class="material-icons-outlined mailpn-stats-tbl-icon"><?php echo esc_html($icon); ?></span>
-							<?php echo esc_html($title); ?>
-						</a>
-					</td>
-					<td>
-						<span class="material-icons-outlined mailpn-stats-tbl-icon">schedule</span>
-						<?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', strtotime($date))); ?>
-					</td>
-					<td>
-						<span class="mailpn-stats-badge <?php echo esc_attr($status_class); ?>">
-							<span class="material-icons-outlined mailpn-stats-tbl-icon"><?php echo esc_html($status_icon); ?></span>
-							<?php echo esc_html($status_label); ?>
-						</span>
-					</td>
-					<td class="mailpn-stats-actions">
-						<?php if ($edit_url !== '#'): ?>
-							<a href="<?php echo esc_url($edit_url); ?>" target="_blank" title="<?php esc_attr_e('View', 'mailpn'); ?>">
-								<span class="material-icons-outlined">visibility</span>
+						// Get recipient info
+						$user = $post_author ? get_userdata($post_author) : false;
+
+						$is_opened    = $post_id ? get_post_meta($post_id, '_mailpn_opened', true) : false;
+						$status_icon  = $is_opened ? 'mark_email_read' : 'mark_email_unread';
+						$status_label = $is_opened ? __('Opened', 'mailpn') : __('Not opened', 'mailpn');
+						$status_class = $is_opened ? 'mailpn-badge-opened' : 'mailpn-badge-pending';
+					?>
+					<tr>
+						<td>
+							<a href="<?php echo esc_url($edit_url); ?>" target="_blank" class="mailpn-stats-link">
+								<?php echo esc_html($title); ?>
 							</a>
-						<?php endif; ?>
-					</td>
-				</tr>
-				<?php endforeach; ?>
-			</tbody>
-		</table>
+						</td>
+						<td>
+							<?php if ($user): ?>
+								<a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $post_author)); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold" target="_blank">
+									<i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i>
+									#<?php echo esc_html($post_author); ?> <?php echo esc_html($user->first_name . ' ' . $user->last_name); ?>
+								</a>
+								(<a href="mailto:<?php echo esc_attr($user->user_email); ?>" target="_blank"><?php echo esc_html($user->user_email); ?></a>)
+							<?php else: ?>
+								—
+							<?php endif; ?>
+						</td>
+						<td>
+							<span class="material-icons-outlined mailpn-stats-tbl-icon">schedule</span>
+							<?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', strtotime($date))); ?>
+						</td>
+						<td>
+							<span class="mailpn-stats-badge <?php echo esc_attr($status_class); ?>">
+								<span class="material-icons-outlined mailpn-stats-tbl-icon"><?php echo esc_html($status_icon); ?></span>
+								<?php echo esc_html($status_label); ?>
+							</span>
+						</td>
+						<td class="mailpn-stats-actions">
+							<?php if ($edit_url !== '#'): ?>
+								<a href="<?php echo esc_url($edit_url); ?>" target="_blank" title="<?php esc_attr_e('View', 'mailpn'); ?>">
+									<span class="material-icons-outlined">visibility</span>
+								</a>
+							<?php endif; ?>
+						</td>
+					</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
 		<?php
 		return ob_get_clean();
 	}

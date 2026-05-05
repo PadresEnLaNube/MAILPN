@@ -645,9 +645,13 @@
 }
 .mailpn-mobile-scrollable{
   overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
 }
 .mailpn-mobile-scrollable > img,.mailpn-mobile-scrollable > div,.mailpn-mobile-scrollable > table,.mailpn-mobile-scrollable > canvas{
   min-width:400px;
+}
+.mailpn-mobile-scrollable > table.mailpn-emails-table{
+  min-width:900px;
 }
 .mailpn-overlay-container{
   position:relative;

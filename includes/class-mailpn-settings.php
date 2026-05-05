@@ -814,47 +814,8 @@ class MAILPN_Settings {
     if (!$user) {
       return false;
     }
-    
-    $user_email = $user->user_email;
-    
-    
-    $mailpn_exception_emails = get_option('mailpn_exception_emails');
-    $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
-    $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
 
-    
-
-    // Exception domains and emails check
-    if ($mailpn_exception_emails == 'on') {
-      if ($mailpn_exception_emails_domains == 'on') {
-        $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
-
-        if (!empty($mailpn_exception_emails_domain)) {
-          // Check if whitelist is enabled and email is whitelisted
-          $mailpn_domain_whitelist_enabled = get_option('mailpn_exception_emails_domains_whitelist');
-          $mailpn_domain_whitelist = $mailpn_domain_whitelist_enabled == 'on' ? get_option('mailpn_exception_emails_domains_whitelist_address') : [];
-          $is_whitelisted = !empty($mailpn_domain_whitelist) && in_array($user_email, $mailpn_domain_whitelist);
-
-          foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
-            if (strpos($user_email, $mailpn_exception_email_domain) !== false && !$is_whitelisted) {
-              return true;
-            }
-          }
-        }
-      }
-
-      if ($mailpn_exception_emails_addresses == 'on') {
-        $mailpn_exception_emails_address = get_option('mailpn_exception_emails_address');
-
-        if (!empty($mailpn_exception_emails_address)) {
-          if (in_array($user_email, $mailpn_exception_emails_address)) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
+    return MAILPN_Mailing::mailpn_is_email_address_excepted($user->user_email);
   }
 
   /**

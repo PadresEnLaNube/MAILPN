@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.32';
+			$this->mailpn_version = '1.0.33';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -638,6 +638,12 @@ class MAILPN {
 		if (get_option('mailpn_password_retrieve') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('retrieve_password_message', $plugin_mailing, 'mailpn_retrieve_password_message', 10, 4);
 		}
+
+		// Apply exception domain filtering to ALL wp_mail calls (native WP emails,
+		// other plugins, etc.). Runs at priority 1 so it blocks before any wrapping.
+		// Emails already sent through mailpn_sender_run have their own exception
+		// check, so this filter skips them (detected by mailpn-table-main marker).
+		$this->mailpn_loader->mailpn_add_filter('wp_mail', $plugin_mailing, 'mailpn_wp_mail_exception_filter', 1, 1);
 
 		if (get_option('mailpn_wp_emails_wrapper') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('wp_mail', $plugin_mailing, 'mailpn_wp_mail_wrapper', 99, 1);

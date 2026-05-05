@@ -162,36 +162,9 @@ class MAILPN_Mailing {
     $mailpn_system_types = ['email_password_reset', 'email_verify_code', 'email_welcome'];
     $is_system_email = in_array($mailpn_type, $mailpn_system_types, true);
 
-    $mailpn_exception_emails = get_option('mailpn_exception_emails');
-    $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
-    $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
-
     // Exception domains and emails check (skip for system emails)
-    if ($mailpn_exception_emails == 'on' && !$is_system_email) {
-      if ($mailpn_exception_emails_domains == 'on') {
-        $mailpn_exception_emails_domain = get_option('mailpn_exception_emails_domain');
-
-        if (!empty($mailpn_exception_emails_domain)) {
-          // Check if whitelist is enabled and email is whitelisted
-          $mailpn_domain_whitelist_enabled = get_option('mailpn_exception_emails_domains_whitelist');
-          $mailpn_domain_whitelist = $mailpn_domain_whitelist_enabled == 'on' ? get_option('mailpn_exception_emails_domains_whitelist_address') : [];
-          $is_whitelisted = !empty($mailpn_domain_whitelist) && in_array($user_email, $mailpn_domain_whitelist);
-
-          foreach ($mailpn_exception_emails_domain as $mailpn_exception_email_domain) {
-            if (strpos($user_email, $mailpn_exception_email_domain) !== false && !$is_whitelisted) {
-              return false;
-            }
-          }
-        }
-      }
-
-      if ($mailpn_exception_emails_addresses == 'on') {
-        $mailpn_exception_emails_address = get_option('mailpn_exception_emails_address');
-
-        if (!empty($mailpn_exception_emails_address) && in_array($user_email, $mailpn_exception_emails_address)) {
-          return false;
-        }
-      }
+    if (!$is_system_email && get_option('mailpn_exception_emails') == 'on' && self::mailpn_is_email_address_excepted($user_email)) {
+      return false;
     }
     $mailpn_subject = !empty($mailpn_subject) ? $mailpn_subject : (!empty($mailpn_id) ? esc_html(get_the_title($mailpn_id)) : esc_html(__('Mail subject', 'mailpn')));
 
@@ -1991,6 +1964,95 @@ class MAILPN_Mailing {
     $args['headers'] = $new_headers;
 
     return $args;
+  }
+
+  /**
+   * Filter wp_mail calls to enforce exception domain rules on ALL emails.
+   * Emails already sent through mailpn_sender_run are detected by the
+   * mailpn-table-main marker and skipped (they have their own exception check).
+   */
+  public function mailpn_wp_mail_exception_filter($args) {
+    // Skip emails already processed by mailpn (they have their own exception logic)
+    if (!empty($args['message']) && stripos($args['message'], 'mailpn-table-main') !== false) {
+      return $args;
+    }
+
+    // Check if exception emails feature is enabled
+    if (get_option('mailpn_exception_emails') != 'on') {
+      return $args;
+    }
+
+    $to = $args['to'];
+    $recipients = is_array($to) ? $to : (is_string($to) ? array_map('trim', explode(',', $to)) : []);
+
+    $filtered = [];
+    foreach ($recipients as $recipient) {
+      $email = trim($recipient);
+      // Extract email from "Name <email>" format
+      if (preg_match('/<([^>]+)>/', $email, $matches)) {
+        $email = $matches[1];
+      }
+      if (!self::mailpn_is_email_address_excepted($email)) {
+        $filtered[] = $recipient;
+      }
+    }
+
+    if (empty($filtered)) {
+      $args['to'] = '';
+      return $args;
+    }
+
+    $args['to'] = is_array($to) ? $filtered : implode(', ', $filtered);
+    return $args;
+  }
+
+  /**
+   * Check if an email address should be blocked based on exception domain
+   * and exception address settings. Works with raw email addresses
+   * (unlike mailpn_is_email_excepted which requires a user ID).
+   */
+  public static function mailpn_is_email_address_excepted($email) {
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      return false;
+    }
+
+    $email = strtolower($email);
+
+    $mailpn_exception_emails_domains = get_option('mailpn_exception_emails_domains');
+    $mailpn_exception_emails_addresses = get_option('mailpn_exception_emails_addresses');
+
+    if ($mailpn_exception_emails_domains == 'on') {
+      $exception_domains = get_option('mailpn_exception_emails_domain');
+
+      if (!empty($exception_domains) && is_array($exception_domains)) {
+        $whitelist_enabled = get_option('mailpn_exception_emails_domains_whitelist');
+        $whitelist = $whitelist_enabled == 'on' ? get_option('mailpn_exception_emails_domains_whitelist_address') : [];
+        if (!is_array($whitelist)) {
+          $whitelist = [];
+        }
+        $whitelist_lower = array_map('strtolower', $whitelist);
+        $is_whitelisted = in_array($email, $whitelist_lower);
+
+        foreach ($exception_domains as $domain) {
+          if (stripos($email, strtolower($domain)) !== false && !$is_whitelisted) {
+            return true;
+          }
+        }
+      }
+    }
+
+    if ($mailpn_exception_emails_addresses == 'on') {
+      $exception_addresses = get_option('mailpn_exception_emails_address');
+
+      if (!empty($exception_addresses) && is_array($exception_addresses)) {
+        $exception_lower = array_map('strtolower', $exception_addresses);
+        if (in_array($email, $exception_lower)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   public function mailpn_log_wrapped_email($mail_data) {

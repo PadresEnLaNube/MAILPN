@@ -457,7 +457,6 @@ class MAILPN_Forms {
                 <option value="<?php echo esc_attr($user->ID); ?>" <?php echo $has_role ? 'data-has-role="true"' : ''; ?>><?php echo esc_html($user->display_name . ' (' . $user->user_email . ')'); ?><?php if ($has_role): ?> ✓<?php endif; ?></option>
               <?php endforeach; ?>
             </select>
-            <p class="mailpn-font-size-small mailpn-color-gray mailpn-mt-5"><?php esc_html_e('Hold Ctrl (Windows) or Cmd (Mac) to select multiple users. Users with ✓ already have this role.', 'mailpn'); ?></p>
           </div>
           <div class="mailpn-role-actions mailpn-mb-20">
             <input type="hidden" class="mailpn-role-nonce" value="<?php echo esc_attr(wp_create_nonce('mailpn-role-assignment')); ?>">
