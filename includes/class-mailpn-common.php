@@ -182,6 +182,13 @@ class MAILPN_Common
 			'select_file' => esc_html(__('Select file', 'mailpn')),
 			'select_files' => esc_html(__('Select files', 'mailpn')),
 			'ordered_element' => esc_html(__('Ordered element', 'mailpn')),
+			'resend_errors_title' => esc_html(__('Resend emails with errors', 'mailpn')),
+			'resend_errors_description' => esc_html(__('The following %d email(s) had errors during sending. Click "Accept" to retry sending to these recipients.', 'mailpn')),
+			'confirm_resend' => esc_html(__('Accept and resend', 'mailpn')),
+			'cancel' => esc_html(__('Cancel', 'mailpn')),
+			'sending' => esc_html(__('Sending...', 'mailpn')),
+			'showing_errors' => esc_html(__('Showing {showing} of {total} errors', 'mailpn')),
+			'load_all_errors' => esc_html(__('Load all {count} errors', 'mailpn')),
 		]);
 
 		// Initialize popups

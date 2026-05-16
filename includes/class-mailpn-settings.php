@@ -298,6 +298,15 @@ class MAILPN_Settings {
           'label' => __('Send errors to admin account', 'mailpn'),
           'description' => __('Send an email to the administrator account whenever an error is produced on sending. It can reduce dramatically the number of emails sent to the users.', 'mailpn'),
         ];
+        $mailpn_options['mailpn_consecutive_errors_limit'] = [
+          'id' => 'mailpn_consecutive_errors_limit',
+          'class' => 'mailpn-input mailpn-width-100-percent',
+          'input' => 'input',
+          'type' => 'number',
+          'label' => __('Consecutive errors limit', 'mailpn'),
+          'description' => __('Set the maximum number of consecutive errors allowed before stopping the sending process. When this limit is reached, the queue will be paused and an email will be sent to the administrator. Default: 10, Minimum: 1.', 'mailpn'),
+          'default' => '10',
+        ];
   $mailpn_options['mailpn_section_mechanics_end'] = [
       'section' => 'end',
     ];

@@ -612,3 +612,179 @@ body.folded .mailpn-settings-footer{left:36px}
 .pn-cm-rp-active-badge{display:inline-block;padding:4px 12px;background:#dff0d8;color:#3c763d;border-radius:4px;font-size:12px;font-weight:600}
 .pn-cm-rp-recommended{display:inline-block;padding:2px 8px;background:#fef3cd;color:#856404;border-radius:4px;font-size:11px;font-weight:600;margin-left:8px;vertical-align:middle}
 @media screen and (max-width:600px){.pn-cm-rp-card{flex-wrap:wrap;gap:10px}.pn-cm-rp-action{width:100%;text-align:right}}
+
+
+/* Resend errors popup styles */
+.mailpn-resend-popup .mailpn-popup-content {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.mailpn-resend-errors-popup h3 {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.mailpn-resend-errors-popup p {
+  margin: 0 0 20px 0;
+  color: #50575e;
+  line-height: 1.6;
+}
+
+.mailpn-errors-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+  background: #f9f9f9;
+  padding: 12px;
+}
+
+.mailpn-errors-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mailpn-errors-list li {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.mailpn-errors-list li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.mailpn-errors-list strong {
+  color: #1d2327;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.mailpn-errors-list a {
+  color: #2271b1;
+  text-decoration: none;
+}
+
+.mailpn-errors-list a:hover {
+  text-decoration: underline;
+}
+
+.mailpn-popup-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.mailpn-btn-primary {
+  background: #2271b1;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mailpn-btn-primary:hover {
+  background: #135e96;
+}
+
+.mailpn-btn-primary:disabled {
+  background: #8c8f94;
+  cursor: not-allowed;
+}
+
+.mailpn-btn-secondary {
+  background: #f6f7f7;
+  color: #2c3338;
+  border: 1px solid #8c8f94;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mailpn-btn-secondary:hover {
+  background: #f0f0f1;
+  border-color: #8c8f94;
+  color: #1d2327;
+}
+
+/* Make resend popup visible and centered */
+.mailpn-resend-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999999;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mailpn-resend-popup.mailpn-popup-active {
+  display: block;
+}
+
+
+/* Errors count info */
+.mailpn-errors-count-info {
+  font-size: 13px;
+  color: #787c82;
+  margin: 12px 0;
+  padding: 8px 12px;
+  background: #f0f0f1;
+  border-radius: 4px;
+  border-left: 3px solid #2271b1;
+}
+
+/* Load all errors button */
+.mailpn-load-all-errors {
+  text-align: center;
+  padding: 12px 0;
+  border-top: 1px solid #dcdcde;
+  margin-top: 12px;
+}
+
+.mailpn-btn-load-all-errors {
+  background: transparent;
+  color: #2271b1;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.mailpn-btn-load-all-errors:hover {
+  background: #f0f6fc;
+  color: #135e96;
+}
+
+.mailpn-btn-load-all-errors .material-icons-outlined {
+  font-size: 18px;
+}
+
+.mailpn-btn-link {
+  text-decoration: none;
+}

@@ -894,8 +894,68 @@ class MAILPN_Mailing {
             $mailpn_timestamps = get_post_meta($post_id, 'mailpn_timestamp_sent', true);
             $last_sent = !empty($mailpn_timestamps) && is_array($mailpn_timestamps) ? end($mailpn_timestamps) : '';
             $emails_sent_count = count(get_posts(['fields' => 'ids', 'numberposts' => -1, 'post_type' => 'mailpn_rec', 'post_status' => ['any'], 'meta_key' => 'mailpn_rec_mail_id', 'meta_value' => $post_id, 'orderby' => 'ID', 'order' => 'ASC']));
+
+            // Check for errors in both mailpn_error option and mailpn_rec records
             $mailpn_errors = get_option('mailpn_error');
-            $has_errors = !empty($mailpn_errors[$post_id]);
+            $has_validation_errors = !empty($mailpn_errors[$post_id]);
+
+            // Count actual send failures (excluding users who already have successful sends)
+            $error_recs = get_posts([
+              'fields'      => 'ids',
+              'numberposts' => -1,
+              'post_type'   => 'mailpn_rec',
+              'post_status' => 'publish',
+              'meta_query'  => [
+                'relation' => 'AND',
+                ['key' => 'mailpn_rec_mail_id', 'value' => $post_id],
+                ['key' => 'mailpn_rec_error', 'value' => '', 'compare' => '!='],
+              ],
+            ]);
+
+            $send_failure_count = 0;
+            $failed_user_ids = [];
+
+            if (!empty($error_recs)) {
+              foreach ($error_recs as $rec_id) {
+                $user_id = get_post_meta($rec_id, 'mailpn_rec_to', true);
+
+                // Skip if we already counted this user
+                if (in_array($user_id, $failed_user_ids)) {
+                  continue;
+                }
+
+                // Get ALL records for this user and mail_id
+                $all_user_recs = get_posts([
+                  'fields'      => 'ids',
+                  'numberposts' => -1,
+                  'post_type'   => 'mailpn_rec',
+                  'post_status' => 'publish',
+                  'meta_query'  => [
+                    'relation' => 'AND',
+                    ['key' => 'mailpn_rec_mail_id', 'value' => $post_id],
+                    ['key' => 'mailpn_rec_to', 'value' => $user_id],
+                  ],
+                ]);
+
+                // Check if any record has no error
+                $has_successful = false;
+                foreach ($all_user_recs as $user_rec_id) {
+                  $rec_error = get_post_meta($user_rec_id, 'mailpn_rec_error', true);
+                  if (empty($rec_error)) {
+                    $has_successful = true;
+                    break;
+                  }
+                }
+
+                if (!$has_successful) {
+                  $failed_user_ids[] = $user_id;
+                  $send_failure_count++;
+                }
+              }
+            }
+
+            $has_errors = $has_validation_errors || $send_failure_count > 0;
+            $total_errors = ($has_validation_errors ? count($mailpn_errors[$post_id]) : 0) + $send_failure_count;
           ?>
           <div class="mailpn-status-card mailpn-status-sent">
             <div class="mailpn-status-header">
@@ -929,21 +989,18 @@ class MAILPN_Mailing {
 
               <?php if ($has_errors): ?>
                 <div class="mailpn-status-errors">
-                  <p class="mailpn-status-error-msg"><i class="material-icons-outlined">warning</i> <?php esc_html_e('Some errors occurred during sending.', 'mailpn'); ?></p>
-                  <details class="mailpn-status-error-details">
-                    <summary><?php esc_html_e('View affected users', 'mailpn'); ?></summary>
-                    <ul>
-                      <?php foreach ($mailpn_errors[$post_id] as $unique_id => $mailpn_error): ?>
-                        <?php $user_info = get_userdata($mailpn_error['mailpn_user_to']); ?>
-                        <?php if (!empty($user_info)): ?>
-                          <li>
-                            <a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $mailpn_error['mailpn_user_to'])); ?>" target="_blank">#<?php echo esc_html($mailpn_error['mailpn_user_to']); ?> <?php echo esc_html($user_info->first_name) . ' ' . esc_html($user_info->last_name); ?></a>
-                            (<a href="mailto:<?php echo esc_attr($user_info->user_email); ?>"><?php echo esc_html($user_info->user_email); ?></a>)
-                          </li>
-                        <?php endif; ?>
-                      <?php endforeach; ?>
-                    </ul>
-                  </details>
+                  <p class="mailpn-status-error-msg">
+                    <i class="material-icons-outlined">warning</i>
+                    <?php
+                      printf(
+                        esc_html(_n('%d error occurred during sending.', '%d errors occurred during sending.', $total_errors, 'mailpn')),
+                        $total_errors
+                      );
+                    ?>
+                  </p>
+                  <p class="mailpn-status-error-hint" style="font-size: 13px; color: #787c82; margin-top: 8px;">
+                    <?php esc_html_e('Click "Resend errors" button below to retry sending to all failed recipients.', 'mailpn'); ?>
+                  </p>
                 </div>
               <?php endif; ?>
             </div>
@@ -1355,15 +1412,86 @@ class MAILPN_Mailing {
   }
 
   public function mailpn_resend_errors($post_id) {
+    $users_to_retry = [];
+
+    // 1. Get errors from mailpn_error option (pre-send validation errors)
     $mailpn_error = get_option('mailpn_error');
     $mailpn_error_data = $mailpn_error[$post_id];
 
     if (!empty($mailpn_error_data)) {
       foreach ($mailpn_error_data as $unique_id => $mailpn_error_data) {
-        self::mailpn_queue_add($post_id, $mailpn_error_data['mailpn_user_to']);
+        $user_id = $mailpn_error_data['mailpn_user_to'];
+        if (!in_array($user_id, $users_to_retry)) {
+          $users_to_retry[] = $user_id;
+        }
       }
-    } 
+    }
 
+    // 2. Get errors from mailpn_rec (actual send failures)
+    $error_recs = get_posts([
+      'fields'      => 'ids',
+      'numberposts' => -1,
+      'post_type'   => 'mailpn_rec',
+      'post_status' => 'publish',
+      'meta_query'  => [
+        'relation' => 'AND',
+        ['key' => 'mailpn_rec_mail_id', 'value' => $post_id],
+        ['key' => 'mailpn_rec_error', 'value' => '', 'compare' => '!='],
+      ],
+    ]);
+
+    if (!empty($error_recs)) {
+      foreach ($error_recs as $rec_id) {
+        $user_id = get_post_meta($rec_id, 'mailpn_rec_to', true);
+
+        // Get ALL records for this user and mail_id
+        $all_user_recs = get_posts([
+          'fields'      => 'ids',
+          'numberposts' => -1,
+          'post_type'   => 'mailpn_rec',
+          'post_status' => 'publish',
+          'meta_query'  => [
+            'relation' => 'AND',
+            ['key' => 'mailpn_rec_mail_id', 'value' => $post_id],
+            ['key' => 'mailpn_rec_to', 'value' => $user_id],
+          ],
+        ]);
+
+        // Check if any record has no error (successful send)
+        $has_successful = false;
+        foreach ($all_user_recs as $user_rec_id) {
+          $rec_error = get_post_meta($user_rec_id, 'mailpn_rec_error', true);
+          if (empty($rec_error)) {
+            $has_successful = true;
+            break;
+          }
+        }
+
+        // Only add to retry list if user doesn't have a successful send
+        if (!$has_successful && !empty($user_id) && !in_array($user_id, $users_to_retry)) {
+          $users_to_retry[] = $user_id;
+        }
+
+        // Delete the error record in any case to clean up
+        wp_delete_post($rec_id, true);
+      }
+    }
+
+    // 3. Add all users with errors back to the queue
+    foreach ($users_to_retry as $user_id) {
+      self::mailpn_queue_add($post_id, $user_id);
+    }
+
+    // 4. Reset consecutive errors counter
+    delete_option('mailpn_consecutive_errors_count');
+
+    // 5. Resume queue if it was paused by errors
+    if (get_option('mailpn_queue_paused_by_errors')) {
+      delete_option('mailpn_queue_paused');
+      delete_option('mailpn_queue_paused_by_errors');
+    }
+
+    // 6. Clear mailpn_error option for this mail
     $mailpn_error[$post_id] = [];
     update_option('mailpn_error', $mailpn_error);
   }
@@ -1424,6 +1552,10 @@ class MAILPN_Mailing {
     $mails_sent_every_ten_minutes = (!empty(get_option('mailpn_sent_every_ten_minutes'))) ? get_option('mailpn_sent_every_ten_minutes') : 5;
     $mails_sent_every_day = (!empty(get_option('mailpn_sent_every_day'))) ? get_option('mailpn_sent_every_day') : 500;
 
+    // Get consecutive errors counter and limit
+    $consecutive_errors_count = get_option('mailpn_consecutive_errors_count', 0);
+    $consecutive_errors_limit = (!empty(get_option('mailpn_consecutive_errors_limit'))) ? intval(get_option('mailpn_consecutive_errors_limit')) : 10;
+
     if (!empty($mailpn_queue)) {
       if (empty($mailpn_queue_paused)) {
         foreach ($mailpn_queue as $mail_id => $mail_users) {
@@ -1433,6 +1565,43 @@ class MAILPN_Mailing {
               self::mailpn_log_send_attempt($mail_id, $user_id, 'queue_process');
 
               $mail_result = do_shortcode('[mailpn-sender mailpn_user_to="' . $user_id . '" mailpn_id="' . $mail_id . '"]');
+
+              // Track consecutive errors
+              if ($mail_result) {
+                // Success: reset consecutive errors counter
+                $consecutive_errors_count = 0;
+                update_option('mailpn_consecutive_errors_count', 0);
+              } else {
+                // Error: increment consecutive errors counter
+                $consecutive_errors_count++;
+                update_option('mailpn_consecutive_errors_count', $consecutive_errors_count);
+
+                // Check if we've reached the limit
+                if ($consecutive_errors_count >= $consecutive_errors_limit) {
+                  // Pause the queue
+                  update_option('mailpn_queue_paused', time());
+                  update_option('mailpn_queue_paused_by_errors', time());
+
+                  // Send email to admin
+                  $admin_email = get_option('admin_email');
+                  $site_name = get_bloginfo('name');
+                  $subject = sprintf(__('[%s] Email sending stopped due to consecutive errors', 'mailpn'), $site_name);
+
+                  $message = sprintf(
+                    __("The email sending process has been automatically paused due to %d consecutive errors.\n\nThis usually indicates a server capacity issue or SMTP configuration problem.\n\nPlease check your email server settings and use the 'Resend errors' button to resume sending when the issue is resolved.\n\nTemplate ID: %s\nTemplate: %s\n\nSite: %s", 'mailpn'),
+                    $consecutive_errors_count,
+                    $mail_id,
+                    get_the_title($mail_id),
+                    home_url()
+                  );
+
+                  wp_mail($admin_email, $subject, $message);
+
+                  // Update queue and exit
+                  update_option('mailpn_queue', $mailpn_queue);
+                  return false;
+                }
+              }
 
               // Remove this user from the queue
               $user_key = array_search($user_id, $mailpn_queue[$mail_id]);

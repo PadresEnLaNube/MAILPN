@@ -83,6 +83,127 @@ class MAILPN_Ajax {
             exit();
           }
           break;
+        case 'mailpn_get_errors_list':
+          if (!empty($mailpn_mail_id)) {
+            // Get limit parameter (default 20 for initial load, -1 for all)
+            $limit = !empty($_POST['limit']) ? intval($_POST['limit']) : 20;
+            $error_list = [];
+
+            // Get errors from mailpn_error option (pre-send validation errors)
+            $mailpn_errors = get_option('mailpn_error');
+            if (!empty($mailpn_errors[$mailpn_mail_id])) {
+              foreach ($mailpn_errors[$mailpn_mail_id] as $unique_id => $mailpn_error) {
+                $user_info = get_userdata($mailpn_error['mailpn_user_to']);
+                if (!empty($user_info)) {
+                  $error_list[] = [
+                    'user_id' => $mailpn_error['mailpn_user_to'],
+                    'name' => trim($user_info->first_name . ' ' . $user_info->last_name),
+                    'email' => $user_info->user_email,
+                    'type' => 'validation',
+                  ];
+                } else {
+                  $error_list[] = [
+                    'user_id' => $mailpn_error['mailpn_user_to'],
+                    'name' => __('Unknown user', 'mailpn'),
+                    'email' => $mailpn_error['user_email'] ?? '',
+                    'type' => 'validation',
+                  ];
+                }
+              }
+            }
+
+            // Get errors from mailpn_rec (actual send failures with error details)
+            // BUT exclude users who already have a successful send
+            $error_recs = get_posts([
+              'fields'      => 'ids',
+              'numberposts' => -1,
+              'post_type'   => 'mailpn_rec',
+              'post_status' => 'publish',
+              'meta_query'  => [
+                'relation' => 'AND',
+                ['key' => 'mailpn_rec_mail_id', 'value' => $mailpn_mail_id],
+                ['key' => 'mailpn_rec_error', 'value' => '', 'compare' => '!='],
+              ],
+            ]);
+
+            if (!empty($error_recs)) {
+              foreach ($error_recs as $rec_id) {
+                $user_id = get_post_meta($rec_id, 'mailpn_rec_to', true);
+                $user_email = get_post_meta($rec_id, 'mailpn_rec_to_email', true);
+
+                // Get ALL records for this user and mail_id
+                $all_user_recs = get_posts([
+                  'fields'      => 'ids',
+                  'numberposts' => -1,
+                  'post_type'   => 'mailpn_rec',
+                  'post_status' => 'publish',
+                  'meta_query'  => [
+                    'relation' => 'AND',
+                    ['key' => 'mailpn_rec_mail_id', 'value' => $mailpn_mail_id],
+                    ['key' => 'mailpn_rec_to', 'value' => $user_id],
+                  ],
+                ]);
+
+                // Check if any of these records has no error (successful send)
+                $has_successful = false;
+                foreach ($all_user_recs as $user_rec_id) {
+                  $rec_error = get_post_meta($user_rec_id, 'mailpn_rec_error', true);
+                  if (empty($rec_error)) {
+                    $has_successful = true;
+                    break;
+                  }
+                }
+
+                // Skip this user if they have a successful send
+                if ($has_successful) {
+                  continue;
+                }
+
+                $user_info = is_numeric($user_id) ? get_userdata($user_id) : null;
+
+                if (!empty($user_info)) {
+                  $error_list[] = [
+                    'user_id' => $user_id,
+                    'name' => trim($user_info->first_name . ' ' . $user_info->last_name),
+                    'email' => $user_email,
+                    'type' => 'send_failure',
+                  ];
+                } else {
+                  $error_list[] = [
+                    'user_id' => $user_id,
+                    'name' => __('Unknown user', 'mailpn'),
+                    'email' => $user_email,
+                    'type' => 'send_failure',
+                  ];
+                }
+              }
+            }
+
+            $total_errors = count($error_list);
+
+            // Apply limit if specified
+            $limited_list = $error_list;
+            $showing_all = true;
+            if ($limit > 0 && $limit < $total_errors) {
+              $limited_list = array_slice($error_list, 0, $limit);
+              $showing_all = false;
+            }
+
+            echo wp_json_encode([
+              'error_key' => '',
+              'error_list' => $limited_list,
+              'total_errors' => $total_errors,
+              'showing_count' => count($limited_list),
+              'showing_all' => $showing_all,
+            ]);
+          } else {
+            echo wp_json_encode([
+              'error_key' => 'mailpn_get_errors_list_error',
+              'error_content' => esc_html(__('An error occurred while getting the errors list.', 'mailpn')),
+            ]);
+          }
+          exit();
+          break;
         case 'mailpn_resend_errors':
           if (!empty($mailpn_mail_id)) {
             $plugin_mailing = new MAILPN_Mailing();

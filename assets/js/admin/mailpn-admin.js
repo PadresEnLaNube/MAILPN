@@ -1,11 +1,132 @@
 (function($) {
 	'use strict';
 
+  function mailpn_show_resend_errors_popup(post_id, load_all) {
+    var ajax_url = mailpn_ajax.ajax_url;
+    var limit = load_all ? -1 : 20;
+
+    // Show loading if expanding
+    if (load_all) {
+      $('.mailpn-errors-list-container').html('<p style="text-align:center; padding:20px;">Loading all errors...</p>');
+    }
+
+    var data_get_errors = {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_get_errors_list',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+      mailpn_mail_id: post_id,
+      limit: limit,
+    };
+
+    $.post(ajax_url, data_get_errors, function(response) {
+      var result = $.parseJSON(response);
+
+      if (result['error_key'] !== '') {
+        mailpn_get_main_message(result['error_content']);
+        return;
+      }
+
+      // Build popup content
+      var error_list = result['error_list'];
+      var total_errors = result['total_errors'];
+      var showing_count = result['showing_count'];
+      var showing_all = result['showing_all'];
+
+      var popup_content = '<div class="mailpn-resend-errors-popup">';
+      popup_content += '<h3>' + mailpn_i18n.resend_errors_title + '</h3>';
+      popup_content += '<p>' + mailpn_i18n.resend_errors_description.replace('%d', total_errors) + '</p>';
+
+      if (total_errors > 0) {
+        // Show count info
+        if (!showing_all) {
+          popup_content += '<p class="mailpn-errors-count-info">';
+          popup_content += (mailpn_i18n.showing_errors || 'Showing {showing} of {total} errors')
+            .replace('{showing}', showing_count)
+            .replace('{total}', total_errors);
+          popup_content += '</p>';
+        }
+
+        popup_content += '<div class="mailpn-errors-list-container">';
+        popup_content += '<ul class="mailpn-errors-list">';
+
+        error_list.forEach(function(error) {
+          popup_content += '<li>';
+          popup_content += '<strong>#' + error.user_id + ' ' + error.name + '</strong>';
+          popup_content += '<br><a href="mailto:' + error.email + '">' + error.email + '</a>';
+          popup_content += '</li>';
+        });
+
+        popup_content += '</ul>';
+        popup_content += '</div>';
+
+        // Add "Load all" button if not showing all
+        if (!showing_all) {
+          popup_content += '<div class="mailpn-load-all-errors">';
+          popup_content += '<button class="mailpn-btn mailpn-btn-link mailpn-btn-load-all-errors" data-post-id="' + post_id + '">';
+          popup_content += '<i class="material-icons-outlined">expand_more</i> ';
+          popup_content += (mailpn_i18n.load_all_errors || 'Load all {count} errors').replace('{count}', total_errors);
+          popup_content += '</button>';
+          popup_content += '</div>';
+        }
+      }
+
+      popup_content += '<div class="mailpn-popup-buttons">';
+      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-confirm-resend" data-post-id="' + post_id + '">' + mailpn_i18n.confirm_resend + '</button>';
+      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transaparent mailpn-btn-cancel-resend">' + mailpn_i18n.cancel + '</button>';
+      popup_content += '</div>';
+      popup_content += '</div>';
+
+      if (load_all) {
+        // Just update the content
+        $('.mailpn-resend-errors-popup').html($(popup_content).html());
+      } else {
+        // Build complete popup with wrapper (following MAILPN_Popups pattern)
+        var popup_id = 'mailpn-resend-errors-popup-' + post_id;
+        var full_popup_html = '<div id="' + popup_id + '" class="mailpn-popup mailpn-resend-popup">' +
+          '<div class="mailpn-popup-content">' + popup_content + '</div>' +
+          '</div>';
+
+        // Remove existing popup if any
+        $('#' + popup_id).remove();
+
+        // Add popup to body
+        $('body').append(full_popup_html);
+
+        // Show popup using MAILPN_Popups system
+        if (typeof MAILPN_Popups !== 'undefined' && MAILPN_Popups.open) {
+          MAILPN_Popups.open(popup_id);
+        } else {
+          // Fallback: show with simple overlay
+          $('#' + popup_id).show();
+          if (!$('.mailpn-popup-overlay').length) {
+            $('body').append('<div class="mailpn-popup-overlay"></div>');
+            $('.mailpn-popup-overlay').fadeIn('fast');
+          }
+        }
+      }
+    });
+  }
+
   $(document).on('click', '.mailpn-btn-error-resend', function(e) {
     e.preventDefault();
-    var mailpn_btn = $(this);
     var post_id = $(this).data('mailpn-post-id');
-    mailpn_btn.addClass('mailpn-link-disabled').siblings('.mailpn-waiting').removeClass('mailpn-display-none');
+    mailpn_show_resend_errors_popup(post_id, false);
+  });
+
+  // Handle "Load all errors" button
+  $(document).on('click', '.mailpn-btn-load-all-errors', function(e) {
+    e.preventDefault();
+    var post_id = $(this).data('post-id');
+    mailpn_show_resend_errors_popup(post_id, true);
+  });
+
+  // Handle confirm resend button
+  $(document).on('click', '.mailpn-btn-confirm-resend', function(e) {
+    e.preventDefault();
+    var post_id = $(this).data('post-id');
+    var mailpn_btn = $(this);
+
+    mailpn_btn.prop('disabled', true).text(mailpn_i18n.sending || 'Sending...');
 
     var ajax_url = mailpn_ajax.ajax_url;
 
@@ -19,13 +140,23 @@
     $.post(ajax_url, data, function(response) {
       if ($.parseJSON(response)['error_key'] == 'mailpn_resend_errors_error') {
         mailpn_get_main_message($.parseJSON(response)['error_content']);
-      }else {
+        // Close popup
+        if (typeof MAILPN_Popups !== 'undefined' && MAILPN_Popups.close) {
+          MAILPN_Popups.close();
+        }
+      } else {
         location.reload();
         mailpn_get_main_message(mailpn_i18n.saved_successfully);
       }
-
-      mailpn_btn.removeClass('mailpn-link-disabled').siblings('.mailpn-waiting').addClass('mailpn-display-none')
     });
+  });
+
+  // Handle cancel button
+  $(document).on('click', '.mailpn-btn-cancel-resend', function(e) {
+    e.preventDefault();
+    if (typeof MAILPN_Popups !== 'undefined' && MAILPN_Popups.close) {
+      MAILPN_Popups.close();
+    }
   });
 
   $(document).on('click', '.mailpn-btn-resend-all', function(e) {
