@@ -659,6 +659,698 @@ class MAILPN_Ajax {
           echo wp_json_encode(['error_key' => '']);
           exit;
           break;
+        case 'mailpn_get_queue_details':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          $mail_id = !empty($_POST['mail_id']) ? intval($_POST['mail_id']) : 0;
+
+          $queue_data = get_option('mailpn_queue', []);
+          $queue_paused = get_option('mailpn_queue_paused');
+          $paused_by_errors = get_option('mailpn_queue_paused_by_errors');
+          $consecutive_errors = get_option('mailpn_consecutive_errors_count', 0);
+          $consecutive_limit = get_option('mailpn_consecutive_errors_limit', 10);
+          $mails_sent_today = get_option('mailpn_mails_sent_today', 0);
+          $daily_limit = get_option('mailpn_sent_every_day', 500);
+          $rate_limit = get_option('mailpn_sent_every_ten_minutes', 5);
+          $paused_daily_limit = $mails_sent_today >= $daily_limit;
+
+          // Calculate total pending across ALL templates (global queue)
+          $total_pending = 0;
+          $pending_list = [];
+          $preview_limit = 30; // Show up to 30 emails from global queue
+
+          foreach ($queue_data as $template_id => $users) {
+            if (!empty($users)) {
+              $total_pending += count($users);
+
+              // Add users from this template to the list
+              foreach ($users as $user_id) {
+                if (count($pending_list) >= $preview_limit) break 2;
+
+                $user = get_userdata($user_id);
+                $template = get_post($template_id);
+
+                if ($user && $template) {
+                  $pending_list[] = [
+                    'id' => $user_id,
+                    'name' => trim($user->first_name . ' ' . $user->last_name),
+                    'email' => $user->user_email,
+                    'template_id' => $template_id,
+                    'template_title' => $template->post_title,
+                  ];
+                }
+              }
+            }
+          }
+
+          // Check if we've hit the daily limit
+          $remaining_today = $daily_limit - $mails_sent_today;
+          $hit_daily_limit = $remaining_today <= 0;
+
+          // Calculate percentage of daily limit used
+          $daily_percentage = ($mails_sent_today / $daily_limit) * 100;
+
+          // Determine if emails will send tomorrow
+          $will_send_tomorrow = $hit_daily_limit ||
+                                $paused_daily_limit ||
+                                (!empty($queue_paused) && $daily_percentage >= 85);
+
+          // Determine if system is effectively paused
+          $is_paused = !empty($queue_paused) || $hit_daily_limit || $will_send_tomorrow;
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'is_paused' => $is_paused,
+            'paused_by_errors' => !empty($paused_by_errors),
+            'paused_daily_limit' => $paused_daily_limit,
+            'hit_daily_limit' => $hit_daily_limit,
+            'pause_timestamp' => $queue_paused,
+            'consecutive_errors' => $consecutive_errors,
+            'consecutive_limit' => $consecutive_limit,
+            'mails_sent_today' => $mails_sent_today,
+            'daily_limit' => $daily_limit,
+            'rate_limit' => $rate_limit,
+            'remaining_today' => max(0, $remaining_today),
+            'total_pending' => $total_pending,
+            'pending_list' => $pending_list,
+            'showing_sample' => $total_pending > $preview_limit,
+          ]);
+          exit;
+          break;
+        case 'mailpn_resume_queue':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          // Resume queue by removing pause flags
+          delete_option('mailpn_queue_paused');
+          delete_option('mailpn_queue_paused_by_errors');
+          delete_option('mailpn_consecutive_errors_count');
+
+          echo wp_json_encode(['error_key' => '']);
+          exit;
+          break;
+        case 'mailpn_get_error_details':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          $rec_id = !empty($_POST['rec_id']) ? intval($_POST['rec_id']) : 0;
+          if (!$rec_id) {
+            echo wp_json_encode(['error_key' => 'invalid_rec_id']);
+            exit;
+          }
+
+          // Get all error information
+          $error_message = get_post_meta($rec_id, 'mailpn_rec_error', true);
+          $to_email = get_post_meta($rec_id, 'mailpn_rec_to_email', true);
+          $to_user_id = get_post_meta($rec_id, 'mailpn_rec_to', true);
+          $subject = get_post_meta($rec_id, 'mailpn_rec_subject', true);
+          $mail_id = get_post_meta($rec_id, 'mailpn_rec_mail_id', true);
+          $sent_datetime = get_post_meta($rec_id, 'mailpn_rec_sent_datetime', true);
+          $headers = get_post_meta($rec_id, 'mailpn_rec_headers', true);
+          $server_ip = get_post_meta($rec_id, 'mailpn_rec_server_ip', true);
+
+          // Parse error message into sections
+          $error_lines = !empty($error_message) ? explode("\n", $error_message) : [];
+
+          // Get user info
+          $user_info = null;
+          if ($to_user_id) {
+            $user = get_userdata($to_user_id);
+            if ($user) {
+              $user_info = [
+                'id' => $to_user_id,
+                'name' => trim($user->first_name . ' ' . $user->last_name),
+                'email' => $user->user_email,
+              ];
+            }
+          }
+
+          // Get template info
+          $template_info = null;
+          if ($mail_id) {
+            $template = get_post($mail_id);
+            if ($template) {
+              $template_info = [
+                'id' => $mail_id,
+                'title' => $template->post_title,
+              ];
+            }
+          }
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'rec_id' => $rec_id,
+            'error_message' => $error_message,
+            'error_lines' => $error_lines,
+            'to_email' => $to_email,
+            'subject' => $subject,
+            'sent_datetime' => $sent_datetime,
+            'headers' => $headers,
+            'server_ip' => $server_ip,
+            'user_info' => $user_info,
+            'template_info' => $template_info,
+          ]);
+          exit;
+          break;
+        case 'mailpn_get_global_queue_status':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          $queue_data = get_option('mailpn_queue', []);
+          $queue_paused = get_option('mailpn_queue_paused');
+          $paused_by_errors = get_option('mailpn_queue_paused_by_errors');
+          $mails_sent_today = get_option('mailpn_mails_sent_today', 0);
+          $daily_limit = get_option('mailpn_sent_every_day', 500);
+          $rate_limit = get_option('mailpn_sent_every_ten_minutes', 5);
+          $paused_daily_limit = $mails_sent_today >= $daily_limit;
+
+          // Calculate total pending across all templates
+          $total_pending = 0;
+          $templates_in_queue = [];
+          foreach ($queue_data as $mail_id => $users) {
+            if (!empty($users)) {
+              $count = count($users);
+              $total_pending += $count;
+              $template = get_post($mail_id);
+              if ($template) {
+                $templates_in_queue[] = [
+                  'id' => $mail_id,
+                  'title' => $template->post_title,
+                  'pending' => $count,
+                ];
+              }
+            }
+          }
+
+          // Get next batch to send (up to 3x rate limit for preview)
+          $next_batch = [];
+          $batch_count = 0;
+          $preview_limit = $rate_limit * 3; // Show up to 3 batches
+          $current_time = current_time('timestamp');
+
+          // Check if we've hit the daily limit
+          $remaining_today = $daily_limit - $mails_sent_today;
+          $hit_daily_limit = $remaining_today <= 0;
+
+          // Calculate percentage of daily limit used
+          $daily_percentage = ($mails_sent_today / $daily_limit) * 100;
+
+          // Determine if emails will send tomorrow:
+          // 1. If we hit the daily limit (no quota left) → tomorrow
+          // 2. If paused and we've used 85%+ of daily limit → likely tomorrow
+          // 3. If paused by daily limit explicitly → tomorrow
+          $will_send_tomorrow = $hit_daily_limit ||
+                                $paused_daily_limit ||
+                                (!empty($queue_paused) && $daily_percentage >= 85);
+
+          // If we hit the daily limit or queue is paused with high usage, calculate from tomorrow
+          $base_time = $current_time;
+          if ($will_send_tomorrow) {
+            // Set base time to tomorrow at the same time
+            $base_time = strtotime('tomorrow', $current_time);
+          }
+
+          foreach ($queue_data as $mail_id => $users) {
+            if ($batch_count >= $preview_limit) break;
+            foreach ($users as $user_id) {
+              if ($batch_count >= $preview_limit) break;
+              $user = get_userdata($user_id);
+              if ($user) {
+                // Calculate estimated send time based on position in queue
+                // Each batch of rate_limit emails takes 10 minutes
+
+                if ($will_send_tomorrow) {
+                  // All emails start from tomorrow
+                  $batch_number = floor($batch_count / $rate_limit);
+                  $estimated_minutes = $batch_number * 10;
+                  $estimated_timestamp = $base_time + ($estimated_minutes * 60);
+                  $is_tomorrow = true;
+                } else {
+                  // Check if this batch will fit in today's remaining quota
+                  $batch_number = floor($batch_count / $rate_limit);
+                  $emails_before_this = $batch_count;
+
+                  if ($emails_before_this < $remaining_today) {
+                    // This email can be sent today
+                    $estimated_minutes = $batch_number * 10;
+                    $estimated_timestamp = $base_time + ($estimated_minutes * 60);
+                    $is_tomorrow = false;
+                  } else {
+                    // This email will be sent tomorrow
+                    $tomorrow = strtotime('tomorrow', $current_time);
+                    $emails_tomorrow = $emails_before_this - $remaining_today;
+                    $batch_number_tomorrow = floor($emails_tomorrow / $rate_limit);
+                    $estimated_minutes = $batch_number_tomorrow * 10;
+                    $estimated_timestamp = $tomorrow + ($estimated_minutes * 60);
+                    $is_tomorrow = true;
+                  }
+                }
+
+                $next_batch[] = [
+                  'user_id' => $user_id,
+                  'name' => trim($user->first_name . ' ' . $user->last_name),
+                  'email' => $user->user_email,
+                  'template_id' => $mail_id,
+                  'template_title' => get_the_title($mail_id),
+                  'estimated_send_time' => $estimated_timestamp,
+                  'estimated_send_formatted' => date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $estimated_timestamp),
+                  'batch_number' => $batch_number,
+                  'sends_tomorrow' => $is_tomorrow,
+                ];
+                $batch_count++;
+              }
+            }
+          }
+
+          // Determine if system is effectively paused
+          $is_paused = !empty($queue_paused) || $hit_daily_limit || $will_send_tomorrow;
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'is_active' => !empty($queue_data) && !$is_paused,
+            'is_paused' => $is_paused,
+            'paused_by_errors' => !empty($paused_by_errors),
+            'paused_daily_limit' => $paused_daily_limit,
+            'hit_daily_limit' => $hit_daily_limit,
+            'remaining_today' => max(0, $remaining_today),
+            'total_pending' => $total_pending,
+            'templates_in_queue' => $templates_in_queue,
+            'next_batch' => $next_batch,
+            'mails_sent_today' => $mails_sent_today,
+            'daily_limit' => $daily_limit,
+            'rate_limit' => $rate_limit,
+            'resume_tomorrow' => $hit_daily_limit || $will_send_tomorrow ? date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime('tomorrow', $current_time)) : '',
+          ]);
+          exit;
+          break;
+        case 'mailpn_check_deliverability':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          $checks = [];
+          $score = 100;
+          $from_email = get_option('mailpn_smtp_from_email');
+          if (empty($from_email)) {
+            $from_email = get_option('mailpn_from_email');
+          }
+          if (empty($from_email)) {
+            $from_email = get_option('admin_email');
+          }
+
+          // Extract domain from email
+          $domain = '';
+          if (!empty($from_email) && strpos($from_email, '@') !== false) {
+            $domain = substr($from_email, strpos($from_email, '@') + 1);
+          }
+
+          // Check 1: SPF Record
+          if (!empty($domain)) {
+            $spf_record = dns_get_record($domain, DNS_TXT);
+            $has_spf = false;
+            foreach ($spf_record as $record) {
+              if (isset($record['txt']) && strpos($record['txt'], 'v=spf1') !== false) {
+                $has_spf = true;
+                break;
+              }
+            }
+            $checks['spf'] = [
+              'name' => 'SPF Record',
+              'status' => $has_spf ? 'passed' : 'failed',
+              'message' => $has_spf ? __('SPF record found and configured', 'mailpn') : __('SPF record not found. Add an SPF record to authorize your server.', 'mailpn'),
+              'suggestion' => !$has_spf ? __('Add a TXT record to your DNS: "v=spf1 mx a ~all" or contact your hosting provider to configure SPF.', 'mailpn') : '',
+            ];
+            if (!$has_spf) $score -= 25;
+          } else {
+            $checks['spf'] = [
+              'name' => 'SPF Record',
+              'status' => 'failed',
+              'message' => __('No email configured. Configure email in settings first.', 'mailpn'),
+              'suggestion' => __('Go to Settings → Email contents and configure "From Email" field.', 'mailpn'),
+            ];
+            $score -= 25;
+          }
+
+          // Check 2: DKIM Record
+          if (!empty($domain)) {
+            $dkim_selectors = ['default', 'selector1', 'selector2', 'mail', 'k1'];
+            $has_dkim = false;
+            foreach ($dkim_selectors as $selector) {
+              $dkim_domain = $selector . '._domainkey.' . $domain;
+              $dkim_record = @dns_get_record($dkim_domain, DNS_TXT);
+              if (!empty($dkim_record)) {
+                foreach ($dkim_record as $record) {
+                  if (isset($record['txt']) && strpos($record['txt'], 'v=DKIM1') !== false) {
+                    $has_dkim = true;
+                    break 2;
+                  }
+                }
+              }
+            }
+            $checks['dkim'] = [
+              'name' => 'DKIM Record',
+              'status' => $has_dkim ? 'passed' : 'warning',
+              'message' => $has_dkim ? __('DKIM record found', 'mailpn') : __('DKIM record not found. DKIM helps prevent email spoofing.', 'mailpn'),
+              'suggestion' => !$has_dkim ? __('Contact your email provider or hosting to enable DKIM signing. They will provide DNS records to add to your domain.', 'mailpn') : '',
+            ];
+            if (!$has_dkim) $score -= 15;
+          }
+
+          // Check 3: DMARC Record
+          if (!empty($domain)) {
+            $dmarc_domain = '_dmarc.' . $domain;
+            $dmarc_record = @dns_get_record($dmarc_domain, DNS_TXT);
+            $has_dmarc = false;
+            if (!empty($dmarc_record)) {
+              foreach ($dmarc_record as $record) {
+                if (isset($record['txt']) && strpos($record['txt'], 'v=DMARC1') !== false) {
+                  $has_dmarc = true;
+                  break;
+                }
+              }
+            }
+            $checks['dmarc'] = [
+              'name' => 'DMARC Record',
+              'status' => $has_dmarc ? 'passed' : 'warning',
+              'message' => $has_dmarc ? __('DMARC policy configured', 'mailpn') : __('DMARC not configured. Recommended for better deliverability.', 'mailpn'),
+              'suggestion' => !$has_dmarc ? __('Add a TXT record at "_dmarc.' . $domain . '" with value: "v=DMARC1; p=none; rua=mailto:' . $from_email . '"', 'mailpn') : '',
+            ];
+            if (!$has_dmarc) $score -= 10;
+          }
+
+          // Check 4: MX Records
+          if (!empty($domain)) {
+            $mx_records = @dns_get_record($domain, DNS_MX);
+            $has_mx = !empty($mx_records);
+            $checks['mx'] = [
+              'name' => 'MX Records',
+              'status' => $has_mx ? 'passed' : 'failed',
+              'message' => $has_mx ? __('MX records configured', 'mailpn') : __('MX records not found', 'mailpn'),
+              'suggestion' => !$has_mx ? __('Contact your hosting provider to configure MX records for your domain.', 'mailpn') : '',
+            ];
+            if (!$has_mx) $score -= 20;
+          }
+
+          // Check 5: SMTP Configuration
+          $smtp_enabled = get_option('mailpn_smtp_enabled') == 'on';
+          $smtp_host = get_option('mailpn_smtp_host');
+          $smtp_port = get_option('mailpn_smtp_port');
+          $smtp_secure = get_option('mailpn_smtp_secure');
+
+          if ($smtp_enabled && !empty($smtp_host) && !empty($smtp_port)) {
+            $checks['smtp'] = [
+              'name' => 'SMTP Configuration',
+              'status' => 'passed',
+              'message' => sprintf(__('SMTP enabled (%s:%s with %s)', 'mailpn'), $smtp_host, $smtp_port, $smtp_secure),
+              'suggestion' => '',
+            ];
+          } else {
+            $checks['smtp'] = [
+              'name' => 'SMTP Configuration',
+              'status' => 'warning',
+              'message' => __('SMTP not configured. Using PHP mail() function may have lower deliverability.', 'mailpn'),
+              'suggestion' => __('Configure SMTP in Settings → SMTP Configuration. Use services like Gmail, SendGrid, or Mailgun for better deliverability.', 'mailpn'),
+            ];
+            $score -= 15;
+          }
+
+          // Check 6: From Email Configuration
+          if (!empty($from_email) && filter_var($from_email, FILTER_VALIDATE_EMAIL)) {
+            $checks['from_email'] = [
+              'name' => 'From Email',
+              'status' => 'passed',
+              'message' => sprintf(__('Configured: %s', 'mailpn'), $from_email),
+              'suggestion' => '',
+            ];
+          } else {
+            $checks['from_email'] = [
+              'name' => 'From Email',
+              'status' => 'failed',
+              'message' => __('From email not configured or invalid', 'mailpn'),
+              'suggestion' => __('Go to Settings → Email contents and configure a valid email address in "From Email" field.', 'mailpn'),
+            ];
+            $score -= 15;
+          }
+
+          // Check 7: Open Tracking (JavaScript in emails)
+          $open_tracking_enabled = get_option('mailpn_open_tracking') == 'on';
+          if (!$open_tracking_enabled) {
+            $checks['open_tracking'] = [
+              'name' => 'Email JavaScript',
+              'status' => 'passed',
+              'message' => __('Open tracking disabled - no JavaScript in emails', 'mailpn'),
+              'suggestion' => '',
+            ];
+          } else {
+            $checks['open_tracking'] = [
+              'name' => 'Email JavaScript',
+              'status' => 'warning',
+              'message' => __('Open tracking enabled - uses inline JavaScript which may affect spam score', 'mailpn'),
+              'suggestion' => __('Consider disabling "Enable open tracking" in Settings → Email mechanics to improve deliverability. Spam filters penalize JavaScript in emails.', 'mailpn'),
+            ];
+            $score -= 10;
+          }
+
+          // Check 8: List-Unsubscribe Header
+          // Always present for user IDs with UsersPN, or generic for direct emails
+          $checks['list_unsubscribe'] = [
+            'name' => 'List-Unsubscribe Header',
+            'status' => 'passed',
+            'message' => __('List-Unsubscribe header configured for all emails', 'mailpn'),
+            'suggestion' => '',
+          ];
+
+          // Check 9: Text/Plain Version
+          // Note: Currently only sends HTML. Adding text/plain would improve score
+          $checks['text_version'] = [
+            'name' => 'Text/Plain Version',
+            'status' => 'warning',
+            'message' => __('Emails sent as HTML only', 'mailpn'),
+            'suggestion' => __('Consider adding a text/plain version alongside HTML for better compatibility and deliverability. Many spam filters prefer multipart emails.', 'mailpn'),
+          ];
+          $score -= 5;
+
+          $score = max(0, $score);
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'score' => $score,
+            'checks' => $checks,
+            'domain' => $domain,
+          ]);
+          exit;
+          break;
+        case 'mailpn_analyze_headers':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          $headers = !empty($_POST['headers']) ? sanitize_textarea_field($_POST['headers']) : '';
+
+          if (empty($headers)) {
+            echo wp_json_encode([
+              'error_key' => 'empty_headers',
+              'error_content' => __('No headers provided', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          $analysis = [];
+          $score = 100;
+
+          // Check SPF
+          if (preg_match('/spf=(\w+)/i', $headers, $matches)) {
+            $spf_result = strtolower($matches[1]);
+            $spf_passed = in_array($spf_result, ['pass', 'neutral']);
+            $analysis['spf'] = [
+              'name' => 'SPF Validation',
+              'status' => $spf_passed ? 'passed' : 'failed',
+              'message' => sprintf(__('SPF Result: %s', 'mailpn'), $spf_result),
+              'suggestion' => !$spf_passed ? __('SPF validation failed. Check your SPF records and ensure your sending server is authorized.', 'mailpn') : '',
+            ];
+            if (!$spf_passed) $score -= 30;
+          } else {
+            $analysis['spf'] = [
+              'name' => 'SPF Validation',
+              'status' => 'warning',
+              'message' => __('SPF result not found in headers', 'mailpn'),
+              'suggestion' => __('Could not detect SPF validation in headers. This might indicate the headers are incomplete.', 'mailpn'),
+            ];
+            $score -= 10;
+          }
+
+          // Check DKIM
+          if (preg_match('/dkim=(\w+)/i', $headers, $matches)) {
+            $dkim_result = strtolower($matches[1]);
+            $dkim_passed = ($dkim_result === 'pass');
+            $analysis['dkim'] = [
+              'name' => 'DKIM Signature',
+              'status' => $dkim_passed ? 'passed' : 'failed',
+              'message' => sprintf(__('DKIM Result: %s', 'mailpn'), $dkim_result),
+              'suggestion' => !$dkim_passed ? __('DKIM signature verification failed. Ensure DKIM is properly configured on your email server.', 'mailpn') : '',
+            ];
+            if (!$dkim_passed) $score -= 25;
+          } else {
+            $analysis['dkim'] = [
+              'name' => 'DKIM Signature',
+              'status' => 'warning',
+              'message' => __('DKIM result not found in headers', 'mailpn'),
+              'suggestion' => __('DKIM signature not detected. Consider enabling DKIM signing for better email authentication.', 'mailpn'),
+            ];
+            $score -= 15;
+          }
+
+          // Check DMARC
+          if (preg_match('/dmarc=(\w+)/i', $headers, $matches)) {
+            $dmarc_result = strtolower($matches[1]);
+            $dmarc_passed = ($dmarc_result === 'pass');
+            $analysis['dmarc'] = [
+              'name' => 'DMARC Policy',
+              'status' => $dmarc_passed ? 'passed' : 'failed',
+              'message' => sprintf(__('DMARC Result: %s', 'mailpn'), $dmarc_result),
+              'suggestion' => !$dmarc_passed ? __('DMARC validation failed. Review your DMARC policy and alignment.', 'mailpn') : '',
+            ];
+            if (!$dmarc_passed) $score -= 20;
+          }
+
+          // Check for spam headers
+          $spam_indicators = [
+            'X-Spam-Flag: YES' => 'Email marked as spam',
+            'X-Spam-Status: Yes' => 'Spam filters detected spam patterns',
+          ];
+
+          foreach ($spam_indicators as $indicator => $message) {
+            if (stripos($headers, $indicator) !== false) {
+              $analysis['spam_flag'] = [
+                'name' => 'Spam Detection',
+                'status' => 'failed',
+                'message' => __($message, 'mailpn'),
+                'suggestion' => __('Your email triggered spam filters. Review content for spam keywords, ensure proper authentication, and check blacklists.', 'mailpn'),
+              ];
+              $score -= 30;
+              break;
+            }
+          }
+
+          // Check for Return-Path
+          if (preg_match('/Return-Path:\s*<?([^>\r\n]+)>?/i', $headers, $matches)) {
+            $return_path = trim($matches[1], '<> ');
+            $analysis['return_path'] = [
+              'name' => 'Return-Path',
+              'status' => 'passed',
+              'message' => sprintf(__('Return-Path configured: %s', 'mailpn'), $return_path),
+              'suggestion' => '',
+            ];
+          } else {
+            $analysis['return_path'] = [
+              'name' => 'Return-Path',
+              'status' => 'warning',
+              'message' => __('Return-Path not found', 'mailpn'),
+              'suggestion' => __('Configure Return-Path header for better bounce handling.', 'mailpn'),
+            ];
+            $score -= 10;
+          }
+
+          $score = max(0, $score);
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'score' => $score,
+            'analysis' => $analysis,
+          ]);
+          exit;
+          break;
+        case 'mailpn_send_test_email_external':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          $to_email = !empty($_POST['to_email']) ? sanitize_email($_POST['to_email']) : '';
+
+          if (empty($to_email) || !is_email($to_email)) {
+            echo wp_json_encode([
+              'error_key' => 'invalid_email',
+              'error_content' => __('Please provide a valid email address', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          // Get from email
+          $from_email = get_option('mailpn_smtp_from_email');
+          if (empty($from_email)) {
+            $from_email = get_option('mailpn_from_email');
+          }
+          if (empty($from_email)) {
+            $from_email = get_option('admin_email');
+          }
+
+          $from_name = get_option('mailpn_smtp_from_name');
+          if (empty($from_name)) {
+            $from_name = get_option('mailpn_from_name');
+          }
+          if (empty($from_name)) {
+            $from_name = get_bloginfo('name');
+          }
+
+          $subject = sprintf(__('Deliverability Test from %s', 'mailpn'), get_bloginfo('name'));
+
+          $message = '<html><head><meta charset="UTF-8"></head><body>';
+          $message .= '<h2>' . __('Email Deliverability Test', 'mailpn') . '</h2>';
+          $message .= '<p>' . sprintf(__('This is a test email sent from %s to verify email deliverability.', 'mailpn'), '<strong>' . get_bloginfo('name') . '</strong>') . '</p>';
+          $message .= '<hr>';
+          $message .= '<h3>' . __('Email Configuration:', 'mailpn') . '</h3>';
+          $message .= '<ul>';
+          $message .= '<li><strong>' . __('From:', 'mailpn') . '</strong> ' . esc_html($from_name) . ' &lt;' . esc_html($from_email) . '&gt;</li>';
+          $message .= '<li><strong>' . __('Site:', 'mailpn') . '</strong> ' . get_bloginfo('name') . ' (' . get_site_url() . ')</li>';
+          $message .= '<li><strong>' . __('Date:', 'mailpn') . '</strong> ' . date_i18n(get_option('date_format') . ' ' . get_option('time_format')) . '</li>';
+
+          $smtp_enabled = get_option('mailpn_smtp_enabled') == 'on';
+          if ($smtp_enabled) {
+            $smtp_host = get_option('mailpn_smtp_host');
+            $smtp_port = get_option('mailpn_smtp_port');
+            $smtp_secure = get_option('mailpn_smtp_secure');
+            $message .= '<li><strong>' . __('SMTP:', 'mailpn') . '</strong> ' . esc_html($smtp_host) . ':' . esc_html($smtp_port) . ' (' . esc_html($smtp_secure) . ')</li>';
+          } else {
+            $message .= '<li><strong>' . __('Mail Method:', 'mailpn') . '</strong> PHP mail()</li>';
+          }
+
+          $message .= '</ul>';
+          $message .= '<hr>';
+          $message .= '<p style="color: #666; font-size: 12px;">' . __('This email was sent using MailPN plugin for WordPress.', 'mailpn') . '</p>';
+          $message .= '</body></html>';
+
+          $headers = [
+            'Content-Type: text/html; charset=UTF-8',
+            'From: ' . $from_name . ' <' . $from_email . '>',
+          ];
+
+          $sent = wp_mail($to_email, $subject, $message, $headers);
+
+          if ($sent) {
+            echo wp_json_encode([
+              'error_key' => '',
+              'message' => sprintf(__('Test email sent successfully to %s. Check Mail-Tester for results.', 'mailpn'), $to_email),
+            ]);
+          } else {
+            echo wp_json_encode([
+              'error_key' => 'send_failed',
+              'error_content' => __('Failed to send test email. Check your email configuration.', 'mailpn'),
+            ]);
+          }
+          exit;
+          break;
       }
 
       echo wp_json_encode([

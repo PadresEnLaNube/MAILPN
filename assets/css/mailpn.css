@@ -829,7 +829,6 @@ input:checked + .mailpn-slider:before{
 .mailpn-btn{
   background-color:var(--mailpn-color-main);
   color:#fff;
-  text-shadow:0 0 20px var(--mailpn-color-main);
   display:inline-block;
   margin:auto;
   font-family:var(--wp--preset--font-family--manrope);
@@ -857,6 +856,15 @@ input:checked + .mailpn-slider:before{
 .mailpn-btn-mini{
   line-height:20px;
   padding:5px 30px;
+}
+.mailpn-btn-transparent{
+  color: var(--mailpn-color-main);
+  background-color: transparent;
+  border: 1px solid var(--mailpn-color-main);
+}
+.mailpn-btn-transparent:hover{
+  color: #ffffff;
+  background-color: var(--mailpn-color-main);
 }
 .mailpn-cursor-pointer{
   cursor:pointer;
@@ -2471,4 +2479,466 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 
 .mailpn-input-wrapper .mailpn-p-10:has(> label) {
   padding-bottom: 0;
+}
+/* Floating queue status button */
+.mailpn-queue-float-button {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  animation: mailpn-pulse 2s infinite;
+}
+
+.mailpn-queue-float-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #2271b1;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mailpn-queue-float-btn:hover {
+  background: #135e96;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.mailpn-queue-float-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.mailpn-queue-btn-paused .mailpn-queue-float-btn {
+  background: #ffc107;
+  color: #664d03;
+}
+
+.mailpn-queue-btn-paused .mailpn-queue-float-btn:hover {
+  background: #e0a800;
+}
+
+.mailpn-queue-float-btn .material-icons-outlined {
+  font-size: 20px;
+}
+
+.mailpn-queue-count {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+@keyframes mailpn-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Global queue popup */
+.mailpn-global-queue-popup-wrapper .mailpn-popup-content {
+  padding: 32px;
+  background: #fff;
+  border-radius: 8px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mailpn-global-queue-popup h3 {
+  margin: 0 0 24px 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1d2327;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mailpn-global-queue-popup h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3c434a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mailpn-queue-section {
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mailpn-queue-section:last-of-type {
+  border-bottom: none;
+  margin-bottom: 24px;
+}
+
+.mailpn-queue-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.mailpn-queue-stats li {
+  background: #f6f7f7;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #50575e;
+}
+
+.mailpn-queue-stats li strong {
+  display: block;
+  color: #1d2327;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.mailpn-queue-status {
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mailpn-status-paused-badge {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.mailpn-status-active-badge {
+  background: #d1e7dd;
+  border-left: 4px solid #4caf50;
+}
+
+.mailpn-queue-status .material-icons-outlined {
+  font-size: 28px;
+}
+
+.mailpn-queue-status strong {
+  font-size: 16px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.mailpn-queue-status p {
+  margin: 0;
+  font-size: 13px;
+  color: #50575e;
+}
+
+.mailpn-queue-templates-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mailpn-queue-templates-list li {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mailpn-queue-templates-list li:last-child {
+  border-bottom: none;
+}
+
+.mailpn-template-pending {
+  background: #f0f0f1;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2271b1;
+}
+
+.mailpn-template-tag {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* Batch groups */
+.mailpn-batch-group {
+  margin-bottom: 28px;
+}
+
+.mailpn-batch-group:last-child {
+  margin-bottom: 0;
+}
+
+.mailpn-batch-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 16px 0;
+  padding: 12px 16px;
+  background: #f0f6fc;
+  border-left: 4px solid #2271b1;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.mailpn-batch-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #50575e;
+}
+
+.mailpn-batch-time .material-icons-outlined {
+  font-size: 18px;
+  color: #2271b1;
+}
+
+.mailpn-batch-tomorrow .mailpn-batch-title {
+  background: #fff8e1;
+  border-left-color: #ffc107;
+}
+
+.mailpn-batch-tomorrow .mailpn-batch-time .material-icons-outlined {
+  color: #f57c00;
+}
+
+/* Next batch list - horizontal layout */
+.mailpn-queue-pending-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.mailpn-queue-pending-list li {
+  background: #f6f7f7;
+  padding: 16px;
+  border-radius: 6px;
+  border-left: 3px solid #2271b1;
+  transition: all 0.2s ease;
+}
+
+.mailpn-queue-pending-list li:hover {
+  background: #e8eaeb;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mailpn-queue-pending-list li strong {
+  display: block;
+  color: #1d2327;
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.mailpn-queue-pending-list .mailpn-user-email {
+  display: block;
+  color: #50575e;
+  font-size: 13px;
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+/* Popup buttons */
+.mailpn-popup-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.mailpn-popup-buttons .material-icons-outlined {
+  font-size: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* Error details popup */
+.mailpn-error-details-popup-wrapper .mailpn-popup-content {
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.mailpn-error-details-popup h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.mailpn-error-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mailpn-error-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.mailpn-error-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3c434a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mailpn-error-section p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #50575e;
+  line-height: 1.6;
+}
+
+.mailpn-error-section p strong {
+  color: #1d2327;
+  font-weight: 600;
+}
+
+.mailpn-error-message-box {
+  background: #fff3cd;
+  padding: 16px;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.mailpn-error-message-box p {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #856404;
+  font-family: 'Courier New', monospace;
+  word-break: break-word;
+}
+
+.mailpn-error-message-box p:first-child {
+  margin-top: 0;
+}
+
+.mailpn-error-message-box p:last-child {
+  margin-bottom: 0;
+}
+
+.mailpn-error-tech-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.mailpn-error-tech-table td {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+
+.mailpn-error-tech-table td:first-child {
+  font-weight: 600;
+  color: #1d2327;
+  background: #f6f7f7;
+  width: 140px;
+  white-space: nowrap;
+}
+
+.mailpn-error-tech-table td:last-child {
+  color: #50575e;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+}
+
+.mailpn-view-error-details {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #2271b1;
+  text-decoration: none;
+  font-size: 13px;
+  margin-top: 4px;
+  transition: color 0.2s ease;
+}
+
+.mailpn-view-error-details:hover {
+  color: #135e96;
+  text-decoration: underline;
+}
+
+.mailpn-view-error-details .material-icons-outlined {
+  font-size: 16px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .mailpn-queue-float-button {
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .mailpn-queue-float-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .mailpn-queue-count {
+    min-width: 20px;
+    padding: 1px 6px;
+    font-size: 12px;
+  }
+
+  .mailpn-global-queue-popup-wrapper .mailpn-popup-content {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .mailpn-queue-pending-list {
+    grid-template-columns: 1fr;
+  }
+
+  .mailpn-queue-stats {
+    grid-template-columns: 1fr;
+  }
 }

@@ -74,6 +74,21 @@ class MAILPN_Settings {
         'label' => __('Custom reasons to receive email block', 'mailpn'),
         'placeholder' => __('Custom reasons to receive email block', 'mailpn'),
       ];
+      $mailpn_options['mailpn_max_width'] = [
+        'id' => 'mailpn_max_width',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'number',
+        'label' => __('Email max width in pixels', 'mailpn'),
+        'placeholder' => __('Email max width in pixels', 'mailpn'),
+      ];
+      $mailpn_options['mailpn_links_color'] = [
+        'id' => 'mailpn_links_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Color of the email links', 'mailpn'),
+      ];
     $mailpn_options['mailpn_section_contents_end'] = [
       'section' => 'end',
     ];
@@ -106,6 +121,14 @@ class MAILPN_Settings {
         'type' => 'checkbox',
         'label' => __('New users active notifications', 'mailpn'),
         'description' => __('If you turn on this options the system will activate users notifications automatically on new accounts creation. It implieas that contacts will receive platform communications from the their user creation. Please, take into account to add this feature in your policies pages.', 'mailpn'),
+      ];
+      $mailpn_options['mailpn_open_tracking'] = [
+        'id' => 'mailpn_open_tracking',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'checkbox',
+        'label' => __('Enable open tracking', 'mailpn'),
+        'description' => __('Track when recipients open emails using a tracking pixel. Warning: Uses inline JavaScript which may affect spam score. Disable if you prioritize deliverability over tracking.', 'mailpn'),
       ];
       $mailpn_options['mailpn_click_tracking'] = [
         'id' => 'mailpn_click_tracking',
@@ -177,6 +200,14 @@ class MAILPN_Settings {
         'type' => 'checkbox',
         'label' => __('Format all WordPress emails', 'mailpn'),
         'description' => __('Automatically wrap all WordPress core emails (password change, email change, admin notifications, etc.) with the MailPN email template. Adds header/footer, makes links clickable, removes [Site Name] from subjects, and logs all sends.', 'mailpn'),
+      ];
+      $mailpn_options['mailpn_wc_emails_wrapper'] = [
+        'id' => 'mailpn_wc_emails_wrapper',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'checkbox',
+        'label' => __('Format all WooCommerce emails', 'mailpn'),
+        'description' => __('Automatically wrap all WooCommerce emails (order confirmations, shipping notifications, etc.) with the MailPN email template. Requires WooCommerce plugin to be active. Adds header/footer, applies custom styling, and logs all sends.', 'mailpn'),
       ];
       $mailpn_options['mailpn_exception_emails'] = [
         'id' => 'mailpn_exception_emails',
@@ -442,29 +473,65 @@ class MAILPN_Settings {
       'section' => 'end',
     ];
 
-    $mailpn_options['mailpn_section_design_start'] = [
+    // Email Security & Deliverability Section
+    $mailpn_options['mailpn_section_deliverability_start'] = [
       'section' => 'start',
-      'label' => __('Email design', 'mailpn'),
+      'label' => __('Email Security & Deliverability', 'mailpn'),
+      'description' => __('Analyze your email configuration to ensure maximum deliverability and avoid spam filters. This tool checks DNS records (SPF, DKIM, DMARC), blacklists, and email content.', 'mailpn'),
     ];
-      $mailpn_options['mailpn_max_width'] = [
-        'id' => 'mailpn_max_width',
-        'class' => 'mailpn-input mailpn-width-100-percent',
-        'input' => 'input',
-        'type' => 'number',
-        'label' => __('Email max width in pixels', 'mailpn'),
-        'placeholder' => __('Email max width in pixels', 'mailpn'),
+
+      // Subsection: Deliverability Analysis
+      $mailpn_options['mailpn_subsection_deliverability_analysis_start'] = [
+        'section' => 'start',
+        'label' => __('Deliverability Analysis', 'mailpn'),
+        'description' => __('Automatically checks your email configuration including DNS records (SPF, DKIM, DMARC, MX), SMTP settings, and sender configuration. Provides a deliverability score (0-100) and specific recommendations for improving email delivery and avoiding spam filters.', 'mailpn'),
       ];
-      $mailpn_options['mailpn_links_color'] = [
-        'id' => 'mailpn_links_color',
-        'class' => 'mailpn-input mailpn-width-100-percent',
-        'input' => 'input',
-        'type' => 'color',
-        'label' => __('Color of the email links', 'mailpn'),
+
+        $mailpn_options['mailpn_deliverability_checker'] = [
+          'id' => 'mailpn_deliverability_checker',
+          'input' => 'deliverability_checker',
+        ];
+
+      $mailpn_options['mailpn_subsection_deliverability_analysis_end'] = [
+        'section' => 'end',
       ];
-    $mailpn_options['mailpn_section_design_end'] = [
+
+      // Subsection: Advanced Header Analysis
+      $mailpn_options['mailpn_subsection_header_analysis_start'] = [
+        'section' => 'start',
+        'label' => __('Advanced Header Analysis (Optional)', 'mailpn'),
+        'description' => __('Send a test email to yourself, then copy and paste the complete email headers here for deep analysis. This will check authentication results, DKIM signatures, SPF validation, and more.', 'mailpn'),
+      ];
+
+        $mailpn_options['mailpn_header_analyzer'] = [
+          'id' => 'mailpn_header_analyzer',
+          'input' => 'header_analyzer',
+        ];
+
+      $mailpn_options['mailpn_subsection_header_analysis_end'] = [
+        'section' => 'end',
+      ];
+
+      // Subsection: External Service Test
+      $mailpn_options['mailpn_subsection_external_test_start'] = [
+        'section' => 'start',
+        'label' => __('External Service Test (Optional)', 'mailpn'),
+        'description' => __('Use external services like Mail-Tester to get a comprehensive spam score and detailed deliverability report.', 'mailpn'),
+      ];
+
+        $mailpn_options['mailpn_external_tester'] = [
+          'id' => 'mailpn_external_tester',
+          'input' => 'external_tester',
+        ];
+
+      $mailpn_options['mailpn_subsection_external_test_end'] = [
+        'section' => 'end',
+      ];
+
+    $mailpn_options['mailpn_section_deliverability_end'] = [
       'section' => 'end',
     ];
-    
+
     $mailpn_options['mailpn_section_roles_start'] = [
       'section' => 'start',
       'label' => __('User Role Management', 'mailpn'),
@@ -501,16 +568,16 @@ class MAILPN_Settings {
 
     add_submenu_page(
       'mailpn_options',
-      esc_html__('Email Templates', 'mailpn'),
-      esc_html__('Email Templates', 'mailpn'),
+      esc_html__('Templates', 'mailpn'),
+      esc_html__('Templates', 'mailpn'),
       'manage_options',
       'edit.php?post_type=mailpn_mail',
     );
 
     add_submenu_page(
       'mailpn_options',
-      esc_html__('Emails sent', 'mailpn'),
-      esc_html__('Emails sent', 'mailpn'),
+      esc_html__('Sendings', 'mailpn'),
+      esc_html__('Sendings', 'mailpn'),
       'manage_options',
       'edit.php?post_type=mailpn_rec',
     );
@@ -554,7 +621,16 @@ class MAILPN_Settings {
               $options = $this->mailpn_get_options();
 
               foreach ($options as $mailpn_option):
-                MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, 'half');
+                // Use full width for deliverability tools
+                $format = 'half';
+                if (isset($mailpn_option['id']) && in_array($mailpn_option['id'], [
+                  'mailpn_deliverability_checker',
+                  'mailpn_header_analyzer',
+                  'mailpn_external_tester'
+                ])) {
+                  $format = 'full';
+                }
+                MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, $format);
               endforeach;
             ?>
             <input type="submit" name="mailpn_submit" id="mailpn_submit" class="mailpn-settings-hidden-submit" data-mailpn-type="option" value="<?php esc_attr_e('Save options', 'mailpn'); ?>">

@@ -215,7 +215,9 @@ class MAILPN_Mailing {
     $headers[] = 'Content-Type: text/html; charset=UTF-8';
 
     // List-Unsubscribe header (required by Gmail/Outlook to avoid spam)
+    // Add for all emails to improve deliverability
     if (!filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL) && class_exists('USERSPN')) {
+      // User ID with UsersPN - use specific unsubscribe URL with nonce
       $unsubscribe_url = add_query_arg([
         'mailpn_action' => 'subscription-unsubscribe',
         'user' => $mailpn_user_to,
@@ -223,6 +225,19 @@ class MAILPN_Mailing {
       $unsubscribe_url = wp_nonce_url($unsubscribe_url, 'subscription-unsubscribe', 'subscription-unsubscribe-nonce');
       $headers[] = 'List-Unsubscribe: <' . esc_url($unsubscribe_url) . '>';
       $headers[] = 'List-Unsubscribe-Post: List-Unsubscribe=One-Click';
+    } else {
+      // Direct email or no UsersPN - add generic unsubscribe options
+      $admin_email = get_option('admin_email');
+      $from_email = get_option('mailpn_from_email');
+      if (empty($from_email)) {
+        $from_email = $admin_email;
+      }
+
+      // Generic unsubscribe page URL
+      $unsubscribe_page = home_url('/unsubscribe/');
+
+      // Add both URL and mailto for better compatibility
+      $headers[] = 'List-Unsubscribe: <' . esc_url($unsubscribe_page) . '>, <mailto:' . esc_attr($from_email) . '?subject=Unsubscribe>';
     }
 
     $mailpn_message = self::mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id);
@@ -622,10 +637,11 @@ class MAILPN_Mailing {
                     </small>
                   </div>
                 </td>
-                
+                <?php if (get_option('mailpn_open_tracking') == 'on'): ?>
                 <td>
-                  <img src="<?php echo esc_url(home_url('wp-json/mailpn/v1/track/' . $mailpn_user_to . '/' . $mailpn_id)); ?>" width="1" height="1" alt="" style="display:none" onload="document.getElementById('mailpn-confirm-read').style.display='none';" onerror="document.getElementById('mailpn-confirm-read').style.display='block';" />
+                  <img src="<?php echo esc_url(home_url('wp-json/mailpn/v1/track/' . $mailpn_user_to . '/' . $mailpn_id)); ?>" width="1" height="1" alt="" style="display:none;" />
                 </td>
+                <?php endif; ?>
               </tr>
             </tbody>
           </table>
@@ -1088,8 +1104,39 @@ class MAILPN_Mailing {
               </div>
             </div>
             <?php if (!empty(get_option('mailpn_queue_paused'))): ?>
+              <?php
+                $pause_timestamp = get_option('mailpn_queue_paused');
+                $paused_by_errors = get_option('mailpn_queue_paused_by_errors');
+                $consecutive_errors = get_option('mailpn_consecutive_errors_count', 0);
+                $consecutive_limit = get_option('mailpn_consecutive_errors_limit', 10);
+              ?>
               <div class="mailpn-status-paused">
-                <i class="material-icons-outlined">pause_circle</i> <?php esc_html_e('The mail queue is paused. Please check the mail queue settings.', 'mailpn'); ?>
+                <div class="mailpn-status-paused-header">
+                  <i class="material-icons-outlined">pause_circle</i>
+                  <strong><?php esc_html_e('Queue Paused', 'mailpn'); ?></strong>
+                </div>
+                <div class="mailpn-status-paused-body">
+                  <?php if ($paused_by_errors): ?>
+                    <p><?php printf(
+                      esc_html__('Sending stopped automatically due to %d consecutive errors (limit: %d).', 'mailpn'),
+                      $consecutive_errors,
+                      $consecutive_limit
+                    ); ?></p>
+                    <p><?php esc_html_e('This usually indicates a server capacity issue or SMTP configuration problem.', 'mailpn'); ?></p>
+                  <?php else: ?>
+                    <p><?php esc_html_e('The mail queue is paused. This may be due to reaching the daily sending limit.', 'mailpn'); ?></p>
+                  <?php endif; ?>
+                  <div class="mailpn-status-paused-actions">
+                    <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-queue-details" data-mail-id="<?php echo esc_attr($post_id); ?>">
+                      <?php esc_html_e('View Queue Details', 'mailpn'); ?>
+                    </a>
+                    <?php if ($paused_by_errors): ?>
+                      <a href="#" class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-resume-queue" data-mail-id="<?php echo esc_attr($post_id); ?>">
+                        <?php esc_html_e('Resume Queue', 'mailpn'); ?>
+                      </a>
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
             <?php endif; ?>
             <div class="mailpn-status-actions">
@@ -1523,6 +1570,45 @@ class MAILPN_Mailing {
         self::mailpn_queue_add($post_id, $user_id);
       }
     }
+  }
+
+  /**
+   * Display floating queue status button for admins
+   */
+  public static function mailpn_queue_status_button() {
+    // Only show for administrators
+    if (!current_user_can('manage_options')) {
+      return;
+    }
+
+    // Check if there's an active queue
+    $queue_data = get_option('mailpn_queue', []);
+    if (empty($queue_data)) {
+      return;
+    }
+
+    $queue_paused = get_option('mailpn_queue_paused');
+    $total_pending = 0;
+    foreach ($queue_data as $mail_id => $users) {
+      if (!empty($users)) {
+        $total_pending += count($users);
+      }
+    }
+
+    if ($total_pending === 0) {
+      return;
+    }
+
+    $status_class = empty($queue_paused) ? 'mailpn-queue-btn-active' : 'mailpn-queue-btn-paused';
+    $status_icon = empty($queue_paused) ? 'send' : 'pause_circle';
+    ?>
+    <div id="mailpn-queue-status-float" class="mailpn-queue-float-button <?php echo esc_attr($status_class); ?>">
+      <button class="mailpn-queue-float-btn" id="mailpn-open-queue-status">
+        <i class="material-icons-outlined"><?php echo esc_html($status_icon); ?></i>
+        <span class="mailpn-queue-count"><?php echo esc_html($total_pending); ?></span>
+      </button>
+    </div>
+    <?php
   }
 
   public function mailpn_subscription_unsubscribe_btn($user_id){
@@ -2254,5 +2340,149 @@ class MAILPN_Mailing {
       'mailpn_rec_content_html' => $data['message_html'],
       'mailpn_rec_content_text' => $data['message_text'],
     ], false);
+  }
+
+  /**
+   * Wrapper for WooCommerce emails
+   * Detects WooCommerce emails and wraps them with MailPN template
+   *
+   * @since    1.0.40
+   */
+  public function mailpn_wc_mail_wrapper($args) {
+    // Only process if it's a WooCommerce email
+    // WooCommerce emails typically have specific headers or come from WC classes
+    $is_wc_email = false;
+
+    // Check if headers contain WooCommerce indicators
+    if (!empty($args['headers'])) {
+      $headers = is_array($args['headers']) ? implode("\n", $args['headers']) : $args['headers'];
+      if (stripos($headers, 'woocommerce') !== false || stripos($headers, 'X-Mailer: WooCommerce') !== false) {
+        $is_wc_email = true;
+      }
+    }
+
+    // Check if message contains WooCommerce template markers
+    if (!$is_wc_email && !empty($args['message'])) {
+      if (stripos($args['message'], 'woocommerce') !== false ||
+          stripos($args['message'], 'id="template_container"') !== false ||
+          stripos($args['message'], 'id="template_header"') !== false) {
+        $is_wc_email = true;
+      }
+    }
+
+    // If not a WooCommerce email, return unchanged
+    if (!$is_wc_email) {
+      return $args;
+    }
+
+    // Skip if already wrapped by MailPN
+    if (stripos($args['message'], 'mailpn-table-main') !== false) {
+      return $args;
+    }
+
+    // Get MailPN template settings
+    $header_image = get_option('mailpn_image_header');
+    $footer_image = get_option('mailpn_image_footer');
+    $legal_name = get_option('mailpn_legal_name');
+    $legal_address = get_option('mailpn_legal_address');
+    $footer_reason = get_option('mailpn_footer_reason');
+    $max_width = get_option('mailpn_max_width', '600');
+    $links_color = get_option('mailpn_links_color', '#0073aa');
+
+    // Build wrapped email
+    $wrapped_html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0; padding:0; background-color:#f7f7f7;">';
+    $wrapped_html .= '<table class="mailpn-table-main" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f7f7f7; padding:40px 0;">';
+    $wrapped_html .= '<tr><td align="center">';
+    $wrapped_html .= '<table width="' . esc_attr($max_width) . '" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border:1px solid #dedede; border-radius:3px;">';
+
+    // Header
+    if (!empty($header_image)) {
+      $wrapped_html .= '<tr><td style="text-align:center; padding:20px 0;">';
+      $wrapped_html .= '<img src="' . esc_url($header_image) . '" alt="' . esc_attr(get_bloginfo('name')) . '" style="max-width:100%; height:auto;">';
+      $wrapped_html .= '</td></tr>';
+    }
+
+    // Content
+    $wrapped_html .= '<tr><td style="padding:20px 40px;">';
+    $wrapped_html .= $args['message'];
+    $wrapped_html .= '</td></tr>';
+
+    // Footer image
+    if (!empty($footer_image)) {
+      $wrapped_html .= '<tr><td style="text-align:center; padding:20px 0;">';
+      $wrapped_html .= '<img src="' . esc_url($footer_image) . '" alt="' . esc_attr(get_bloginfo('name')) . '" style="max-width:100%; height:auto;">';
+      $wrapped_html .= '</td></tr>';
+    }
+
+    $wrapped_html .= '</table>';
+
+    // Legal footer
+    if (!empty($legal_name) || !empty($legal_address)) {
+      $wrapped_html .= '<table width="' . esc_attr($max_width) . '" cellpadding="0" cellspacing="0" style="margin-top:20px;">';
+      $wrapped_html .= '<tr><td style="text-align:center; font-size:12px; color:#666; padding:20px;">';
+
+      if (!empty($legal_name)) {
+        $wrapped_html .= '<p style="margin:5px 0;">' . esc_html($legal_name) . '</p>';
+      }
+
+      if (!empty($legal_address)) {
+        $wrapped_html .= '<p style="margin:5px 0;">' . esc_html($legal_address) . '</p>';
+      }
+
+      if (!empty($footer_reason)) {
+        $wrapped_html .= '<p style="margin:15px 0 5px 0;">' . esc_html($footer_reason) . '</p>';
+      }
+
+      $wrapped_html .= '</td></tr></table>';
+    }
+
+    $wrapped_html .= '</td></tr></table></body></html>';
+
+    $args['message'] = $wrapped_html;
+
+    // Ensure content type is HTML
+    if (!empty($args['headers'])) {
+      if (is_array($args['headers'])) {
+        $has_content_type = false;
+        foreach ($args['headers'] as $header) {
+          if (stripos($header, 'content-type') !== false) {
+            $has_content_type = true;
+            break;
+          }
+        }
+        if (!$has_content_type) {
+          $args['headers'][] = 'Content-Type: text/html; charset=UTF-8';
+        }
+      } else {
+        if (stripos($args['headers'], 'content-type') === false) {
+          $args['headers'] .= "\nContent-Type: text/html; charset=UTF-8";
+        }
+      }
+    } else {
+      $args['headers'] = ['Content-Type: text/html; charset=UTF-8'];
+    }
+
+    return $args;
+  }
+
+  /**
+   * Add custom CSS styles to WooCommerce emails
+   *
+   * @since    1.0.40
+   */
+  public function mailpn_wc_email_styles($css, $email) {
+    $links_color = get_option('mailpn_links_color', '#0073aa');
+    $max_width = get_option('mailpn_max_width', '600');
+
+    $custom_css = "
+      a {
+        color: {$links_color} !important;
+      }
+      #template_container {
+        max-width: {$max_width}px !important;
+      }
+    ";
+
+    return $css . $custom_css;
   }
 }

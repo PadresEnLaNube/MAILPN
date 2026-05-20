@@ -52,7 +52,7 @@ class MAILPN {
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.35';
+			$this->mailpn_version = '1.0.45';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -373,6 +373,10 @@ class MAILPN {
 		// Add statistics button for rec post type
 		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_add_statistics_button');
 
+		// Add floating queue status button for admins
+		$this->mailpn_loader->mailpn_add_action('admin_footer', 'MAILPN_Mailing', 'mailpn_queue_status_button');
+		$this->mailpn_loader->mailpn_add_action('wp_footer', 'MAILPN_Mailing', 'mailpn_queue_status_button');
+
 		// Add click tracking endpoint
 		add_action('init', function() {
 			add_rewrite_rule(
@@ -648,6 +652,12 @@ class MAILPN {
 		if (get_option('mailpn_wp_emails_wrapper') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('wp_mail', $plugin_mailing, 'mailpn_wp_mail_wrapper', 99, 1);
 			add_action('wp_mail_succeeded', [$plugin_mailing, 'mailpn_log_wrapped_email']);
+		}
+
+		// WooCommerce emails wrapper
+		if (get_option('mailpn_wc_emails_wrapper') == 'on' && class_exists('WooCommerce')) {
+			$this->mailpn_loader->mailpn_add_filter('wp_mail', $plugin_mailing, 'mailpn_wc_mail_wrapper', 98, 1);
+			$this->mailpn_loader->mailpn_add_filter('woocommerce_email_styles', $plugin_mailing, 'mailpn_wc_email_styles', 999, 2);
 		}
 
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-sender', $plugin_mailing, 'mailpn_sender');

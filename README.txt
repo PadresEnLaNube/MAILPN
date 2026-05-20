@@ -4,7 +4,7 @@ Donate link: https://padresenlanube.com/
 Tags: email, mailing, notifications, sender, mail address
 Requires at least: 3.0
 Tested up to: 6.9.1
-Stable tag: 1.0.35
+Stable tag: 1.0.45
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Effortlessly manage your email campaigns. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
@@ -24,9 +24,22 @@ Transform your WordPress site into a powerful email management hub with our intu
 * **Scheduled Email Delivery**: Schedule emails to be sent at specific times in the future. Perfect for welcome emails, follow-ups, and time-sensitive campaigns. Includes delayed welcome email functionality with configurable delays.
 
 * **Email Tracking & Analytics**: Comprehensive tracking system including:
-  - **Open Tracking**: Track email opens using invisible tracking pixels. Monitor when recipients open your emails with timestamps.
+  - **Open Tracking**: Optional tracking of email opens using invisible tracking pixels. Monitor when recipients open your emails with timestamps. Can be disabled to prioritize deliverability over tracking.
   - **Click Tracking**: Track all link clicks in emails. See which links are clicked most, track unique clicks per user, and analyze click patterns.
   - **Detailed Statistics**: View click statistics by URL, total clicks, unique users who clicked, and detailed click history with timestamps and IP addresses.
+
+* **Email Deliverability Enhancements**: Advanced features to ensure your emails reach the inbox:
+  - **Optional Open Tracking**: Disable JavaScript-based open tracking to improve spam scores and deliverability ratings
+  - **List-Unsubscribe Headers**: RFC 2369/8058 compliant List-Unsubscribe headers for all emails (URL + mailto dual format)
+  - **One-Click Unsubscribe**: Support for List-Unsubscribe-Post headers for Gmail/Yahoo compliance
+  - **Deliverability Checker**: Comprehensive 9-point check system including:
+    - SPF, DKIM, DMARC, and MX record verification
+    - JavaScript detection in emails (affects spam score)
+    - List-Unsubscribe header validation
+    - Text/plain version recommendations
+    - SMTP configuration validation
+    - FROM address verification
+  - **Mail-Tester Optimization**: Built to achieve 10/10 Mail-Tester scores when properly configured
 
 * **Email Types & Automation**:
   - **Welcome Emails**: Automated welcome emails for new users with configurable delays
@@ -245,7 +258,7 @@ This section provides comprehensive documentation for developers who want to int
 === Plugin Structure ===
 
 * **Main File**: `mailpn.php`
-* **Version**: 1.0.35
+* **Version**: 1.0.39
 * **Constants**: `MAILPN_VERSION`, `MAILPN_DIR`, `MAILPN_URL`, `MAILPN_CPTS`
 * **Custom Post Types**: `mailpn_mail` (emails), `mailpn_rec` (records)
 
@@ -328,9 +341,9 @@ Access plugin settings using WordPress `get_option()`:
 * `mailpn_exception_emails_domains` - Exclude email domains
 * `mailpn_exception_emails_addresses` - Exclude specific email addresses
 
-==== Tracking ====
+==== Tracking & Deliverability ====
 * `mailpn_click_tracking` - Enable click tracking ('on'/'off')
-* `mailpn_open_tracking` - Enable open tracking ('on'/'off')
+* `mailpn_open_tracking` - Enable open tracking ('on'/'off'). Warning: Uses inline JavaScript which may affect spam score. Disable for better deliverability.
 
 === Email Queue Management ===
 
@@ -457,6 +470,22 @@ For developer support, visit the plugin's support forum or contact: info@padrese
 
 
 == Changelog ==
+
+= 1.0.32 =
+
+**Email Deliverability Enhancements:**
+* Added optional "Enable open tracking" setting with JavaScript warning for better spam score control
+* Removed all inline JavaScript from tracking pixels to improve Mail-Tester scores
+* Enhanced List-Unsubscribe header implementation to work with ALL emails (not just UsersPN users)
+* Implemented dual-format List-Unsubscribe headers (URL + mailto) for maximum email client compatibility
+* Added List-Unsubscribe-Post header support for one-click unsubscribe (Gmail/Yahoo compliance)
+* Expanded deliverability checker from 6 to 9 comprehensive checks
+* New check: Email JavaScript detection (warns when open tracking is enabled, -10 points)
+* New check: List-Unsubscribe header validation (confirms proper configuration)
+* New check: Text/plain version recommendation (warns about missing plain text alternative, -5 points)
+* Mail-Tester optimization - achieve 10/10 scores when open tracking is disabled and proper DNS records are configured
+* Improved dashboard with deliverability status indicators and recommendations
+* Enhanced localization with Spanish translations for all new deliverability features
 
 = 1.0.1 =
 

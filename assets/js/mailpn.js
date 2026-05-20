@@ -461,3 +461,273 @@
     }
   });
 })(jQuery);
+
+// Floating queue status button
+(function($) {
+  'use strict';
+
+  $(document).on('click', '#mailpn-open-queue-status', function(e) {
+    e.preventDefault();
+
+    // Show loading state
+    var btn = $(this);
+    var originalHTML = btn.html();
+    btn.prop('disabled', true).html('<div class="mailpn-waiting"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div>');
+
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_get_global_queue_status',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+    }, function(response) {
+      btn.prop('disabled', false).html(originalHTML);
+
+      var result = $.parseJSON(response);
+
+      console.log('=== Queue Status Debug ===');
+      console.log('is_paused:', result.is_paused);
+      console.log('paused_by_errors:', result.paused_by_errors);
+      console.log('hit_daily_limit:', result.hit_daily_limit);
+      console.log('paused_daily_limit:', result.paused_daily_limit);
+      console.log('is_active:', result.is_active);
+
+      if (result.error_key !== '') {
+        alert('Error loading queue status');
+        return;
+      }
+
+      // Build popup content using MAILPN popup system
+      var popup_content = '<div class="mailpn-global-queue-popup">';
+      popup_content += '<h3><i class="material-icons-outlined">assessment</i>' + (mailpn_i18n.queue_status || 'Queue Status') + '</h3>';
+
+      // Status badge
+      if (result.is_paused) {
+        popup_content += '<div class="mailpn-queue-status mailpn-status-paused-badge">';
+        popup_content += '<div>';
+        popup_content += '<i class="material-icons-outlined">pause_circle</i> ';
+        popup_content += '</div>';
+        popup_content += '<div>';
+        popup_content += '<strong>' + (mailpn_i18n.paused || 'Paused') + '</strong>';
+        if (result.paused_by_errors) {
+          popup_content += '<p>' + (mailpn_i18n.paused_by_errors_msg || 'Paused due to consecutive errors') + '</p>';
+        } else if (result.hit_daily_limit) {
+          popup_content += '<p>' + (mailpn_i18n.paused_daily_limit || 'Paused due to daily limit') + '</p>';
+          if (result.resume_tomorrow) {
+            popup_content += '<p style="margin-top:8px;"><i class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">schedule</i> ';
+            popup_content += (mailpn_i18n.resume_at || 'Will resume at') + ': <strong>' + result.resume_tomorrow + '</strong></p>';
+          }
+        } else if (result.paused_daily_limit) {
+          popup_content += '<p>' + (mailpn_i18n.paused_daily_limit || 'Paused due to daily limit') + '</p>';
+        }
+        popup_content += '</div>';
+        popup_content += '</div>';
+      } else if (result.is_active) {
+        popup_content += '<div class="mailpn-queue-status mailpn-status-active-badge">';
+        popup_content += '<div>';
+        popup_content += '<i class="material-icons-outlined">check_circle</i> ';
+        popup_content += '</div>';
+        popup_content += '<div>';
+        popup_content += '<strong>' + (mailpn_i18n.active || 'Active') + '</strong>';
+        popup_content += '<p>' + (mailpn_i18n.processing_queue || 'Processing queue') + '</p>';
+        popup_content += '</div>';
+        popup_content += '</div>';
+      }
+
+      // Statistics
+      popup_content += '<div class="mailpn-queue-section">';
+      popup_content += '<h4>' + (mailpn_i18n.statistics || 'Statistics') + '</h4>';
+      popup_content += '<ul class="mailpn-queue-stats">';
+      popup_content += '<li><strong>' + (mailpn_i18n.total_pending || 'Total pending') + '</strong><div style="font-size:20px;font-weight:600;color:#2271b1;margin-top:4px;">' + result.total_pending + '</div></li>';
+      popup_content += '<li><strong>' + (mailpn_i18n.sent_today || 'Sent today') + '</strong><div style="font-size:20px;font-weight:600;color:#2271b1;margin-top:4px;">' + result.mails_sent_today + ' / ' + result.daily_limit + '</div></li>';
+      popup_content += '<li><strong>' + (mailpn_i18n.rate_limit || 'Rate limit') + '</strong><div style="font-size:20px;font-weight:600;color:#2271b1;margin-top:4px;">' + result.rate_limit + ' / 10min</div></li>';
+      popup_content += '</ul>';
+      popup_content += '</div>';
+
+      // Templates in queue
+      if (result.templates_in_queue.length > 0) {
+        popup_content += '<div class="mailpn-queue-section">';
+        popup_content += '<h4>' + (mailpn_i18n.templates_in_queue || 'Templates in Queue') + '</h4>';
+        popup_content += '<ul class="mailpn-queue-templates-list">';
+        result.templates_in_queue.forEach(function(template) {
+          popup_content += '<li>';
+          popup_content += '<strong>' + template.title + '</strong>';
+          popup_content += '<span class="mailpn-template-pending">' + template.pending + ' ' + (mailpn_i18n.pending || 'pending') + '</span>';
+          popup_content += '</li>';
+        });
+        popup_content += '</ul>';
+        popup_content += '</div>';
+      }
+
+      // Next batch
+      if (result.next_batch.length > 0) {
+        popup_content += '<div class="mailpn-queue-section">';
+
+        // Group by date (today vs tomorrow) and then by batch
+        var todayBatches = {};
+        var tomorrowBatches = {};
+
+        result.next_batch.forEach(function(item) {
+          var batches = item.sends_tomorrow ? tomorrowBatches : todayBatches;
+          var key = item.estimated_send_formatted; // Use formatted date as key for better grouping
+
+          if (!batches[key]) {
+            batches[key] = {
+              items: [],
+              time: item.estimated_send_formatted,
+              batch_number: item.batch_number,
+              sends_tomorrow: item.sends_tomorrow
+            };
+          }
+          batches[key].items.push(item);
+        });
+
+        // Display today's batches first
+        var todayKeys = Object.keys(todayBatches);
+        if (todayKeys.length > 0) {
+          todayKeys.forEach(function(key, index) {
+            var batch = todayBatches[key];
+            var batchLabel = index === 0 && !result.hit_daily_limit ?
+              (mailpn_i18n.sending_now || 'Sending now') :
+              (mailpn_i18n.batch || 'Batch') + ' ' + (index + 1);
+
+            popup_content += '<div class="mailpn-batch-group">';
+            popup_content += '<h4 class="mailpn-batch-title">';
+            popup_content += '<span>' + batchLabel + '</span>';
+            popup_content += '<span class="mailpn-batch-time">';
+            popup_content += '<i class="material-icons-outlined">schedule</i> ';
+            popup_content += batch.time;
+            popup_content += '</span>';
+            popup_content += '</h4>';
+
+            popup_content += '<ul class="mailpn-queue-pending-list">';
+            batch.items.forEach(function(item) {
+              popup_content += '<li>';
+              popup_content += '<strong>#' + item.user_id + ' ' + item.name + '</strong>';
+              popup_content += '<span class="mailpn-user-email">' + item.email + '</span>';
+              popup_content += '<span class="mailpn-template-tag">' + item.template_title + '</span>';
+              popup_content += '</li>';
+            });
+            popup_content += '</ul>';
+            popup_content += '</div>';
+          });
+        }
+
+        // Display tomorrow's batches
+        var tomorrowKeys = Object.keys(tomorrowBatches);
+        if (tomorrowKeys.length > 0) {
+          tomorrowKeys.forEach(function(key, index) {
+            var batch = tomorrowBatches[key];
+            var batchLabel = index === 0 ?
+              (mailpn_i18n.sending_tomorrow || 'Sending tomorrow') :
+              (mailpn_i18n.batch || 'Batch') + ' ' + (index + 1) + ' (' + (mailpn_i18n.sending_tomorrow || 'tomorrow') + ')';
+
+            popup_content += '<div class="mailpn-batch-group mailpn-batch-tomorrow">';
+            popup_content += '<h4 class="mailpn-batch-title">';
+            popup_content += '<span>' + batchLabel + '</span>';
+            popup_content += '<span class="mailpn-batch-time">';
+            popup_content += '<i class="material-icons-outlined">schedule</i> ';
+            popup_content += batch.time;
+            popup_content += '</span>';
+            popup_content += '</h4>';
+
+            popup_content += '<ul class="mailpn-queue-pending-list">';
+            batch.items.forEach(function(item) {
+              popup_content += '<li>';
+              popup_content += '<strong>#' + item.user_id + ' ' + item.name + '</strong>';
+              popup_content += '<span class="mailpn-user-email">' + item.email + '</span>';
+              popup_content += '<span class="mailpn-template-tag">' + item.template_title + '</span>';
+              popup_content += '</li>';
+            });
+            popup_content += '</ul>';
+            popup_content += '</div>';
+          });
+        }
+
+        popup_content += '</div>';
+      }
+
+      popup_content += '<div class="mailpn-popup-buttons">';
+
+      // Add resume button if paused
+      if (result.is_paused) {
+        popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-resume-queue-popup" data-source="global-popup">';
+        popup_content += '<i class="material-icons-outlined">play_arrow</i> ';
+        popup_content += (mailpn_i18n.resume_queue || 'Resume Queue');
+        popup_content += '</button>';
+      }
+
+      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-close-global-queue">' + (mailpn_i18n.close || 'Close') + '</button>';
+      popup_content += '</div>';
+      popup_content += '</div>';
+
+      // Show popup using MAILPN_Popups
+      var popup_id = 'mailpn-global-queue-popup';
+      var full_popup_html = '<div id="' + popup_id + '" class="mailpn-popup mailpn-global-queue-popup-wrapper">' +
+        '<div class="mailpn-popup-content">' + popup_content + '</div>' +
+        '</div>';
+
+      $('#' + popup_id).remove();
+      $('body').append(full_popup_html);
+
+      if (typeof MAILPN_Popups !== 'undefined' && MAILPN_Popups.open) {
+        MAILPN_Popups.open(popup_id);
+      } else {
+        $('#' + popup_id).show();
+        if (!$('.mailpn-popup-overlay').length) {
+          $('body').append('<div class="mailpn-popup-overlay"></div>');
+          $('.mailpn-popup-overlay').fadeIn('fast');
+        }
+      }
+    }).fail(function() {
+      btn.prop('disabled', false).html(originalHTML);
+      alert('Network error');
+    });
+  });
+
+  // Close popup
+  $(document).on('click', '.mailpn-btn-close-global-queue', function(e) {
+    e.preventDefault();
+    if (typeof MAILPN_Popups !== 'undefined' && MAILPN_Popups.close) {
+      MAILPN_Popups.close();
+    }
+  });
+
+  // Resume queue from global popup
+  $(document).on('click', '.mailpn-btn-resume-queue-popup', function(e) {
+    e.preventDefault();
+    var btn = $(this);
+
+    if (!confirm(mailpn_i18n.confirm_resume_queue || 'Are you sure you want to resume the queue? Make sure you have fixed the issue that caused the errors.')) {
+      return;
+    }
+
+    var originalHTML = btn.html();
+    btn.prop('disabled', true).html('<div class="mailpn-waiting"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div> ' + (mailpn_i18n.resuming || 'Resuming...'));
+
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_resume_queue',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+    }, function(response) {
+      var result = $.parseJSON(response);
+
+      if (result.error_key !== '') {
+        alert('Error resuming queue');
+        btn.prop('disabled', false).html(originalHTML);
+      } else {
+        btn.html('<i class="material-icons-outlined">check</i> ' + (mailpn_i18n.queue_resumed || 'Queue resumed'));
+
+        // Close popup and reload after 1 second
+        setTimeout(function() {
+          if (typeof MAILPN_Popups !== 'undefined' && MAILPN_Popups.close) {
+            MAILPN_Popups.close();
+          }
+          location.reload();
+        }, 1000);
+      }
+    }).fail(function() {
+      alert('Network error');
+      btn.prop('disabled', false).html(originalHTML);
+    });
+  });
+
+})(jQuery);

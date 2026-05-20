@@ -105,10 +105,9 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.mailpn-notification-icon-btn.mark-all-read', function() {
         var userId = $(this).data('user-id');
         var $button = $(this);
-        var $icon = $button.find('i');
-        var originalIcon = $icon.text();
+        var originalHTML = $button.html();
 
-        $icon.text('hourglass_empty').prop('disabled', true);
+        $button.html('<div class="mailpn-waiting"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div>').prop('disabled', true);
 
         $.ajax({
             url: mailpn_notifications_ajax.ajax_url,
@@ -126,7 +125,7 @@ jQuery(document).ready(function($) {
                         $(this).closest('.mailpn-tooltip').replaceWith('<div class="mailpn-tooltip"><button type="button" class="mailpn-notification-icon-btn mark-unread" data-notification-id="' + notificationId + '" title="' + mailpn_notifications_ajax.mark_unread_text + '"><i class="material-icons-outlined">mark_email_unread</i></button><span class="mailpn-tooltiptext">' + mailpn_notifications_ajax.mark_unread_text + '</span></div>');
                     });
                 }
-                $icon.text(originalIcon).prop('disabled', false);
+                $button.html(originalHTML).prop('disabled', false);
             },
             error: function() {
                 $icon.text(originalIcon).prop('disabled', false);

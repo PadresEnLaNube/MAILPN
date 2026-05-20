@@ -535,9 +535,14 @@ class MAILPN_Post_Type_Rec
                 <?php echo esc_html(get_the_title($mailpn_rec_post_id)); ?></a></small>
           <?php endif ?>
         <?php else: ?>
-          <p><i
-              class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">block</i>
-            <?php esc_html_e('Email not sent. Errors have been found.', 'mailpn'); ?></p>
+          <p>
+            <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">block</i>
+            <?php esc_html_e('Email not sent. Errors have been found.', 'mailpn'); ?>
+            <a href="#" class="mailpn-view-error-details" data-rec-id="<?php echo esc_attr($post_id); ?>" style="margin-left: 8px;">
+              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">info</i>
+              <?php esc_html_e('View Details', 'mailpn'); ?>
+            </a>
+          </p>
         <?php endif ?>
         <?php
         break;
