@@ -811,4 +811,65 @@
     });
   });
 
+  // Update daily rate calculation when rate limit changes
+  $(document).on('input change keyup', '.mailpn-rate-limit-input', function() {
+    var rateValue = parseInt($(this).val()) || 0;
+    var dailyEmails = rateValue * 6 * 24;
+
+    // Update all instances of daily number in the wrapper
+    $('.mailpn-daily-rate-calc-wrapper .mailpn-daily-number').each(function() {
+      $(this).text(dailyEmails.toLocaleString());
+    });
+
+    // Update the rate value
+    $('.mailpn-daily-rate-calc-wrapper .mailpn-rate-value').text(rateValue);
+  });
+
+  // Retry failed email
+  $(document).on('click', '.mailpn-retry-email', function(e) {
+    e.preventDefault();
+
+    var btn = $(this);
+    var recId = btn.data('rec-id');
+    var originalHTML = btn.html();
+
+    if (!recId) {
+      mailpn_get_main_message('Invalid record ID', 'error');
+      return;
+    }
+
+    if (btn.prop('disabled')) {
+      return;
+    }
+
+    btn.prop('disabled', true).html('<span class="mailpn-loader data"></span>');
+
+    $.ajax({
+      url: mailpn_ajax.ajax_url,
+      type: 'POST',
+      data: {
+        action: 'mailpn_ajax',
+        mailpn_ajax_type: 'mailpn_retry_email',
+        mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+        rec_id: recId
+      }
+    }).done(function(response) {
+      var result = JSON.parse(response);
+
+      if (result.error_key === '') {
+        mailpn_get_main_message(result.message || 'Email sent successfully', 'success');
+        // Reload the page to show updated status
+        setTimeout(function() {
+          location.reload();
+        }, 1500);
+      } else {
+        mailpn_get_main_message(result.message || 'Error sending email', 'error');
+        btn.prop('disabled', false).html(originalHTML);
+      }
+    }).fail(function() {
+      btn.prop('disabled', false).html(originalHTML);
+      mailpn_get_main_message('Network error', 'error');
+    });
+  });
+
 })(jQuery);

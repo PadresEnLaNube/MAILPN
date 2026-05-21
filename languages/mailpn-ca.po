@@ -238,6 +238,21 @@ msgstr "Esborra el registre de depuració"
 msgid "Clear Queue"
 msgstr "Esborra la cua"
 
+msgid "Resume Queue"
+msgstr "Reprendre la cua"
+
+msgid "Pause Queue"
+msgstr "Pausar la cua"
+
+msgid "Are you sure you want to pause the email sending queue?"
+msgstr "Esteu segur que voleu pausar la cua d'enviament de correus electrònics?"
+
+msgid "Pausing..."
+msgstr "Pausant..."
+
+msgid "Queue paused"
+msgstr "Cua pausada"
+
 #: includes/class-mailpn-post-type-rec.php:562
 msgid "Click Statistics"
 msgstr "Estadístiques de clics"
@@ -622,6 +637,14 @@ msgstr "Contingut de text del correu electrònic"
 msgid "Email type"
 msgstr "Tipus de correu electrònic"
 
+#: includes/class-mailpn-post-type-mail.php:64
+msgid "Email subtitle"
+msgstr "Subtítol del correu electrònic"
+
+#: includes/class-mailpn-post-type-mail.php:66
+msgid "Optional subtitle that will be displayed below the title in the email body."
+msgstr "Subtítol opcional que es mostrarà sota el títol al cos del correu electrònic."
+
 #: includes/class-mailpn-settings.php:1945
 msgid "emails"
 msgstr "correus electrònics"
@@ -644,8 +667,32 @@ msgid "emails sent"
 msgstr "correus electrònics enviats"
 
 #: includes/class-mailpn-settings.php:98
-msgid "Emails sent every day"
-msgstr "Correus electrònics enviats cada dia"
+msgid "Maximum emails sent per day"
+msgstr "Màxim de correus electrònics enviats al dia"
+
+msgid "Estimated daily capacity"
+msgstr "Capacitat diària estimada"
+
+msgid "Based on current rate limit:"
+msgstr "Basat en el límit de velocitat actual:"
+
+msgid "emails/day"
+msgstr "correus/dia"
+
+msgid "emails every 10 min"
+msgstr "correus cada 10 min"
+
+msgid "per hour"
+msgstr "per hora"
+
+msgid "hours"
+msgstr "hores"
+
+msgid "This is the theoretical maximum. The actual daily limit below may be lower based on your email server capacity."
+msgstr "Aquest és el màxim teòric. El límit diari real a continuació pot ser menor segons la capacitat del teu servidor de correu."
+
+msgid "Set the maximum number of emails that can be sent per day. Check your mail server settings and the system will automatically be adjusted to this number. Default is 500."
+msgstr "Estableix el nombre màxim de correus electrònics que es poden enviar per dia. Verifica la configuració del teu servidor de correu i el sistema s'ajustarà automàticament a aquest nombre. Per defecte és 500."
 
 #: includes/class-mailpn-settings.php:90
 msgid "Emails sent every ten minutes"
@@ -2282,3 +2329,52 @@ msgstr "El vostre nom d'usuari SMTP o adreça de correu electrònic."
 #: includes/class-mailpn-settings.php:364
 msgid "your@email.com"
 msgstr "el vostre@correu.com"
+
+#: includes/class-mailpn-post-type-rec.php:543
+msgid "View Details"
+msgstr "Veure detalls"
+
+#: includes/class-mailpn-post-type-rec.php:547
+msgid "Retry"
+msgstr "Reintentar"
+
+#: includes/class-mailpn-ajax.php:267
+msgid "Email added to queue for retry. It will be sent at the next processing cycle."
+msgstr "Correu afegit a la cua per reintentar. S'enviarà en el proper cicle de processament."
+
+#: includes/class-mailpn-ajax.php:237
+msgid "Failed to send email. Check error details."
+msgstr "Error en enviar el correu. Comprova els detalls de l'error."
+
+#: includes/class-mailpn-ajax.php:239
+msgid "Email was skipped due to validation issues."
+msgstr "El correu va ser omès per problemes de validació."
+
+#: includes/class-mailpn-ajax.php:209
+msgid "Missing record ID"
+msgstr "Falta l'ID del registre"
+
+#: includes/class-mailpn-ajax.php:216
+msgid "Invalid record data"
+msgstr "Dades del registre invàlides"
+
+#: includes/class-mailpn-ajax.php:223
+msgid "Email template is not available or not published"
+msgstr "La plantilla de correu no està disponible o no està publicada"
+
+#: includes/class-mailpn-mailing.php:1234
+msgid "Estimated completion: %s (%s)"
+msgstr "Finalització estimada: %s (%s)"
+
+#: includes/class-mailpn-mailing.php:1226
+msgid "%s hour"
+msgid_plural "%s hours"
+msgstr[0] "%s hora"
+msgstr[1] "%s hores"
+
+#: includes/class-mailpn-mailing.php:1228
+#: includes/class-mailpn-mailing.php:1232
+msgid "%s minute"
+msgid_plural "%s minutes"
+msgstr[0] "%s minut"
+msgstr[1] "%s minuts"

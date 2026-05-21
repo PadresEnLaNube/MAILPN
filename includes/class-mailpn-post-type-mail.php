@@ -56,6 +56,16 @@ class MAILPN_Post_Type_Mail
         . '</div>'
         . '</div>',
     ];
+    $mailpn_fields_meta['mailpn_subtitle'] = [
+      'id' => 'mailpn_subtitle',
+      'class' => 'mailpn-input mailpn-width-100-percent',
+      'input' => 'input',
+      'type' => 'text',
+      'parent' => 'this',
+      'label' => __('Email subtitle', 'mailpn'),
+      'placeholder' => __('Email subtitle', 'mailpn'),
+      'description' => __('Optional subtitle that will be displayed below the title in the email body.', 'mailpn'),
+    ];
     $mailpn_fields_meta['mailpn_type'] = [
       'id' => 'mailpn_type',
       'class' => 'mailpn-select mailpn-width-100-percent',

@@ -228,6 +228,62 @@ class MAILPN_Ajax {
 
           echo wp_json_encode(['error_key' => '', ]);exit();
           break;
+        case 'mailpn_retry_email':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'unauthorized', 'message' => esc_html__('Unauthorized access', 'mailpn')]);
+            exit();
+          }
+
+          $rec_id = !empty($_POST['rec_id']) ? intval($_POST['rec_id']) : 0;
+
+          if (empty($rec_id)) {
+            echo wp_json_encode(['error_key' => 'missing_id', 'message' => esc_html__('Missing record ID', 'mailpn')]);
+            exit();
+          }
+
+          // Get record data
+          $mail_id = get_post_meta($rec_id, 'mailpn_rec_mail_id', true);
+          $user_id = get_post_meta($rec_id, 'mailpn_rec_to', true);
+
+          if (empty($mail_id) || empty($user_id)) {
+            echo wp_json_encode(['error_key' => 'invalid_data', 'message' => esc_html__('Invalid record data', 'mailpn')]);
+            exit();
+          }
+
+          // Check if template is published
+          $mail_post = get_post($mail_id);
+          if (!$mail_post || $mail_post->post_status !== 'publish') {
+            echo wp_json_encode(['error_key' => 'invalid_template', 'message' => esc_html__('Email template is not available or not published', 'mailpn')]);
+            exit();
+          }
+
+          // Get current queue
+          $mailpn_queue = get_option('mailpn_queue', []);
+
+          // Ensure the mail_id has an array in the queue
+          if (!isset($mailpn_queue[$mail_id]) || !is_array($mailpn_queue[$mail_id])) {
+            $mailpn_queue[$mail_id] = [];
+          }
+
+          // Add user to the FIRST position of the queue (beginning of array)
+          array_unshift($mailpn_queue[$mail_id], $user_id);
+
+          // Remove duplicates if any
+          $mailpn_queue[$mail_id] = array_unique($mailpn_queue[$mail_id]);
+
+          // Save updated queue
+          update_option('mailpn_queue', $mailpn_queue);
+
+          // Delete the error record
+          wp_delete_post($rec_id, true);
+
+          // Return success message
+          echo wp_json_encode([
+            'error_key' => '',
+            'message' => esc_html__('Email added to queue for retry. It will be sent at the next processing cycle.', 'mailpn')
+          ]);
+          exit();
+          break;
         case 'mailpn_force_send_periodic':
           if (!current_user_can('manage_options')) {
             echo wp_json_encode(['error_key' => 'unauthorized', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
@@ -750,6 +806,19 @@ class MAILPN_Ajax {
           delete_option('mailpn_queue_paused');
           delete_option('mailpn_queue_paused_by_errors');
           delete_option('mailpn_consecutive_errors_count');
+
+          echo wp_json_encode(['error_key' => '']);
+          exit;
+          break;
+        case 'mailpn_pause_queue':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          // Pause queue by setting pause flag
+          update_option('mailpn_queue_paused', time());
+          // Don't set paused_by_errors flag as this is a manual pause
 
           echo wp_json_encode(['error_key' => '']);
           exit;

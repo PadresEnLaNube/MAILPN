@@ -542,6 +542,10 @@ class MAILPN_Post_Type_Rec
               <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">info</i>
               <?php esc_html_e('View Details', 'mailpn'); ?>
             </a>
+            <a href="#" class="mailpn-retry-email" data-rec-id="<?php echo esc_attr($post_id); ?>" style="margin-left: 8px;">
+              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">refresh</i>
+              <?php esc_html_e('Retry', 'mailpn'); ?>
+            </a>
           </p>
         <?php endif ?>
         <?php

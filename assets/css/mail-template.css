@@ -32,7 +32,7 @@
 .mailpn-button {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #007cba;
+    background-color: #86b3ac;
     color: #ffffff;
     text-decoration: none;
     border-radius: 4px;
@@ -40,7 +40,46 @@
 }
 
 .mailpn-button:hover {
-    background-color: #005a87;
+    background-color: #6a9a94;
+}
+
+/* WordPress Gutenberg button styles for emails */
+.wp-block-button {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.wp-block-button__link,
+.wp-element-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #86b3ac;
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.5;
+    border: none;
+    margin: 10px 5px;
+}
+
+.wp-block-button__link:hover,
+.wp-element-button:hover {
+    background-color: #6a9a94;
+    color: #ffffff !important;
+}
+
+/* Support for button color variations */
+.wp-block-button.is-style-fill .wp-block-button__link {
+    background-color: #86b3ac;
+    color: #ffffff !important;
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link {
+    background-color: transparent;
+    border: 2px solid #86b3ac;
+    color: #86b3ac !important;
 }
 
 /* Responsive design */

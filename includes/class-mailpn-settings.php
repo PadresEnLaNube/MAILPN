@@ -99,19 +99,25 @@ class MAILPN_Settings {
     ];
       $mailpn_options['mailpn_sent_every_ten_minutes'] = [
         'id' => 'mailpn_sent_every_ten_minutes',
-        'class' => 'mailpn-input mailpn-width-100-percent',
+        'class' => 'mailpn-input mailpn-width-100-percent mailpn-rate-limit-input',
         'input' => 'input',
         'type' => 'number',
         'label' => __('Emails sent every ten minutes', 'mailpn'),
-        'description' => __('Set the number of emails that the system will send every 10 mimutes. Default emails sent will be 5.', 'mailpn'),
+        'description' => __('Set the number of emails that the system will send every 10 minutes. Default emails sent will be 5.', 'mailpn'),
+      ];
+      $mailpn_options['mailpn_calculated_daily_rate'] = [
+        'id' => 'mailpn_calculated_daily_rate',
+        'class' => 'mailpn-width-100-percent',
+        'input' => 'html',
+        'html_content' => self::mailpn_get_daily_rate_calculation_html(),
       ];
       $mailpn_options['mailpn_sent_every_day'] = [
         'id' => 'mailpn_sent_every_day',
         'class' => 'mailpn-input mailpn-width-100-percent',
         'input' => 'input',
         'type' => 'number',
-        'label' => __('Emails sent every day', 'mailpn'),
-        'description' => __('You can limit the number of emails sent everyday. Check your mail server settings and the system will automatically be adjusted to this number. Default emails sent will be 500.', 'mailpn'),
+        'label' => __('Maximum emails sent per day', 'mailpn'),
+        'description' => __('Set the maximum number of emails that can be sent per day. Check your mail server settings and the system will automatically be adjusted to this number. Default is 500.', 'mailpn'),
         'default' => '500',
       ];
       $mailpn_options['mailpn_new_user_notifications'] = [
@@ -419,6 +425,7 @@ class MAILPN_Settings {
       'label' => __('SMTP Username', 'mailpn'),
       'placeholder' => __('your@email.com', 'mailpn'),
       'description' => __('Your SMTP username or email address.', 'mailpn'),
+      'autocomplete' => 'off',
     ];
 
     $mailpn_options['mailpn_smtp_password'] = [
@@ -431,7 +438,7 @@ class MAILPN_Settings {
       'label' => __('SMTP Password', 'mailpn'),
       'placeholder' => '••••••••',
       'description' => __('Your SMTP password or app password. For Gmail, you MUST use an App Password (not your regular password). To create an App Password: 1) Enable 2-Factor Authentication on your Google Account, 2) Go to Security → App passwords, 3) Generate a password for "Mail".', 'mailpn'),
-      'autocomplete' => 'new-password',
+      'autocomplete' => 'off',
     ];
 
     $mailpn_options['mailpn_smtp_from_email'] = [
@@ -1565,8 +1572,55 @@ class MAILPN_Settings {
   public function mailpn_plugin_action_links($links) {
       $settings_link = '<a href="admin.php?page=mailpn_options">' . esc_html__('Settings', 'mailpn') . '</a>';
       array_unshift($links, $settings_link);
-      
+
       return $links;
+  }
+
+  /**
+   * Generate HTML for dynamic daily rate calculation
+   *
+   * @return string HTML content
+   */
+  public static function mailpn_get_daily_rate_calculation_html() {
+    $current_rate = get_option('mailpn_sent_every_ten_minutes', 5);
+    $calculated_daily = $current_rate * 6 * 24; // 6 intervals per hour × 24 hours
+
+    ob_start();
+    ?>
+    <div class="mailpn-daily-rate-calc-wrapper mailpn-mb-10">
+      <label class="mailpn-vertical-align-middle mailpn-display-block mailpn-toggle mailpn-cursor-pointer">
+        <h4 class="mailpn-daily-calc-header">
+          <?php esc_html_e('Estimated daily capacity', 'mailpn'); ?>:
+          <strong class="mailpn-daily-number mailpn-color-main-0"><?php echo esc_html(number_format($calculated_daily)); ?></strong>
+          <?php esc_html_e('emails/day', 'mailpn'); ?>
+          <i class="material-icons-outlined mailpn-cursor-pointer mailpn-float-right">add</i>
+        </h4>
+      </label>
+
+      <div class="mailpn-toggle-content mailpn-display-none-soft mailpn-mt-10">
+        <div class="mailpn-section-info-block">
+          <i class="material-icons-outlined mailpn-section-info-icon">info</i>
+          <div>
+            <p class="mailpn-mb-10">
+              <strong><?php esc_html_e('Based on current rate limit:', 'mailpn'); ?></strong>
+            </p>
+            <p class="mailpn-mb-10">
+              <span class="mailpn-rate-value"><?php echo esc_html($current_rate); ?></span>
+              <?php esc_html_e('emails every 10 min', 'mailpn'); ?>
+              × 6 <?php esc_html_e('per hour', 'mailpn'); ?>
+              × 24 <?php esc_html_e('hours', 'mailpn'); ?>
+              = <strong class="mailpn-daily-number mailpn-color-main-0"><?php echo esc_html(number_format($calculated_daily)); ?></strong>
+              <?php esc_html_e('emails/day', 'mailpn'); ?>
+            </p>
+            <small>
+              <?php esc_html_e('This is the theoretical maximum. The actual daily limit below may be lower based on your email server capacity.', 'mailpn'); ?>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php
+    return ob_get_clean();
   }
 
 }

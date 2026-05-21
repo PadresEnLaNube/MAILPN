@@ -164,11 +164,27 @@ class MAILPN_Mailing {
 
     // Exception domains and emails check (skip for system emails)
     if (!$is_system_email && get_option('mailpn_exception_emails') == 'on' && self::mailpn_is_email_address_excepted($user_email)) {
-      return false;
+      return 'skipped'; // Validation issue, not a sending error
     }
+
+    // Check if mail template is published - don't send drafts or other unpublished states
+    if (!empty($mailpn_id)) {
+      $mail_post_status = get_post_status($mailpn_id);
+      if ($mail_post_status !== 'publish') {
+        // Log for debugging if needed
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+          error_log(sprintf('MAILPN: Attempted to send email with template ID %d but status is "%s" (not published)', $mailpn_id, $mail_post_status));
+        }
+        // Return 'skipped' string to indicate this is a validation issue, not a sending error
+        return 'skipped';
+      }
+    }
+
     $mailpn_subject = !empty($mailpn_subject) ? $mailpn_subject : (!empty($mailpn_id) ? esc_html(get_the_title($mailpn_id)) : esc_html(__('Mail subject', 'mailpn')));
 
     $mailpn_content = !empty($mailpn_id) ? get_post($mailpn_id)->post_content : $mailpn_content;
+
+    $mailpn_subtitle = !empty($mailpn_id) ? esc_html(get_post_meta($mailpn_id, 'mailpn_subtitle', true)) : '';
 
     if (!empty($mailpn_content)) {
       $content_filters = apply_filters('mailpn_content_filters', [
@@ -193,7 +209,7 @@ class MAILPN_Mailing {
 
     // Validation: Don't send email if content is empty or subject is default
     if (empty(trim($mailpn_content)) || $mailpn_subject === esc_html(__('Mail subject', 'mailpn'))) {
-        return false;
+        return 'skipped'; // Validation issue, not a sending error
     }
 
     $mailpn_attachments = [];
@@ -240,7 +256,7 @@ class MAILPN_Mailing {
       $headers[] = 'List-Unsubscribe: <' . esc_url($unsubscribe_page) . '>, <mailto:' . esc_attr($from_email) . '?subject=Unsubscribe>';
     }
 
-    $mailpn_message = self::mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id);
+    $mailpn_message = self::mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id, $mailpn_subtitle);
 
     if (filter_var($mailpn_user_to, FILTER_VALIDATE_EMAIL)) {
       $mailpn_result = wp_mail($mailpn_user_to, $mailpn_subject, $mailpn_message, $headers, $mailpn_attachments);
@@ -497,10 +513,6 @@ class MAILPN_Mailing {
 
       // Set authentication if enabled
       if ($smtp_auth === 'on') {
-        if (empty($smtp_username) || empty($smtp_password)) {
-          // SMTP auth is enabled but credentials are missing - disable SMTP and use default mail
-          return;
-        }
         $phpmailer->SMTPAuth = true;
         $phpmailer->Username = $smtp_username;
         $phpmailer->Password = $smtp_password;
@@ -537,15 +549,120 @@ class MAILPN_Mailing {
     }
   }
 
-  public function mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id = 0) {
+  /**
+   * Process HTML content to add inline styles for WordPress buttons
+   *
+   * @param string $content HTML content
+   * @return string Processed HTML content with inline button styles
+   */
+  private function mailpn_process_buttons_for_email($content) {
+    if (empty($content)) {
+      return $content;
+    }
+
+    // Get main color from settings
+    $main_color = get_option('mailpn_links_color');
+    if (empty($main_color)) {
+      $main_color = '#86b3ac'; // Default color if not set
+    }
+
+    // WordPress button styles - compatible with most email clients
+    $button_styles = 'display:inline-block;padding:12px 24px;margin:10px 5px;background-color:' . esc_attr($main_color) . ';color:#ffffff !important;text-decoration:none;border-radius:4px;font-weight:600;font-size:16px;line-height:1.5;text-align:center;border:none;';
+    $button_wrapper_styles = 'text-align:center;margin:20px 0;';
+
+    // Process wp-block-button (Gutenberg button block)
+    $content = preg_replace_callback(
+      '/<div[^>]*class="[^"]*wp-block-button[^"]*"[^>]*>(.*?)<\/div>/is',
+      function($matches) use ($button_styles, $button_wrapper_styles) {
+        $inner = $matches[1];
+        // Extract the link
+        if (preg_match('/<a([^>]*)>(.*?)<\/a>/is', $inner, $link_matches)) {
+          $link_attrs = $link_matches[1];
+          $link_text = $link_matches[2];
+
+          // Extract href
+          $href = '';
+          if (preg_match('/href=["\']([^"\']*)["\']/', $link_attrs, $href_matches)) {
+            $href = $href_matches[1];
+          }
+
+          // Check for custom background color
+          $custom_bg = '';
+          if (preg_match('/background-color:\s*([^;"]+)/i', $link_attrs, $bg_matches)) {
+            $custom_bg = 'background-color:' . $bg_matches[1] . ';';
+          }
+
+          // Check for custom text color
+          $custom_color = '';
+          if (preg_match('/color:\s*([^;"]+)/i', $link_attrs, $color_matches)) {
+            $custom_color = 'color:' . $color_matches[1] . ' !important;';
+          }
+
+          // Merge custom styles with default
+          $final_styles = $button_styles;
+          if ($custom_bg) {
+            $final_styles = preg_replace('/background-color:[^;]+;/', $custom_bg, $final_styles);
+          }
+          if ($custom_color) {
+            $final_styles = preg_replace('/color:[^;]+;/', $custom_color, $final_styles);
+          }
+
+          return '<div style="' . $button_wrapper_styles . '"><a href="' . esc_url($href) . '" style="' . $final_styles . '">' . $link_text . '</a></div>';
+        }
+        return $matches[0];
+      },
+      $content
+    );
+
+    // Process wp-element-button class (alternative button markup)
+    $content = preg_replace_callback(
+      '/<a[^>]*class="[^"]*wp-element-button[^"]*"[^>]*>(.*?)<\/a>/is',
+      function($matches) use ($button_styles) {
+        $full_tag = $matches[0];
+        $text = $matches[1];
+
+        // Extract href
+        $href = '';
+        if (preg_match('/href=["\']([^"\']*)["\']/', $full_tag, $href_matches)) {
+          $href = $href_matches[1];
+        }
+
+        // Check for custom styles
+        $custom_styles = '';
+        if (preg_match('/style=["\']([^"\']*)["\']/', $full_tag, $style_matches)) {
+          $custom_styles = $style_matches[1];
+        }
+
+        return '<a href="' . esc_url($href) . '" style="' . $button_styles . $custom_styles . '">' . $text . '</a>';
+      },
+      $content
+    );
+
+    return $content;
+  }
+
+  public function mailpn_template($mailpn_subject, $mailpn_content, $mailpn_socials, $mailpn_legal_name, $mailpn_legal_address, $mailpn_user_to, $mailpn_id = 0, $mailpn_subtitle = '') {
     $mailpn_template_css = file_get_contents(MAILPN_DIR . 'assets/css/mail-template.css');
+
+    // Get main color from settings and replace in CSS
+    $main_color = get_option('mailpn_links_color');
+    if (empty($main_color)) {
+      $main_color = '#86b3ac'; // Default color if not set
+    }
+
+    // Replace default button color with main color in CSS
+    $mailpn_template_css = str_replace('#007cba', $main_color, $mailpn_template_css);
 
     wp_register_style('mail-template-css', false);
     wp_enqueue_style('mail-template-css');
     wp_add_inline_style('mail-template-css', $mailpn_template_css);
-    
+
     $mailpn_max_width = get_option('mailpn_max_width');
     $mailpn_max_width_val = (!empty($mailpn_max_width) && is_numeric($mailpn_max_width)) ? intval($mailpn_max_width) : 700;
+
+    // Process content to add inline styles to WordPress buttons
+    $mailpn_content = $this->mailpn_process_buttons_for_email($mailpn_content);
+
     ob_start();
     ?>
       <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -566,6 +683,19 @@ class MAILPN_Mailing {
                   </td>
                 </tr>
               <?php endif ?>
+
+              <?php if (!empty($mailpn_subject) || !empty($mailpn_subtitle)): ?>
+                <tr style="text-align:center;">
+                  <td style="padding:20px 20px 10px 20px;">
+                    <?php if (!empty($mailpn_subject)): ?>
+                      <h1 style="margin:0 0 10px 0;font-size:28px;font-weight:600;color:#333333;line-height:1.3;"><?php echo esc_html($mailpn_subject); ?></h1>
+                    <?php endif; ?>
+                    <?php if (!empty($mailpn_subtitle)): ?>
+                      <h2 style="margin:0;font-size:18px;font-weight:400;color:#666666;line-height:1.5;"><?php echo esc_html($mailpn_subtitle); ?></h2>
+                    <?php endif; ?>
+                  </td>
+                </tr>
+              <?php endif; ?>
 
               <tr style="text-align:left;">
                 <td>
@@ -1084,6 +1214,28 @@ class MAILPN_Mailing {
               <div class="mailpn-status-stats">
                 <span class="mailpn-status-stat"><strong><?php echo esc_html($emails_sent); ?></strong> <?php esc_html_e('of', 'mailpn'); ?> <strong><?php echo esc_html($emails_total); ?></strong> <?php esc_html_e('emails sent', 'mailpn'); ?> (<?php echo esc_html($progress_pct); ?>%)</span>
                 <span class="mailpn-status-stat mailpn-status-rate"><i class="material-icons-outlined">speed</i> <?php echo esc_html($mails_sent_every_ten_minutes); ?> <?php esc_html_e('emails every ten minutes', 'mailpn'); ?></span>
+                <?php if ($emails_pending > 0 && $mails_sent_every_ten_minutes > 0): ?>
+                  <?php
+                    // Calculate estimated completion time
+                    $cycles_needed = ceil($emails_pending / $mails_sent_every_ten_minutes);
+                    $minutes_needed = $cycles_needed * 10;
+                    $completion_time = time() + ($minutes_needed * 60);
+                    $completion_date = wp_date(get_option('date_format') . ' ' . get_option('time_format'), $completion_time);
+
+                    // Calculate time remaining in a human-readable format
+                    $hours = floor($minutes_needed / 60);
+                    $mins = $minutes_needed % 60;
+                    if ($hours > 0) {
+                      $time_remaining = sprintf(_n('%s hour', '%s hours', $hours, 'mailpn'), $hours);
+                      if ($mins > 0) {
+                        $time_remaining .= ' ' . sprintf(_n('%s minute', '%s minutes', $mins, 'mailpn'), $mins);
+                      }
+                    } else {
+                      $time_remaining = sprintf(_n('%s minute', '%s minutes', $mins, 'mailpn'), $mins);
+                    }
+                  ?>
+                  <span class="mailpn-status-stat mailpn-status-eta"><i class="material-icons-outlined">schedule</i> <?php printf(esc_html__('Estimated completion: %s (%s)', 'mailpn'), '<strong>' . esc_html($completion_date) . '</strong>', esc_html($time_remaining)); ?></span>
+                <?php endif; ?>
                 <?php if ($mailpn_type === 'email_periodic'): ?>
                   <?php
                     $periodic_period_q = get_post_meta($post_id, 'mailpn_periodic_period', true);
@@ -1652,18 +1804,26 @@ class MAILPN_Mailing {
 
               $mail_result = do_shortcode('[mailpn-sender mailpn_user_to="' . $user_id . '" mailpn_id="' . $mail_id . '"]');
 
-              // Track consecutive errors
-              if ($mail_result) {
+              // Track consecutive errors - distinguish between real errors and validation skips
+              if ($mail_result && $mail_result !== 'skipped') {
                 // Success: reset consecutive errors counter
                 $consecutive_errors_count = 0;
                 update_option('mailpn_consecutive_errors_count', 0);
+              } elseif ($mail_result === 'skipped') {
+                // Skipped due to validation (not published, empty content, etc.)
+                // Don't count as error, just remove from queue
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                  error_log(sprintf('MAILPN: Email skipped (validation issue) - Mail ID: %d, User ID: %d', $mail_id, $user_id));
+                }
+                // Don't increment error counter for validation issues
+                // The email will be removed from queue below (continues processing)
               } else {
-                // Error: increment consecutive errors counter
+                // Real sending error: increment consecutive errors counter
                 $consecutive_errors_count++;
                 update_option('mailpn_consecutive_errors_count', $consecutive_errors_count);
 
-                // Check if we've reached the limit
-                if ($consecutive_errors_count >= $consecutive_errors_limit) {
+                // Check if we've reached the limit (only for real errors)
+                if ($consecutive_errors_limit > 0 && $consecutive_errors_count >= $consecutive_errors_limit) {
                   // Pause the queue
                   update_option('mailpn_queue_paused', time());
                   update_option('mailpn_queue_paused_by_errors', time());
@@ -1852,6 +2012,15 @@ class MAILPN_Mailing {
     $mailpn_queue = get_option('mailpn_queue');
 
     if (!empty($mail_id) && !empty($user_id)) {
+      // Check if mail template is published - don't queue drafts
+      $mail_post_status = get_post_status($mail_id);
+      if ($mail_post_status !== 'publish') {
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+          error_log(sprintf('MAILPN: Attempted to queue email with template ID %d but status is "%s" (not published)', $mail_id, $mail_post_status));
+        }
+        return false;
+      }
+
       // Check if user is blocked before adding to queue
       if (is_numeric($user_id)) {
         // Check notification status
@@ -1913,6 +2082,14 @@ class MAILPN_Mailing {
 
   public static function mailpn_get_users_to($mail_id) {
     if (get_post_type($mail_id) != 'mailpn_mail') {
+      return false;
+    }
+
+    // Only get users for published mail templates
+    if (get_post_status($mail_id) !== 'publish') {
+      if (defined('WP_DEBUG') && WP_DEBUG) {
+        error_log(sprintf('MAILPN: Attempted to get users for template ID %d but status is "%s" (not published)', $mail_id, get_post_status($mail_id)));
+      }
       return false;
     }
 

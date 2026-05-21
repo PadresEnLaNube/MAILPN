@@ -972,6 +972,14 @@ msgstr "Contenido del texto del correo electrónico"
 msgid "Email type"
 msgstr "Tipo de correo electrónico"
 
+#: includes/class-mailpn-post-type-mail.php:64
+msgid "Email subtitle"
+msgstr "Subtítulo del correo electrónico"
+
+#: includes/class-mailpn-post-type-mail.php:66
+msgid "Optional subtitle that will be displayed below the title in the email body."
+msgstr "Subtítulo opcional que se mostrará debajo del título en el cuerpo del correo electrónico."
+
 #: includes/class-mailpn-common.php:202
 msgid "emails every 10 minutes"
 msgstr "correos electrónicos cada 10 minutos"
@@ -979,6 +987,23 @@ msgstr "correos electrónicos cada 10 minutos"
 #: includes/class-mailpn-mailing.php:1086
 msgid "emails every ten minutes"
 msgstr "correos electrónicos cada diez minutos"
+
+#: includes/class-mailpn-mailing.php:1234
+msgid "Estimated completion: %s (%s)"
+msgstr "Finalización estimada: %s (%s)"
+
+#: includes/class-mailpn-mailing.php:1226
+msgid "%s hour"
+msgid_plural "%s hours"
+msgstr[0] "%s hora"
+msgstr[1] "%s horas"
+
+#: includes/class-mailpn-mailing.php:1228
+#: includes/class-mailpn-mailing.php:1232
+msgid "%s minute"
+msgid_plural "%s minutes"
+msgstr[0] "%s minuto"
+msgstr[1] "%s minutos"
 
 #: includes/class-mailpn-dashboard.php:672
 msgid "Emails opened"
@@ -1014,8 +1039,32 @@ msgid "Emails sent as HTML only"
 msgstr "Correos electrónicos enviados únicamente en formato HTML."
 
 #: includes/class-mailpn-settings.php:113
-msgid "Emails sent every day"
-msgstr "Correos electrónicos enviados todos los días"
+msgid "Maximum emails sent per day"
+msgstr "Máximo de correos electrónicos enviados al día"
+
+msgid "Estimated daily capacity"
+msgstr "Capacidad diaria estimada"
+
+msgid "Based on current rate limit:"
+msgstr "Basado en el límite de velocidad actual:"
+
+msgid "emails/day"
+msgstr "correos/día"
+
+msgid "emails every 10 min"
+msgstr "correos cada 10 min"
+
+msgid "per hour"
+msgstr "por hora"
+
+msgid "hours"
+msgstr "horas"
+
+msgid "This is the theoretical maximum. The actual daily limit below may be lower based on your email server capacity."
+msgstr "Este es el máximo teórico. El límite diario real a continuación puede ser menor según la capacidad de tu servidor de correo."
+
+msgid "Set the maximum number of emails that can be sent per day. Check your mail server settings and the system will automatically be adjusted to this number. Default is 500."
+msgstr "Establece el número máximo de correos electrónicos que se pueden enviar por día. Verifica la configuración de tu servidor de correo y el sistema se ajustará automáticamente a este número. Por defecto es 500."
 
 #: includes/class-mailpn-settings.php:105
 msgid "Emails sent every ten minutes"
@@ -2174,6 +2223,18 @@ msgstr "Resultado"
 msgid "Resume Queue"
 msgstr "Reanudar la cola"
 
+msgid "Pause Queue"
+msgstr "Pausar la cola"
+
+msgid "Are you sure you want to pause the email sending queue?"
+msgstr "¿Estás seguro de que quieres pausar la cola de envío de correos?"
+
+msgid "Pausing..."
+msgstr "Pausando..."
+
+msgid "Queue paused"
+msgstr "Cola pausada"
+
 #: includes/class-mailpn-common.php:209
 msgid "Resuming..."
 msgstr "Reanudando..."
@@ -3050,6 +3111,34 @@ msgstr "Ver contenido"
 #: includes/class-mailpn-post-type-rec.php:543
 msgid "View Details"
 msgstr "Ver detalles"
+
+#: includes/class-mailpn-post-type-rec.php:547
+msgid "Retry"
+msgstr "Reintentar"
+
+#: includes/class-mailpn-ajax.php:267
+msgid "Email added to queue for retry. It will be sent at the next processing cycle."
+msgstr "Correo añadido a la cola para reintento. Se enviará en el próximo ciclo de procesamiento."
+
+#: includes/class-mailpn-ajax.php:237
+msgid "Failed to send email. Check error details."
+msgstr "Error al enviar el correo. Comprueba los detalles del error."
+
+#: includes/class-mailpn-ajax.php:239
+msgid "Email was skipped due to validation issues."
+msgstr "El correo fue omitido por problemas de validación."
+
+#: includes/class-mailpn-ajax.php:209
+msgid "Missing record ID"
+msgstr "Falta el ID del registro"
+
+#: includes/class-mailpn-ajax.php:216
+msgid "Invalid record data"
+msgstr "Datos del registro inválidos"
+
+#: includes/class-mailpn-ajax.php:223
+msgid "Email template is not available or not published"
+msgstr "La plantilla de correo no está disponible o no está publicada"
 
 #: includes/class-mailpn-post-type-rec.php:174
 msgid "View Mail record"

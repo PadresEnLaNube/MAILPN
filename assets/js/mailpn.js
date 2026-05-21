@@ -647,11 +647,18 @@
 
       popup_content += '<div class="mailpn-popup-buttons">';
 
-      // Add resume button if paused
+      // Add pause/resume button
       if (result.is_paused) {
+        // Show resume button if paused
         popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-resume-queue-popup" data-source="global-popup">';
         popup_content += '<i class="material-icons-outlined">play_arrow</i> ';
         popup_content += (mailpn_i18n.resume_queue || 'Resume Queue');
+        popup_content += '</button>';
+      } else if (result.is_active) {
+        // Show pause button if active
+        popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-pause-queue-popup" data-source="global-popup">';
+        popup_content += '<i class="material-icons-outlined">pause</i> ';
+        popup_content += (mailpn_i18n.pause_queue || 'Pause Queue');
         popup_content += '</button>';
       }
 
@@ -715,6 +722,45 @@
         btn.prop('disabled', false).html(originalHTML);
       } else {
         btn.html('<i class="material-icons-outlined">check</i> ' + (mailpn_i18n.queue_resumed || 'Queue resumed'));
+
+        // Close popup and reload after 1 second
+        setTimeout(function() {
+          if (typeof MAILPN_Popups !== 'undefined' && MAILPN_Popups.close) {
+            MAILPN_Popups.close();
+          }
+          location.reload();
+        }, 1000);
+      }
+    }).fail(function() {
+      alert('Network error');
+      btn.prop('disabled', false).html(originalHTML);
+    });
+  });
+
+  // Pause queue from global popup
+  $(document).on('click', '.mailpn-btn-pause-queue-popup', function(e) {
+    e.preventDefault();
+    var btn = $(this);
+
+    if (!confirm(mailpn_i18n.confirm_pause_queue || 'Are you sure you want to pause the email sending queue?')) {
+      return;
+    }
+
+    var originalHTML = btn.html();
+    btn.prop('disabled', true).html('<div class="mailpn-waiting"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div> ' + (mailpn_i18n.pausing || 'Pausing...'));
+
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_pause_queue',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+    }, function(response) {
+      var result = $.parseJSON(response);
+
+      if (result.error_key !== '') {
+        alert('Error pausing queue');
+        btn.prop('disabled', false).html(originalHTML);
+      } else {
+        btn.html('<i class="material-icons-outlined">check</i> ' + (mailpn_i18n.queue_paused || 'Queue paused'));
 
         // Close popup and reload after 1 second
         setTimeout(function() {
