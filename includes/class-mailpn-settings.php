@@ -92,6 +92,272 @@ class MAILPN_Settings {
     $mailpn_options['mailpn_section_contents_end'] = [
       'section' => 'end',
     ];
+
+    $mailpn_options['mailpn_section_design_start'] = [
+      'section' => 'start',
+      'label' => __('Email Design', 'mailpn'),
+      'description' => __('Customize the appearance of your emails including fonts, colors, and formats.', 'mailpn'),
+    ];
+      $mailpn_options['mailpn_subsection_preview_start'] = [
+        'section' => 'start',
+        'label' => __('Live Preview', 'mailpn'),
+        'class' => 'mailpn-design-preview-section',
+      ];
+      $mailpn_options['mailpn_design_preset_info'] = [
+        'id' => 'mailpn_design_preset_info',
+        'class' => 'mailpn-width-100-percent',
+        'input' => 'html',
+        'html_content' => '<div class="mailpn-info-box-blue"><i class="material-icons-outlined">info</i> ' . __('Default values are already optimized for good readability on both desktop and mobile devices.', 'mailpn') . '</div>',
+      ];
+      $mailpn_options['mailpn_design_preview'] = [
+        'id' => 'mailpn_design_preview',
+        'class' => 'mailpn-width-100-percent',
+        'input' => 'html',
+        'html_content' => '
+          <div class="mailpn-design-preview-wrapper">
+            <h3 class="mailpn-preview-title">' . __('Live Preview', 'mailpn') . '</h3>
+            <div id="mailpn-design-preview-content" class="mailpn-preview-content">
+              <h1 id="preview-h1" class="mailpn-preview-h1">Título Principal (H1)</h1>
+              <h2 id="preview-h2" class="mailpn-preview-h2">Subtítulo Secundario (H2)</h2>
+              <h3 id="preview-h3" class="mailpn-preview-h3">Encabezado Terciario (H3)</h3>
+              <p id="preview-paragraph" class="mailpn-preview-p">
+                Este es un <strong>ejemplo de párrafo</strong> que muestra cómo se verá el texto del correo electrónico con los ajustes seleccionados.
+                Puedes personalizar la <em>fuente, tamaños, colores</em> y espaciado para que coincida con tu marca.
+              </p>
+              <p id="preview-paragraph-2" class="mailpn-preview-p">
+                Los cambios se reflejarán en <a href="#" class="mailpn-preview-link">tiempo real</a> mientras ajustas las opciones.
+              </p>
+              <ul id="preview-list" class="mailpn-preview-list">
+                <li>Elemento de lista 1</li>
+                <li>Elemento de lista 2</li>
+                <li>Elemento de lista 3</li>
+              </ul>
+              <div class="mailpn-preview-button-wrapper">
+                <a id="preview-button" href="#" class="mailpn-preview-button">
+                  Botón de Ejemplo
+                </a>
+              </div>
+              <div id="preview-footer" class="mailpn-preview-footer">
+                <small>Texto de pie de página de ejemplo</small>
+              </div>
+            </div>
+            <div class="mailpn-preview-mode-buttons">
+              <button type="button" id="mailpn-preview-desktop" class="button mailpn-preview-mode-btn active">
+                <i class="material-icons-outlined">computer</i>
+                ' . __('Desktop', 'mailpn') . '
+              </button>
+              <button type="button" id="mailpn-preview-mobile" class="button mailpn-preview-mode-btn">
+                <i class="material-icons-outlined">smartphone</i>
+                ' . __('Mobile', 'mailpn') . '
+              </button>
+            </div>
+          </div>
+        ',
+      ];
+      $mailpn_options['mailpn_subsection_preview_end'] = [
+        'section' => 'end',
+      ];
+      $mailpn_options['mailpn_subsection_typography_start'] = [
+        'section' => 'start',
+        'label' => __('Typography', 'mailpn'),
+      ];
+      $mailpn_options['mailpn_font_family'] = [
+        'id' => 'mailpn_font_family',
+        'class' => 'mailpn-select mailpn-width-100-percent',
+        'input' => 'select',
+        'label' => __('Email Font Family', 'mailpn'),
+        'description' => __('Select the font family for email content.', 'mailpn'),
+        'options' => [
+          'Arial, sans-serif' => 'Arial',
+          'Helvetica, sans-serif' => 'Helvetica',
+          'Georgia, serif' => 'Georgia',
+          'Times New Roman, serif' => 'Times New Roman',
+          'Courier New, monospace' => 'Courier New',
+          'Verdana, sans-serif' => 'Verdana',
+          'Trebuchet MS, sans-serif' => 'Trebuchet MS',
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif' => 'System Default',
+        ],
+        'default' => 'Arial, sans-serif',
+      ];
+      $mailpn_options['mailpn_font_size_desktop'] = [
+        'id' => 'mailpn_font_size_desktop',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'range',
+        'label' => __('Desktop Font Size (px)', 'mailpn'),
+        'description' => __('Base font size for desktop email viewing. Default: 14px', 'mailpn'),
+        'placeholder' => '14',
+        'default' => '14',
+        'min' => '10',
+        'max' => '24',
+        'step' => '1',
+      ];
+      $mailpn_options['mailpn_font_size_mobile'] = [
+        'id' => 'mailpn_font_size_mobile',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'range',
+        'label' => __('Mobile Font Size (px)', 'mailpn'),
+        'description' => __('Base font size for mobile email viewing (screens under 600px). Default: 16px for better readability on small screens.', 'mailpn'),
+        'placeholder' => '16',
+        'default' => '16',
+        'min' => '12',
+        'max' => '24',
+        'step' => '1',
+      ];
+      $mailpn_options['mailpn_heading_size_h1'] = [
+        'id' => 'mailpn_heading_size_h1',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'range',
+        'label' => __('H1 Heading Size (px)', 'mailpn'),
+        'description' => __('Font size for H1 headings on mobile. Default: 26px', 'mailpn'),
+        'placeholder' => '26',
+        'default' => '26',
+        'min' => '16',
+        'max' => '48',
+        'step' => '1',
+      ];
+      $mailpn_options['mailpn_heading_size_h2'] = [
+        'id' => 'mailpn_heading_size_h2',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'range',
+        'label' => __('H2 Heading Size (px)', 'mailpn'),
+        'description' => __('Font size for H2 headings on mobile. Default: 22px', 'mailpn'),
+        'placeholder' => '22',
+        'default' => '22',
+        'min' => '14',
+        'max' => '40',
+        'step' => '1',
+      ];
+      $mailpn_options['mailpn_heading_size_h3'] = [
+        'id' => 'mailpn_heading_size_h3',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'range',
+        'label' => __('H3 Heading Size (px)', 'mailpn'),
+        'description' => __('Font size for H3 headings on mobile. Default: 20px', 'mailpn'),
+        'placeholder' => '20',
+        'default' => '20',
+        'min' => '12',
+        'max' => '36',
+        'step' => '1',
+      ];
+      $mailpn_options['mailpn_line_height'] = [
+        'id' => 'mailpn_line_height',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'text',
+        'label' => __('Line Height', 'mailpn'),
+        'description' => __('Line height for email content. Use decimals like 1.6 or percentages like 160%. Default: 1.6', 'mailpn'),
+        'placeholder' => '1.6',
+        'default' => '1.6',
+      ];
+      $mailpn_options['mailpn_subsection_typography_end'] = [
+        'section' => 'end',
+      ];
+      $mailpn_options['mailpn_subsection_colors_start'] = [
+        'section' => 'start',
+        'label' => __('Colors', 'mailpn'),
+      ];
+      $mailpn_options['mailpn_background_color'] = [
+        'id' => 'mailpn_background_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Email Background Color', 'mailpn'),
+        'description' => __('Background color for the email content. Default: #ffffff (white)', 'mailpn'),
+        'placeholder' => '#ffffff',
+        'default' => '#ffffff',
+      ];
+      $mailpn_options['mailpn_text_color'] = [
+        'id' => 'mailpn_text_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Text Color', 'mailpn'),
+        'description' => __('Default text color for email content. Default: #333333', 'mailpn'),
+        'placeholder' => '#333333',
+        'default' => '#333333',
+      ];
+      $mailpn_options['mailpn_button_bg_color'] = [
+        'id' => 'mailpn_button_bg_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Button Background Color', 'mailpn'),
+        'description' => __('Background color for buttons in emails. Default: #ffffff (white)', 'mailpn'),
+        'placeholder' => '#ffffff',
+        'default' => '#ffffff',
+      ];
+      $mailpn_options['mailpn_button_text_color'] = [
+        'id' => 'mailpn_button_text_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Button Text Color', 'mailpn'),
+        'description' => __('Text color for buttons in emails. Default: #ffffff (white)', 'mailpn'),
+        'placeholder' => '#ffffff',
+        'default' => '#ffffff',
+      ];
+      $mailpn_options['mailpn_button_border_radius'] = [
+        'id' => 'mailpn_button_border_radius',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'range',
+        'label' => __('Button Border Radius (px)', 'mailpn'),
+        'description' => __('Border radius for buttons. 0 = square, higher values = more rounded. Default: 4px', 'mailpn'),
+        'placeholder' => '4',
+        'default' => '4',
+        'min' => '0',
+        'max' => '50',
+        'step' => '1',
+      ];
+      $mailpn_options['mailpn_subsection_colors_end'] = [
+        'section' => 'end',
+      ];
+      $mailpn_options['mailpn_subsection_sections_start'] = [
+        'section' => 'start',
+        'label' => __('Header & Footer', 'mailpn'),
+      ];
+      $mailpn_options['mailpn_header_bg_color'] = [
+        'id' => 'mailpn_header_bg_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Header Background Color', 'mailpn'),
+        'description' => __('Background color for email header section. Default: #ffffff (white)', 'mailpn'),
+        'placeholder' => '#ffffff',
+        'default' => '#ffffff',
+      ];
+      $mailpn_options['mailpn_footer_bg_color'] = [
+        'id' => 'mailpn_footer_bg_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Footer Background Color', 'mailpn'),
+        'description' => __('Background color for email footer section. Default: #ffffff (white)', 'mailpn'),
+        'placeholder' => '#ffffff',
+        'default' => '#ffffff',
+      ];
+      $mailpn_options['mailpn_footer_text_color'] = [
+        'id' => 'mailpn_footer_text_color',
+        'class' => 'mailpn-input mailpn-width-100-percent',
+        'input' => 'input',
+        'type' => 'color',
+        'label' => __('Footer Text Color', 'mailpn'),
+        'description' => __('Text color for email footer. Default: #6c757d', 'mailpn'),
+        'placeholder' => '#6c757d',
+        'default' => '#6c757d',
+      ];
+      $mailpn_options['mailpn_subsection_sections_end'] = [
+        'section' => 'end',
+      ];
+    $mailpn_options['mailpn_section_design_end'] = [
+      'section' => 'end',
+    ];
+
     $mailpn_options['mailpn_section_mechanics_start'] = [
       'section' => 'start',
       'label' => __('Email mechanics', 'mailpn'),
@@ -626,15 +892,25 @@ class MAILPN_Settings {
           <form action="" method="post" id="mailpn_form" class="mailpn-form mailpn-p-30">
             <?php
               $options = $this->mailpn_get_options();
+              $in_design_section = false;
 
               foreach ($options as $mailpn_option):
-                // Use full width for deliverability tools
+                // Track if we're in the design section
+                if (isset($mailpn_option['section'])) {
+                  if ($mailpn_option['section'] === 'start' && isset($mailpn_option['label']) && $mailpn_option['label'] === __('Email Design', 'mailpn')) {
+                    $in_design_section = true;
+                  } elseif ($mailpn_option['section'] === 'end' && $in_design_section) {
+                    $in_design_section = false;
+                  }
+                }
+
+                // Use full width for deliverability tools and design section
                 $format = 'half';
-                if (isset($mailpn_option['id']) && in_array($mailpn_option['id'], [
+                if ($in_design_section || (isset($mailpn_option['id']) && in_array($mailpn_option['id'], [
                   'mailpn_deliverability_checker',
                   'mailpn_header_analyzer',
                   'mailpn_external_tester'
-                ])) {
+                ]))) {
                   $format = 'full';
                 }
                 MAILPN_Forms::mailpn_input_wrapper_builder($mailpn_option, 'option', 0, 0, $format);
@@ -719,11 +995,11 @@ class MAILPN_Settings {
       </div>
 
       <!-- Recommended plugins popup -->
-      <div class="mailpn-popup-overlay mailpn-display-none-soft" style="z-index:1000000;"></div>
-      <div id="mailpn-recommended-plugins" class="mailpn-popup mailpn-popup-size-medium mailpn-display-none-soft" style="z-index:1000001;">
-        <div class="mailpn-popup-content" style="padding:30px;">
-          <h3 style="margin:0 0 8px;"><?php esc_html_e('Recommended Plugins', 'mailpn'); ?></h3>
-          <p style="color:#787c82;margin:0 0 20px;"><?php esc_html_e('Enhance your workflow with these companion plugins.', 'mailpn'); ?></p>
+      <div class="mailpn-popup-overlay mailpn-display-none-soft mailpn-z-index-1000000"></div>
+      <div id="mailpn-recommended-plugins" class="mailpn-popup mailpn-popup-size-medium mailpn-display-none-soft mailpn-z-index-1000001">
+        <div class="mailpn-popup-content mailpn-p-30">
+          <h3 class="mailpn-m-0-0-8"><?php esc_html_e('Recommended Plugins', 'mailpn'); ?></h3>
+          <p class="mailpn-color-muted mailpn-m-0-0-20"><?php esc_html_e('Enhance your workflow with these companion plugins.', 'mailpn'); ?></p>
           <div class="pn-cm-rp-list">
             <?php foreach ($pn_family as $pn_slug => $pn_pl) :
               $pn_is_installed = isset($pn_installed[$pn_pl['file']]);

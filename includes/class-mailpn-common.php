@@ -253,6 +253,17 @@ class MAILPN_Common
 			'test_with_mailtester' => esc_html(__('Test with Mail-Tester', 'mailpn')),
 			'send_test_email' => esc_html(__('Send Test Email', 'mailpn')),
 			'check_mailtester_results' => esc_html(__('Go back to Mail-Tester and click "Then check your score" to see your deliverability report.', 'mailpn')),
+			'global_error_log' => esc_html(__('Global Error Log', 'mailpn')),
+			'global_error_log_desc' => esc_html(__('Recent errors from all email sending attempts', 'mailpn')),
+			'loading' => esc_html(__('Loading', 'mailpn')),
+			'view_full_log' => esc_html(__('View Full Log', 'mailpn')),
+			'clear_log' => esc_html(__('Clear Log', 'mailpn')),
+			'no_error_log' => esc_html(__('No errors in log', 'mailpn')),
+			'total_errors' => esc_html(__('Total errors', 'mailpn')),
+			'network_error' => esc_html(__('Network error', 'mailpn')),
+			'confirm_clear_log' => esc_html(__('Are you sure you want to clear the error log?', 'mailpn')),
+			'clearing' => esc_html(__('Clearing...', 'mailpn')),
+			'log_cleared' => esc_html(__('Error log has been cleared', 'mailpn')),
 		]);
 
 		// Initialize popups

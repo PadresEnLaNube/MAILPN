@@ -7,7 +7,7 @@
 
     // Show loading if expanding
     if (load_all) {
-      $('.mailpn-errors-list-container').html('<p style="text-align:center; padding:20px;">Loading all errors...</p>');
+      $('.mailpn-errors-list-container').html('<p class="mailpn-loading-text">Loading all errors...</p>');
     }
 
     var data_get_errors = {
@@ -540,6 +540,19 @@
       popup_content += '</table>';
       popup_content += '</div>';
 
+      // Global error log section
+      popup_content += '<div class="mailpn-error-section mailpn-global-error-log-section">';
+      popup_content += '<h4>' + (mailpn_i18n.global_error_log || 'Global Error Log') + '</h4>';
+      popup_content += '<p class="mailpn-mb-10"><small>' + (mailpn_i18n.global_error_log_desc || 'Recent errors from all email sending attempts') + '</small></p>';
+      popup_content += '<div id="mailpn-global-error-log-content" class="mailpn-global-error-log-content">';
+      popup_content += '<div class="mailpn-loading mailpn-display-inline-block"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div> ' + (mailpn_i18n.loading || 'Loading') + '...';
+      popup_content += '</div>';
+      popup_content += '<div class="mailpn-popup-buttons mailpn-mt-10">';
+      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transaparent mailpn-btn-view-full-error-log">' + (mailpn_i18n.view_full_log || 'View Full Log') + '</button>';
+      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transaparent mailpn-btn-clear-error-log">' + (mailpn_i18n.clear_log || 'Clear Log') + '</button>';
+      popup_content += '</div>';
+      popup_content += '</div>';
+
       popup_content += '<div class="mailpn-popup-buttons">';
       popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transaparent mailpn-btn-close-error-details">' + (mailpn_i18n.close || 'Close') + '</button>';
       popup_content += '</div>';
@@ -563,9 +576,90 @@
           $('.mailpn-popup-overlay').fadeIn('fast');
         }
       }
+
+      // Load global error log
+      loadGlobalErrorLog(10);
     }).fail(function() {
       link.html(originalHTML);
       alert('Network error');
+    });
+  });
+
+  // Function to load global error log
+  function loadGlobalErrorLog(lines) {
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_view_email_error_log',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+      lines: lines || 10,
+    }, function(response) {
+      var result = $.parseJSON(response);
+
+      if (result.error_key !== '') {
+        $('#mailpn-global-error-log-content').html('<p class="mailpn-error-text">' + (result.error_content || 'Error loading log') + '</p>');
+        return;
+      }
+
+      if (!result.log_content || result.log_content.trim() === '') {
+        $('#mailpn-global-error-log-content').html('<p class="mailpn-no-details">' + (mailpn_i18n.no_error_log || 'No errors in log') + '</p>');
+        return;
+      }
+
+      var log_html = '<div class="mailpn-error-message-box" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px; white-space: pre-wrap;">';
+      log_html += result.log_content;
+      log_html += '</div>';
+
+      if (result.stats) {
+        log_html += '<p class="mailpn-mt-10"><small><strong>' + (mailpn_i18n.total_errors || 'Total errors') + ':</strong> ' + (result.stats.total_errors || 0) + '</small></p>';
+      }
+
+      $('#mailpn-global-error-log-content').html(log_html);
+    }).fail(function() {
+      $('#mailpn-global-error-log-content').html('<p class="mailpn-error-text">' + (mailpn_i18n.network_error || 'Network error') + '</p>');
+    });
+  }
+
+  // View full error log button
+  $(document).on('click', '.mailpn-btn-view-full-error-log', function(e) {
+    e.preventDefault();
+    loadGlobalErrorLog(100);
+    $(this).prop('disabled', true).text(mailpn_i18n.loading || 'Loading...');
+    var btn = $(this);
+    setTimeout(function() {
+      btn.prop('disabled', false).text(mailpn_i18n.view_full_log || 'View Full Log');
+    }, 1000);
+  });
+
+  // Clear error log button
+  $(document).on('click', '.mailpn-btn-clear-error-log', function(e) {
+    e.preventDefault();
+
+    if (!confirm(mailpn_i18n.confirm_clear_log || 'Are you sure you want to clear the error log?')) {
+      return;
+    }
+
+    var btn = $(this);
+    var originalText = btn.text();
+    btn.prop('disabled', true).text(mailpn_i18n.clearing || 'Clearing...');
+
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_clear_email_error_log',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+    }, function(response) {
+      var result = $.parseJSON(response);
+
+      if (result.error_key !== '') {
+        alert(result.error_content || 'Error clearing log');
+        btn.prop('disabled', false).text(originalText);
+        return;
+      }
+
+      $('#mailpn-global-error-log-content').html('<p class="mailpn-no-details">' + (mailpn_i18n.log_cleared || 'Error log has been cleared') + '</p>');
+      btn.prop('disabled', false).text(originalText);
+    }).fail(function() {
+      alert(mailpn_i18n.network_error || 'Network error');
+      btn.prop('disabled', false).text(originalText);
     });
   });
 
@@ -611,10 +705,10 @@
       var scoreColor = score >= 80 ? '#4caf50' : (score >= 60 ? '#ff9800' : '#f44336');
       var scoreIcon = score >= 80 ? 'check_circle' : (score >= 60 ? 'warning' : 'error');
 
-      var html = '<div class="mailpn-deliverability-score-box mailpn-mb-20 mailpn-p-20" style="background: ' + scoreColor + '; color: white; border-radius: 8px;">';
+      var html = '<div class="mailpn-deliverability-score-box mailpn-bg-score-' + (score >= 80 ? 'success' : (score >= 60 ? 'warning' : 'error')) + '">';
       html += '<div class="mailpn-text-align-center">';
-      html += '<i class="material-icons-outlined" style="font-size: 48px; vertical-align: middle;">' + scoreIcon + '</i>';
-      html += '<h2 style="margin: 10px 0; color: white;">' + (mailpn_i18n.deliverability_score || 'Deliverability Score') + ': ' + score + '/100</h2>';
+      html += '<i class="material-icons-outlined mailpn-deliverability-score-icon">' + scoreIcon + '</i>';
+      html += '<h2>' + (mailpn_i18n.deliverability_score || 'Deliverability Score') + ': ' + score + '/100</h2>';
       html += '</div>';
       html += '</div>';
 
@@ -624,22 +718,22 @@
       var checksHTML = '<div class="mailpn-deliverability-checks-list">';
       $.each(checks, function(key, check) {
         var checkIcon = check.status === 'passed' ? 'check_circle' : (check.status === 'warning' ? 'warning' : 'cancel');
-        var checkColor = check.status === 'passed' ? '#4caf50' : (check.status === 'warning' ? '#ff9800' : '#f44336');
+        var checkColorClass = check.status === 'passed' ? 'success' : (check.status === 'warning' ? 'warning' : 'error');
 
-        checksHTML += '<div class="mailpn-deliverability-check-item mailpn-mb-30 mailpn-p-20" style="border-left: 4px solid ' + checkColor + '; background: #f9f9f9; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">';
+        checksHTML += '<div class="mailpn-deliverability-check-item mailpn-border-color-' + checkColorClass + '">';
         checksHTML += '<div class="mailpn-display-table mailpn-width-100-percent">';
-        checksHTML += '<div class="mailpn-display-inline-table" style="width: 50px;">';
-        checksHTML += '<i class="material-icons-outlined" style="color: ' + checkColor + '; font-size: 36px; vertical-align: middle;">' + checkIcon + '</i>';
+        checksHTML += '<div class="mailpn-check-icon-wrapper">';
+        checksHTML += '<i class="material-icons-outlined mailpn-check-icon mailpn-color-' + checkColorClass + '">' + checkIcon + '</i>';
         checksHTML += '</div>';
-        checksHTML += '<div class="mailpn-display-inline-table" style="width: calc(100% - 50px); vertical-align: middle;">';
-        checksHTML += '<strong style="font-size: 16px;">' + check.name + '</strong>';
-        checksHTML += '<p style="margin: 8px 0 0 0; color: #666; line-height: 1.5;">' + check.message + '</p>';
+        checksHTML += '<div class="mailpn-check-content-wrapper">';
+        checksHTML += '<strong class="mailpn-check-title">' + check.name + '</strong>';
+        checksHTML += '<p class="mailpn-check-message">' + check.message + '</p>';
 
         // Add suggestion if check failed or has warning
         if (check.suggestion && (check.status === 'failed' || check.status === 'warning')) {
-          checksHTML += '<div class="mailpn-mt-10 mailpn-p-10" style="background: #fff; border-radius: 4px; border-left: 3px solid ' + checkColor + ';">';
-          checksHTML += '<strong style="color: ' + checkColor + ';"><i class="material-icons-outlined" style="font-size: 16px; vertical-align: middle;">lightbulb</i> ' + (mailpn_i18n.suggestion || 'Suggestion') + ':</strong> ';
-          checksHTML += '<span style="color: #444;">' + check.suggestion + '</span>';
+          checksHTML += '<div class="mailpn-check-suggestion-box mailpn-border-color-' + checkColorClass + '">';
+          checksHTML += '<strong class="mailpn-color-' + checkColorClass + '"><i class="material-icons-outlined mailpn-check-suggestion-icon">lightbulb</i> ' + (mailpn_i18n.suggestion || 'Suggestion') + ':</strong> ';
+          checksHTML += '<span class="mailpn-check-suggestion-text">' + check.suggestion + '</span>';
           checksHTML += '</div>';
         }
 
@@ -696,10 +790,10 @@
       var scoreIcon = score >= 80 ? 'check_circle' : (score >= 60 ? 'warning' : 'error');
 
       var html = '<div class="mailpn-mt-20">';
-      html += '<div class="mailpn-deliverability-score-box mailpn-mb-20 mailpn-p-20" style="background: ' + scoreColor + '; color: white; border-radius: 8px;">';
+      html += '<div class="mailpn-deliverability-score-box mailpn-bg-score-' + (score >= 80 ? 'success' : (score >= 60 ? 'warning' : 'error')) + '">';
       html += '<div class="mailpn-text-align-center">';
-      html += '<i class="material-icons-outlined" style="font-size: 48px; vertical-align: middle;">' + scoreIcon + '</i>';
-      html += '<h3 style="margin: 10px 0; color: white;">' + (mailpn_i18n.header_analysis_score || 'Header Analysis Score') + ': ' + score + '/100</h3>';
+      html += '<i class="material-icons-outlined mailpn-deliverability-score-icon">' + scoreIcon + '</i>';
+      html += '<h3>' + (mailpn_i18n.header_analysis_score || 'Header Analysis Score') + ': ' + score + '/100</h3>';
       html += '</div>';
       html += '</div>';
 
@@ -707,21 +801,21 @@
       html += '<div class="mailpn-header-analysis-checks">';
       $.each(analysis, function(key, check) {
         var checkIcon = check.status === 'passed' ? 'check_circle' : (check.status === 'warning' ? 'warning' : 'cancel');
-        var checkColor = check.status === 'passed' ? '#4caf50' : (check.status === 'warning' ? '#ff9800' : '#f44336');
+        var checkColorClass = check.status === 'passed' ? 'success' : (check.status === 'warning' ? 'warning' : 'error');
 
-        html += '<div class="mailpn-deliverability-check-item mailpn-mb-30 mailpn-p-20" style="border-left: 4px solid ' + checkColor + '; background: #f9f9f9; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">';
+        html += '<div class="mailpn-deliverability-check-item mailpn-border-color-' + checkColorClass + '">';
         html += '<div class="mailpn-display-table mailpn-width-100-percent">';
-        html += '<div class="mailpn-display-inline-table" style="width: 50px;">';
-        html += '<i class="material-icons-outlined" style="color: ' + checkColor + '; font-size: 36px; vertical-align: middle;">' + checkIcon + '</i>';
+        html += '<div class="mailpn-check-icon-wrapper">';
+        html += '<i class="material-icons-outlined mailpn-check-icon mailpn-color-' + checkColorClass + '">' + checkIcon + '</i>';
         html += '</div>';
-        html += '<div class="mailpn-display-inline-table" style="width: calc(100% - 50px); vertical-align: middle;">';
-        html += '<strong style="font-size: 16px;">' + check.name + '</strong>';
-        html += '<p style="margin: 8px 0 0 0; color: #666; line-height: 1.5;">' + check.message + '</p>';
+        html += '<div class="mailpn-check-content-wrapper">';
+        html += '<strong class="mailpn-check-title">' + check.name + '</strong>';
+        html += '<p class="mailpn-check-message">' + check.message + '</p>';
 
         if (check.suggestion && (check.status === 'failed' || check.status === 'warning')) {
-          html += '<div class="mailpn-mt-10 mailpn-p-10" style="background: #fff; border-radius: 4px; border-left: 3px solid ' + checkColor + ';">';
-          html += '<strong style="color: ' + checkColor + ';"><i class="material-icons-outlined" style="font-size: 16px; vertical-align: middle;">lightbulb</i> ' + (mailpn_i18n.suggestion || 'Suggestion') + ':</strong> ';
-          html += '<span style="color: #444;">' + check.suggestion + '</span>';
+          html += '<div class="mailpn-check-suggestion-box mailpn-border-color-' + checkColorClass + '">';
+          html += '<strong class="mailpn-color-' + checkColorClass + '"><i class="material-icons-outlined mailpn-check-suggestion-icon">lightbulb</i> ' + (mailpn_i18n.suggestion || 'Suggestion') + ':</strong> ';
+          html += '<span class="mailpn-check-suggestion-text">' + check.suggestion + '</span>';
           html += '</div>';
         }
 
@@ -786,9 +880,9 @@
         var errorMsg = result.error_content || 'Error sending test email';
         mailpn_get_main_message(errorMsg, 'error');
 
-        var resultHTML = '<div class="mailpn-p-20" style="background: #ffebee; border-left: 4px solid #f44336; border-radius: 4px;">';
-        resultHTML += '<i class="material-icons-outlined mailpn-vertical-align-middle" style="color: #f44336;">error</i> ';
-        resultHTML += '<strong style="color: #c62828;">' + errorMsg + '</strong>';
+        var resultHTML = '<div class="mailpn-info-banner-error">';
+        resultHTML += '<i class="material-icons-outlined mailpn-vertical-align-middle mailpn-icon-error-red">error</i> ';
+        resultHTML += '<strong class="mailpn-color-dark-red">' + errorMsg + '</strong>';
         resultHTML += '</div>';
         $('#mailpn-test-email-result').html(resultHTML).removeClass('mailpn-display-none-soft');
         return;
@@ -796,10 +890,10 @@
 
       mailpn_get_main_message(result.message, 'success');
 
-      var resultHTML = '<div class="mailpn-p-20" style="background: #e8f5e9; border-left: 4px solid #4caf50; border-radius: 4px;">';
-      resultHTML += '<i class="material-icons-outlined mailpn-vertical-align-middle" style="color: #4caf50;">check_circle</i> ';
-      resultHTML += '<strong style="color: #2e7d32;">' + result.message + '</strong>';
-      resultHTML += '<p style="margin: 10px 0 0 0; color: #555;">';
+      var resultHTML = '<div class="mailpn-info-banner-success-alt">';
+      resultHTML += '<i class="material-icons-outlined mailpn-vertical-align-middle mailpn-color-success">check_circle</i> ';
+      resultHTML += '<strong class="mailpn-color-dark-green">' + result.message + '</strong>';
+      resultHTML += '<p class="mailpn-m-10-0-5 mailpn-text-light-gray">';
       resultHTML += (mailpn_i18n.check_mailtester_results || 'Go back to Mail-Tester and click "Then check your score" to see your deliverability report.');
       resultHTML += '</p>';
       resultHTML += '</div>';

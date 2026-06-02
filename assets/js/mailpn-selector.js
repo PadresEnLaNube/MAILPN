@@ -38,7 +38,7 @@
             control.append(valueContainer, indicator);
             wrapper.append(control);
             
-            this.menu = $('<div class="mailpn-selector__menu" style="display: none;"></div>');
+            this.menu = $('<div class="mailpn-selector__menu mailpn-display-none-soft"></div>');
             
             if (this.options.searchable) {
                 const searchContainer = $('<div class="mailpn-selector__search"></div>');
@@ -92,13 +92,14 @@
                 const option = $(e.currentTarget);
                 const value = option.data('value');
                 const label = option.text();
+                const optionStyle = option.attr('style');
 
                 const wasSelected = this.selectedValues.includes(value);
 
                 if (this.options.multiple) {
-                    this.toggleValue(value, label);
+                    this.toggleValue(value, label, optionStyle);
                 } else {
-                    this.setValue(value, label);
+                    this.setValue(value, label, optionStyle);
                     this.closeMenu();
                 }
 
@@ -184,6 +185,12 @@
                     .text(label)
                     .data('value', value);
 
+                // Copy style attribute from original option
+                const optionStyle = $option.attr('style');
+                if (optionStyle) {
+                    optionElement.attr('style', optionStyle);
+                }
+
                 if (isSelected) {
                     optionElement.addClass('-selector__option--is-selected');
                 }
@@ -219,25 +226,25 @@
             });
         }
 
-        toggleValue(value, label) {
+        toggleValue(value, label, optionStyle) {
             if (value === '') return;
             if (this.selectedValues.includes(value)) {
                 this.removeAllSelectedValue(value);
                 return;
             }
             this.selectedValues.push(value);
-            this.addSelectedValue(value, label);
+            this.addSelectedValue(value, label, optionStyle);
             this.updateOriginalSelect();
         }
 
-        setValue(value, label) {
+        setValue(value, label, optionStyle) {
             this.selectedValues = [value];
             this.valueContainer.empty();
-            this.addSelectedValue(value, label);
+            this.addSelectedValue(value, label, optionStyle);
             this.updateOriginalSelect();
         }
 
-        addSelectedValue(value, label) {
+        addSelectedValue(value, label, optionStyle) {
             // Remove placeholder if exists
             this.valueContainer.find('.mailpn-selector__placeholder').remove();
             if (this.options.multiple) {
@@ -246,6 +253,11 @@
                 const removeButton = $('<span class="mailpn-selector__multi-value__remove"><i class="material-icons-outlined mailpn-icon-close">close</i></span>');
 
                 valueElement.attr('data-value', value);
+
+                // Apply style from option
+                if (optionStyle) {
+                    labelElement.attr('style', optionStyle);
+                }
 
                 removeButton.on('click', (e) => {
                     e.stopPropagation();
@@ -265,6 +277,12 @@
                 const valueElement = $('<span class="mailpn-selector__single-value"></span>');
                 const labelElement = $('<span class="mailpn-selector__single-value__label"></span>').text(label);
                 const removeButton = $('<span class="mailpn-selector__single-value__remove"><i class="material-icons-outlined mailpn-icon-close">close</i></span>');
+
+                // Apply style from option
+                if (optionStyle) {
+                    labelElement.attr('style', optionStyle);
+                }
+
                 removeButton.on('click', (e) => {
                     e.stopPropagation();
                     // Clear selection
@@ -339,9 +357,10 @@
                 const $option = $(option);
                 const value = $option.val();
                 const label = $option.text();
+                const optionStyle = $option.attr('style');
                 if (value === '') return; // Skip empty value (placeholder)
                 this.selectedValues.push(value);
-                this.addSelectedValue(value, label);
+                this.addSelectedValue(value, label, optionStyle);
             });
         }
     }

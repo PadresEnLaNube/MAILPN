@@ -801,30 +801,42 @@ input:checked + .mailpn-slider:before{
 /* MailPN Message Types */
 .mailpn-main-message.mailpn-message-success {
   background-color: #4caf50 !important;
+  color: #ffffff !important;
 }
 
 .mailpn-main-message.mailpn-message-error {
   background-color: #f44336 !important;
+  color: #ffffff !important;
 }
 
 .mailpn-main-message.mailpn-message-warning {
   background-color: #ff9800 !important;
+  color: #ffffff !important;
 }
 
 .mailpn-main-message.mailpn-message-error #mailpn-main-message-span {
   font-weight: 500;
+  color: #ffffff !important;
+}
+
+.mailpn-main-message.mailpn-message-success #mailpn-main-message-span {
+  color: #ffffff !important;
+}
+
+.mailpn-main-message.mailpn-message-warning #mailpn-main-message-span {
+  color: #ffffff !important;
 }
 
 .mailpn-main-message.mailpn-message-error .mailpn-close-icon {
-  color: #ffcdd2 !important;
+  color: #ffffff !important;
 }
 
 .mailpn-main-message.mailpn-message-success .mailpn-close-icon {
-  color: #c8e6c9 !important;
+  color: #ffffff !important;
 }
 
 .mailpn-main-message.mailpn-message-warning .mailpn-close-icon {
-  color: #ffe0b2 !important;
+  color: #ffffff !important;
 }
 .mailpn-btn{
   background-color:var(--mailpn-color-main);
@@ -2480,6 +2492,445 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
 .mailpn-input-wrapper .mailpn-p-10:has(> label) {
   padding-bottom: 0;
 }
+
+/* Schedule Preview Cards */
+.mailpn-schedule-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mailpn-sp-card {
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.mailpn-sp-card-blue {
+  background: #f0f6fc;
+}
+
+.mailpn-sp-card-yellow {
+  background: #fef8ee;
+}
+
+.mailpn-sp-card-green {
+  background: #f0faf0;
+}
+
+.mailpn-sp-card-value {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.mailpn-sp-card-value-blue {
+  color: #2271b1;
+}
+
+.mailpn-sp-card-value-yellow {
+  color: #dba617;
+}
+
+.mailpn-sp-card-value-green {
+  color: #00a32a;
+}
+
+.mailpn-sp-card-value-small {
+  font-size: 14px;
+}
+
+.mailpn-sp-card-label {
+  font-size: 12px;
+  color: #50575e;
+}
+
+/* Section Headers with Icons */
+.mailpn-section-header {
+  margin: 20px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mailpn-section-header-small {
+  margin: 12px 0 8px;
+}
+
+.mailpn-section-header-icon {
+  font-size: 20px;
+}
+
+.mailpn-section-header-subtitle {
+  font-weight: 400;
+  font-size: 13px;
+  color: #787c82;
+  margin-left: 4px;
+}
+
+/* Email Tables */
+.mailpn-emails-table {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.mailpn-emails-table th,
+.mailpn-emails-table td {
+  text-align: left;
+  padding: 6px 10px;
+}
+
+.mailpn-table-icon {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+/* Info Boxes */
+.mailpn-info-box {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-left: 4px solid;
+  border-radius: 4px;
+}
+
+.mailpn-info-box-blue {
+  background: #e3f2fd;
+  border-left-color: #2196f3;
+}
+
+.mailpn-info-box-orange {
+  background: #fff3e0;
+  border-left-color: #ff9800;
+}
+
+.mailpn-info-box p {
+  margin: 0;
+}
+
+.mailpn-info-box-blue p {
+  color: #1976d2;
+}
+
+.mailpn-info-box-orange p {
+  color: #e65100;
+}
+
+.mailpn-info-box-icon {
+  font-size: 20px;
+}
+
+.mailpn-info-box ul,
+.mailpn-info-box ol {
+  margin: 10px 0 0 20px;
+  color: #555;
+}
+
+/* Monospace Textarea */
+.mailpn-textarea-monospace {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* Color Preview */
+.mailpn-color-preview {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+/* Deliverability Score Box */
+.mailpn-deliverability-score-box {
+  margin-bottom: 20px;
+  padding: 20px;
+  color: white;
+  border-radius: 8px;
+}
+
+.mailpn-deliverability-score-icon {
+  font-size: 48px;
+  vertical-align: middle;
+}
+
+.mailpn-deliverability-score-box h2,
+.mailpn-deliverability-score-box h3 {
+  margin: 10px 0;
+  color: white;
+}
+
+/* Deliverability Check Item */
+.mailpn-deliverability-check-item {
+  margin-bottom: 30px;
+  padding: 20px;
+  border-left: 4px solid;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mailpn-check-icon-wrapper {
+  display: inline-table;
+  width: 50px;
+}
+
+.mailpn-check-icon {
+  font-size: 36px;
+  vertical-align: middle;
+}
+
+.mailpn-check-content-wrapper {
+  display: inline-table;
+  width: calc(100% - 50px);
+  vertical-align: middle;
+}
+
+.mailpn-check-title {
+  font-size: 16px;
+}
+
+.mailpn-check-message {
+  margin: 8px 0 0 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.mailpn-check-suggestion-box {
+  margin-top: 10px;
+  padding: 10px;
+  background: #fff;
+  border-radius: 4px;
+  border-left: 3px solid;
+}
+
+.mailpn-check-suggestion-icon {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.mailpn-check-suggestion-text {
+  color: #444;
+}
+
+/* Loading Text */
+.mailpn-loading-text {
+  text-align: center;
+  padding: 20px;
+}
+
+/* Icon colors */
+.mailpn-icon-success {
+  color: #00a32a;
+}
+
+.mailpn-icon-gray {
+  color: #787c82;
+}
+
+.mailpn-icon-size-14 {
+  font-size: 14px;
+}
+
+.mailpn-icon-size-16 {
+  font-size: 16px;
+}
+
+.mailpn-icon-size-18 {
+  font-size: 18px;
+}
+
+.mailpn-icon-size-20 {
+  font-size: 20px;
+}
+
+.mailpn-icon-size-20-gray {
+  font-size: 20px;
+  color: #787c82;
+}
+
+/* Table cells */
+.mailpn-table-cell-muted {
+  padding: 8px 12px;
+  color: #787c82;
+  font-style: italic;
+}
+
+.mailpn-table-cell-normal {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+/* Section headers alternate */
+.mailpn-section-header-alt {
+  margin: 20px 0 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Table with spacing */
+.mailpn-emails-table-spaced {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+}
+
+.mailpn-emails-table-spaced th {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #787c82;
+}
+
+/* Compact table spacing */
+.mailpn-emails-table-compact {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 2px;
+}
+
+/* Email link style */
+.mailpn-email-link {
+  color: #007cba;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.mailpn-email-link:hover {
+  text-decoration: underline;
+}
+
+/* Email list item */
+.mailpn-email-list-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+/* User email small text */
+.mailpn-user-email-small {
+  color: #a7aaad;
+  font-size: 11px;
+}
+
+/* Status error hint */
+.mailpn-status-error-hint {
+  font-size: 13px;
+  color: #787c82;
+  margin-top: 8px;
+}
+
+/* Table header muted */
+.mailpn-table-header-muted {
+  font-size: 12px;
+  color: #787c82;
+}
+
+/* Section body */
+.mailpn-section-body {
+  margin-top: 12px;
+}
+
+/* Section header mini */
+.mailpn-section-header-mini {
+  margin: 0 0 8px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Info stats grid */
+.mailpn-info-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+/* Info stat card */
+.mailpn-info-stat-card {
+  background: #f0f6fc;
+  border-radius: 8px;
+  padding: 16px 14px;
+  text-align: center;
+}
+
+.mailpn-info-stat-label {
+  font-size: 11px;
+  color: #50575e;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.mailpn-info-stat-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2271b1;
+}
+
+.mailpn-info-stat-value-large {
+  font-size: 22px;
+}
+
+/* Warning banner */
+.mailpn-warning-banner {
+  background: #fef8ee;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mailpn-warning-icon {
+  color: #dba617;
+}
+
+/* Meta info text */
+.mailpn-meta-info {
+  margin-bottom: 16px;
+  color: #50575e;
+}
+
+/* Section header with subtitle */
+.mailpn-section-header-subtitle-alt {
+  font-weight: 400;
+  color: #787c82;
+}
+
+/* Table icon colors */
+.mailpn-table-icon-blue {
+  color: #2271b1;
+}
+
+/* Table cell with right align */
+.mailpn-table-cell-right {
+  padding: 8px 12px;
+  color: #787c82;
+  text-align: right;
+}
+
+/* Table cell empty/italic */
+.mailpn-table-cell-empty {
+  padding: 8px 12px;
+  color: #787c82;
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* Section header medium */
+.mailpn-section-header-medium {
+  margin: 20px 0 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* Floating queue status button */
 .mailpn-queue-float-button {
   position: fixed;
@@ -2910,6 +3361,220 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   font-size: 16px;
 }
 
+/* Global error log section */
+.mailpn-global-error-log-section {
+  background: #f0f6fc;
+  border: 1px solid #d0e3f7;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+}
+
+.mailpn-global-error-log-content {
+  min-height: 50px;
+}
+
+.mailpn-global-error-log-content .mailpn-error-message-box {
+  background: #fff;
+  border-left-color: #2271b1;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.mailpn-no-details {
+  font-style: italic;
+  color: #787c82;
+  text-align: center;
+  padding: 20px;
+  font-size: 13px;
+}
+
+.mailpn-error-text {
+  color: #d63638;
+  font-weight: 500;
+  padding: 10px;
+}
+
+/* Design Layout - 2 Columns using CSS Grid */
+#mailpn_section_design_start > .mailpn-toggle-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+/* Live Preview subsection - left column, sticky */
+#mailpn_section_design_start > .mailpn-toggle-content > .mailpn-design-preview-section {
+  position: sticky;
+  top: 32px;
+  grid-column: 1;
+  grid-row: 1 / 99;
+}
+
+/* Other subsections - right column, stacked */
+#mailpn_section_design_start > .mailpn-toggle-content > .mailpn-section-wrapper:not(.mailpn-design-preview-section) {
+  grid-column: 2;
+}
+
+/* Mobile responsive for design layout */
+@media (max-width: 1200px) {
+  #mailpn_section_design_start > .mailpn-toggle-content {
+    grid-template-columns: 1fr;
+  }
+
+  #mailpn_section_design_start > .mailpn-toggle-content > .mailpn-design-preview-section {
+    position: static;
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  #mailpn_section_design_start > .mailpn-toggle-content > .mailpn-section-wrapper:not(.mailpn-design-preview-section) {
+    grid-column: 1;
+  }
+}
+
+/* Design Preview Styles */
+.mailpn-design-preview-wrapper {
+  position: relative;
+  background: #f0f0f1;
+  padding: 30px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.mailpn-preview-title {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.mailpn-preview-content {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.mailpn-preview-h1 {
+  margin: 0 0 15px 0;
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.3;
+}
+
+.mailpn-preview-h2 {
+  margin: 0 0 15px 0;
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.mailpn-preview-h3 {
+  margin: 0 0 15px 0;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.mailpn-preview-p {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.mailpn-preview-list {
+  margin: 0 0 20px 0;
+  padding-left: 25px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.mailpn-preview-list li {
+  margin-bottom: 8px;
+}
+
+.mailpn-preview-link {
+  color: #2271b1;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.mailpn-preview-link:hover {
+  color: #135e96;
+}
+
+.mailpn-preview-button-wrapper {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.mailpn-preview-button {
+  display: inline-block;
+  text-decoration: none;
+  padding: 12px 24px;
+  font-weight: 600;
+  background-color: #ffffff;
+  color: #333333;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  border: 1px solid #ddd;
+}
+
+.mailpn-preview-button:hover {
+  opacity: 0.9;
+  color: #333333;
+}
+
+.mailpn-preview-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 12px;
+  text-align: center;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 4px;
+  color: #6c757d;
+}
+
+.mailpn-preview-footer small {
+  color: #6c757d;
+}
+
+.mailpn-preview-mode-buttons {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.mailpn-preview-mode-btn {
+  position: relative;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  flex: 1;
+}
+
+.mailpn-preview-mode-btn.active {
+  background: #2271b1 !important;
+  color: #fff !important;
+  border-color: #2271b1 !important;
+  font-weight: 600;
+}
+
+.mailpn-preview-mode-btn:hover {
+  background: #135e96 !important;
+  color: #fff !important;
+  border-color: #135e96 !important;
+}
+
+.mailpn-preview-mode-btn .material-icons-outlined {
+  margin-right: 5px;
+  vertical-align: middle;
+  font-size: 18px;
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .mailpn-queue-float-button {
@@ -2941,4 +3606,333 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   .mailpn-queue-stats {
     grid-template-columns: 1fr;
   }
+}
+
+/* Additional utility classes for removing inline styles */
+
+/* Flexbox utilities */
+.mailpn-align-items-center {
+  align-items: center;
+}
+
+.mailpn-gap-6 {
+  gap: 6px;
+}
+
+.mailpn-gap-8 {
+  gap: 8px;
+}
+
+.mailpn-gap-10 {
+  gap: 10px;
+}
+
+/* Status popup inner */
+.mailpn-status-popup-inner {
+  min-width: 420px;
+  padding: 24px;
+}
+
+/* Section header in popup */
+.mailpn-status-popup-header {
+  margin: 0 0 20px;
+  font-size: 16px;
+}
+
+/* Info banners */
+.mailpn-info-banner-neutral {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mailpn-info-banner-success {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f0faf0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mailpn-info-banner-info {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f0f6fc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mailpn-info-banner-error {
+  padding: 20px;
+  background: #ffebee;
+  border-left: 4px solid #f44336;
+  border-radius: 4px;
+}
+
+.mailpn-info-banner-success-alt {
+  padding: 20px;
+  background: #e8f5e9;
+  border-left: 4px solid #4caf50;
+  border-radius: 4px;
+}
+
+/* Icon specific colors */
+.mailpn-icon-warning {
+  color: #dba617;
+}
+
+.mailpn-icon-info-blue {
+  color: #2271b1;
+}
+
+.mailpn-icon-success-green {
+  color: #00a32a;
+}
+
+.mailpn-icon-error-red {
+  color: #f44336;
+}
+
+/* Padding utilities for table cells */
+.mailpn-table-th-left {
+  text-align: left;
+  padding: 6px 10px;
+}
+
+.mailpn-table-th-left-lg {
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.mailpn-table-td-default {
+  padding: 6px 10px;
+}
+
+.mailpn-table-td-muted-italic {
+  padding: 6px 10px;
+  color: #787c82;
+  font-style: italic;
+}
+
+.mailpn-table-td-pending {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.mailpn-table-td-pending-email {
+  color: #a7aaad;
+  font-size: 11px;
+}
+
+/* Color utilities for dynamic content */
+.mailpn-color-success {
+  color: #4caf50;
+}
+
+.mailpn-color-warning {
+  color: #ff9800;
+}
+
+.mailpn-color-error {
+  color: #f44336;
+}
+
+.mailpn-color-muted {
+  color: #787c82;
+}
+
+.mailpn-color-dark-red {
+  color: #c62828;
+}
+
+.mailpn-color-dark-green {
+  color: #2e7d32;
+}
+
+/* Background color utilities */
+.mailpn-bg-success {
+  background: #4caf50;
+}
+
+.mailpn-bg-warning {
+  background: #ff9800;
+}
+
+.mailpn-bg-error {
+  background: #f44336;
+}
+
+/* Border utilities */
+.mailpn-border-left-color-inherit {
+  border-left-color: inherit;
+}
+
+/* Margin utilities */
+.mailpn-m-0-0-8 {
+  margin: 0 0 8px;
+}
+
+.mailpn-m-0-0-10 {
+  margin: 0 0 10px;
+}
+
+.mailpn-m-0-0-20 {
+  margin: 0 0 20px;
+}
+
+.mailpn-m-10-0-5 {
+  margin: 10px 0 5px 0;
+}
+
+.mailpn-mt-8 {
+  margin-top: 8px;
+}
+
+.mailpn-mt-12 {
+  margin-top: 12px;
+}
+
+/* Font size 11 */
+.mailpn-font-size-11 {
+  font-size: 11px;
+}
+
+.mailpn-font-size-18 {
+  font-size: 18px;
+}
+
+/* Text color utilities */
+.mailpn-text-gray {
+  color: #a7aaad;
+}
+
+.mailpn-text-light-gray {
+  color: #555;
+}
+
+/* Z-index utilities */
+.mailpn-z-index-1000000 {
+  z-index: 1000000;
+}
+
+.mailpn-z-index-1000001 {
+  z-index: 1000001;
+}
+
+/* No notifications box */
+.mailpn-no-notifications {
+  background: #f8f9fa;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 5px;
+  text-align: center;
+  color: #6c757d;
+}
+
+/* Cursor utilities */
+.mailpn-cursor-pointer {
+  cursor: pointer;
+}
+
+/* Debug box */
+.mailpn-debug-box {
+  background: #f1f1f1;
+  padding: 20px;
+  margin: 20px 0;
+  border: 1px solid #ccc;
+}
+
+/* Deliverability score backgrounds */
+.mailpn-bg-score-success {
+  background: #4caf50 !important;
+}
+
+.mailpn-bg-score-warning {
+  background: #ff9800 !important;
+}
+
+.mailpn-bg-score-error {
+  background: #f44336 !important;
+}
+
+/* Border color classes for dynamic content */
+.mailpn-border-color-success {
+  border-left-color: #4caf50;
+}
+
+.mailpn-border-color-warning {
+  border-left-color: #ff9800;
+}
+
+.mailpn-border-color-error {
+  border-left-color: #f44336;
+}
+
+/* Queue stat value */
+.mailpn-queue-stat-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2271b1;
+  margin-top: 4px;
+}
+
+/* Icon utilities */
+.mailpn-icon-16-middle {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+/* Margin top 8 */
+.mailpn-mt-8-text {
+  margin-top: 8px;
+}
+
+/* QR validation styles */
+.mailpn-qr-validation-result {
+  margin: 20px 0;
+  padding: 15px;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 6px;
+  color: #155724;
+}
+
+.mailpn-qr-validation-result h4 {
+  margin: 0 0 10px 0;
+  color: #155724;
+}
+
+.mailpn-qr-scanner-controls {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.mailpn-qr-success {
+  margin: 10px 0;
+  padding: 10px;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  color: #155724;
+  text-align: center;
+}
+
+.mailpn-qr-error-message {
+  text-align: center;
+  color: #666;
+}
+
+.mailpn-qr-history-empty {
+  text-align: center;
+  color: #666;
+  padding: 20px;
 }

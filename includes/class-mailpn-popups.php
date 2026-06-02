@@ -35,7 +35,7 @@ class MAILPN_Popups {
 
         ob_start();
         ?>
-        <div id="<?php echo esc_attr($options['id']); ?>" class="mailpn-popup <?php echo esc_attr($options['class']); ?>" style="display: none;">
+        <div id="<?php echo esc_attr($options['id']); ?>" class="mailpn-popup <?php echo esc_attr($options['class']); ?> mailpn-display-none-soft">
             <div class="mailpn-popup-overlay"></div>
             <div class="mailpn-popup-content">
                 <?php if ($options['closeButton']) : ?>

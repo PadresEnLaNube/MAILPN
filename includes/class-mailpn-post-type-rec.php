@@ -538,11 +538,11 @@ class MAILPN_Post_Type_Rec
           <p>
             <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-red mailpn-mr-10">block</i>
             <?php esc_html_e('Email not sent. Errors have been found.', 'mailpn'); ?>
-            <a href="#" class="mailpn-view-error-details" data-rec-id="<?php echo esc_attr($post_id); ?>" style="margin-left: 8px;">
+            <a href="#" class="mailpn-view-error-details mailpn-ml-10" data-rec-id="<?php echo esc_attr($post_id); ?>">
               <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">info</i>
               <?php esc_html_e('View Details', 'mailpn'); ?>
             </a>
-            <a href="#" class="mailpn-retry-email" data-rec-id="<?php echo esc_attr($post_id); ?>" style="margin-left: 8px;">
+            <a href="#" class="mailpn-retry-email mailpn-ml-10" data-rec-id="<?php echo esc_attr($post_id); ?>">
               <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-16">refresh</i>
               <?php esc_html_e('Retry', 'mailpn'); ?>
             </a>
@@ -923,9 +923,9 @@ class MAILPN_Post_Type_Rec
 
     if ($typenow == 'mailpn_rec') {
       ?>
-      <div class="mailpn-statistics-button-wrapper" style="display: inline-block; margin-left: 10px; float: right;">
+      <div class="mailpn-statistics-button-wrapper mailpn-display-inline-block mailpn-ml-10 mailpn-float-right">
         <button type="button" id="mailpn-statistics-button" class="button">
-          <i class="material-icons-outlined" style="vertical-align: middle; margin-right: 5px;">analytics</i>
+          <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-mr-10">analytics</i>
           <?php esc_html_e('View Statistics', 'mailpn'); ?>
         </button>
       </div>

@@ -316,31 +316,150 @@ class MAILPN_Ajax {
             echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
             exit();
           }
-      
+
           $admin_user_id = get_current_user_id();
-          
+
           // Enable notifications for the user performing the test
           update_user_meta($admin_user_id, 'userspn_notifications', 'on');
-          
+
           $subject = esc_html__('Test email from MAILPN', 'mailpn');
 
           ob_start();
           ?>
-            <h2><?php esc_html_e('MAILPN Test email', 'mailpn'); ?></h2>           
-            <p><?php esc_html_e('Hello', 'mailpn'); ?> [user-name].</p>
-            <p><?php esc_html_e('This is a test email sent from the MAILPN plugin.', 'mailpn'); ?></p>
+            <h1><?php esc_html_e('Test Email - Main Title (H1)', 'mailpn'); ?></h1>
+            <h2><?php esc_html_e('Secondary Subtitle (H2)', 'mailpn'); ?></h2>
+            <h3><?php esc_html_e('Tertiary Heading (H3)', 'mailpn'); ?></h3>
+
+            <p><?php esc_html_e('Hello', 'mailpn'); ?> [user-name],</p>
+
+            <p><?php esc_html_e('This is a', 'mailpn'); ?> <strong><?php esc_html_e('test email', 'mailpn'); ?></strong> <?php esc_html_e('sent from the MAILPN plugin. You can customize the', 'mailpn'); ?> <em><?php esc_html_e('fonts, sizes, colors', 'mailpn'); ?></em> <?php esc_html_e('and spacing to match your brand.', 'mailpn'); ?></p>
+
+            <p><?php esc_html_e('Changes will be reflected in', 'mailpn'); ?> <a href="<?php echo esc_url(admin_url('admin.php?page=mailpn_options')); ?>"><?php esc_html_e('real-time', 'mailpn'); ?></a> <?php esc_html_e('while you adjust the options.', 'mailpn'); ?></p>
+
+            <h4><?php esc_html_e('Features included:', 'mailpn'); ?></h4>
+            <ul>
+              <li><?php esc_html_e('Typography customization', 'mailpn'); ?></li>
+              <li><?php esc_html_e('Color schemes', 'mailpn'); ?></li>
+              <li><?php esc_html_e('Responsive design', 'mailpn'); ?></li>
+            </ul>
+
+            <p style="text-align: center; margin: 30px 0;">
+              <a href="<?php echo esc_url(admin_url('admin.php?page=mailpn_options')); ?>" class="wp-block-button__link wp-element-button" style="background-color: #86b3ac; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: 600;">
+                <?php esc_html_e('Button Example', 'mailpn'); ?>
+              </a>
+            </p>
+
+            <p><small><?php esc_html_e('This is a test to verify all formatting styles are applied correctly.', 'mailpn'); ?></small></p>
           <?php
-          $content = ob_get_contents(); 
-          ob_end_clean(); 
-          
+          $content = ob_get_contents();
+          ob_end_clean();
+
+          // Clear previous errors
+          $GLOBALS['mailpn_last_error'] = null;
+
+          // Verify basic configuration before attempting to send
+          $config_errors = [];
+
+          // Verify SMTP configuration if enabled
+          if (get_option('mailpn_smtp_enabled') === 'on') {
+            $smtp_host = get_option('mailpn_smtp_host');
+            $smtp_port = get_option('mailpn_smtp_port');
+            $smtp_auth = get_option('mailpn_smtp_auth');
+            $smtp_username = get_option('mailpn_smtp_username');
+            $smtp_password = get_option('mailpn_smtp_password');
+
+            if (empty($smtp_host)) {
+              $config_errors[] = esc_html__('SMTP Host is empty', 'mailpn');
+            }
+            if (empty($smtp_port)) {
+              $config_errors[] = esc_html__('SMTP Port is empty', 'mailpn');
+            }
+            if ($smtp_auth === 'on') {
+              if (empty($smtp_username)) {
+                $config_errors[] = esc_html__('SMTP Username is empty', 'mailpn');
+              }
+              if (empty($smtp_password)) {
+                $config_errors[] = esc_html__('SMTP Password is empty', 'mailpn');
+              }
+            }
+          } else {
+            // Verify server configuration for sending without SMTP
+            if (!ini_get('sendmail_path') && !function_exists('mail')) {
+              $config_errors[] = esc_html__('No mail server configured (sendmail_path or mail() function)', 'mailpn');
+            }
+          }
+
+          // If there are configuration errors, show them immediately
+          if (!empty($config_errors)) {
+            $error_message = esc_html__('Email configuration error', 'mailpn') . ': ' . implode('; ', $config_errors);
+            self::mailpn_log_email_error('test_email_send', $error_message, [
+              'user_id' => $admin_user_id,
+              'config_errors' => $config_errors,
+            ]);
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => $error_message]);exit();
+          }
+
+          // Enable PHPMailer error capturing
+          $phpmailer_error = '';
+          $original_error_handler = set_error_handler(function($severity, $message, $file, $line) use (&$phpmailer_error) {
+            if (strpos($message, 'PHPMailer') !== false || strpos($message, 'SMTP') !== false || strpos($message, 'mail') !== false) {
+              $phpmailer_error = $message;
+            }
+            return false; // Let PHP handle the error normally
+          });
+
           $result = do_shortcode('[mailpn-sender mailpn_type="email_coded" mailpn_user_to="' . $admin_user_id . '" mailpn_subject="' . $subject . '"]' . $content . '[/mailpn-sender]');
+
+          // Restore the original error handler
+          if ($original_error_handler) {
+            restore_error_handler();
+          }
 
           if ($result) {
             echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully', 'mailpn')]);exit();
           } else {
-            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => esc_html__('Failed to send test email', 'mailpn')]);exit();
+            // Build detailed error message
+            $error_message = esc_html__('Failed to send test email', 'mailpn');
+            $error_details = [];
+
+            // Check for errors captured by the error handler
+            if (!empty($phpmailer_error)) {
+              $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $phpmailer_error;
+              $error_details['phpmailer_error'] = $phpmailer_error;
+            } else {
+              // Check globally stored error information
+              if (isset($GLOBALS['mailpn_last_error']) && is_array($GLOBALS['mailpn_last_error'])) {
+                $last_error = $GLOBALS['mailpn_last_error'];
+                if (!empty($last_error['message'])) {
+                  $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $last_error['message'];
+                  $error_details = $last_error;
+                }
+              } else {
+                // Check PHPMailer errors directly
+                if (isset($GLOBALS['phpmailer']) && is_object($GLOBALS['phpmailer'])) {
+                  $phpmailer_error_info = $GLOBALS['phpmailer']->ErrorInfo;
+                  if (!empty($phpmailer_error_info)) {
+                    $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $phpmailer_error_info;
+                    $error_details['phpmailer_error_info'] = $phpmailer_error_info;
+                  }
+                }
+              }
+            }
+
+            // If no specific error, add diagnostic information
+            if ($error_message === esc_html__('Failed to send test email', 'mailpn')) {
+              $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . esc_html__('Check SMTP settings or server mail configuration', 'mailpn');
+            }
+
+            // Log the error
+            self::mailpn_log_email_error('test_email_send', $error_message, array_merge([
+              'user_id' => $admin_user_id,
+              'subject' => $subject,
+            ], $error_details));
+
+            echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => $error_message]);exit();
           }
-          
+
           break;
         case 'mailpn_send_test_email_campaign':
           if (!current_user_can('manage_options')) {
@@ -459,31 +578,35 @@ class MAILPN_Ajax {
               $test_error = $GLOBALS['phpmailer']->ErrorInfo;
             }
           }
-          
+
           // Restore the original error handler
           if ($original_error_handler) {
-            set_error_handler($original_error_handler);
+            restore_error_handler();
           }
-          
+
           if ($result) {
             echo wp_json_encode(['error_key' => '', 'error_content' => esc_html__('Test email sent successfully to', 'mailpn') . ' ' . $user_email]);exit();
           } else {
             // Build detailed error message
             $error_message = esc_html__('Failed to send test email', 'mailpn');
-            
+            $error_details = [];
+
             // Use the direct test error if available
             if (!empty($test_error)) {
               $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $test_error;
+              $error_details['phpmailer_error'] = $test_error;
             } else {
               // Check for errors captured by the error handler
               if (!empty($phpmailer_error)) {
                 $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $phpmailer_error;
+                $error_details['phpmailer_error'] = $phpmailer_error;
               } else {
                 // Check globally stored error information
                 if (isset($GLOBALS['mailpn_last_error']) && is_array($GLOBALS['mailpn_last_error'])) {
                   $last_error = $GLOBALS['mailpn_last_error'];
                   if (!empty($last_error['message'])) {
                     $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $last_error['message'];
+                    $error_details = array_merge($error_details, $last_error);
                   }
                 } else {
                   // Check PHPMailer errors directly
@@ -491,17 +614,27 @@ class MAILPN_Ajax {
                     $phpmailer_error_info = $GLOBALS['phpmailer']->ErrorInfo;
                     if (!empty($phpmailer_error_info)) {
                       $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . $phpmailer_error_info;
+                      $error_details['phpmailer_error_info'] = $phpmailer_error_info;
                     }
                   }
                 }
               }
             }
-            
+
             // If no specific error, add diagnostic information
             if ($error_message === esc_html__('Failed to send test email', 'mailpn')) {
-              $error_message = esc_html__('Email sending failed', 'mailpn') . ': Check SMTP settings or server mail configuration';
+              $error_message = esc_html__('Email sending failed', 'mailpn') . ': ' . esc_html__('Check SMTP settings or server mail configuration', 'mailpn');
             }
-            
+
+            // Log the error with full details
+            self::mailpn_log_email_error('campaign_test_email', $error_message, array_merge([
+              'post_id' => $post_id,
+              'user_id' => $user_id,
+              'user_email' => $user_email,
+              'subject' => $subject,
+              'config_check_passed' => empty($config_errors),
+            ], $error_details));
+
             echo wp_json_encode(['error_key' => 'mailpn_test_email_send_error', 'error_content' => $error_message]);exit();
           }
           
@@ -1340,6 +1473,39 @@ class MAILPN_Ajax {
           ]);
           exit;
           break;
+        case 'mailpn_view_email_error_log':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
+            exit;
+          }
+
+          $lines = !empty($_POST['lines']) ? intval($_POST['lines']) : 100;
+          $log_content = MAILPN_Debug::get_email_error_log($lines);
+          $stats = MAILPN_Debug::get_email_error_stats();
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'log_content' => $log_content,
+            'stats' => $stats,
+          ]);
+          exit;
+          break;
+
+        case 'mailpn_clear_email_error_log':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied', 'error_content' => esc_html__('Unauthorized access', 'mailpn')]);
+            exit;
+          }
+
+          MAILPN_Debug::clear_email_error_log();
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'message' => esc_html__('Email error log cleared successfully', 'mailpn'),
+          ]);
+          exit;
+          break;
+
         case 'mailpn_send_test_email_external':
           if (!current_user_can('manage_options')) {
             echo wp_json_encode(['error_key' => 'permission_denied']);
@@ -1560,5 +1726,82 @@ class MAILPN_Ajax {
       'message' => 'All notifications marked as read',
       'count' => $marked_count
     ));
+  }
+
+  /**
+   * Log email sending errors with detailed information
+   *
+   * @param string $context Context of the error (e.g., 'test_email_send', 'campaign_test')
+   * @param string $error_message The error message
+   * @param array $additional_data Additional data to log
+   * @since    1.0.55
+   */
+  private static function mailpn_log_email_error($context, $error_message, $additional_data = []) {
+    $log_entry = [
+      'timestamp' => current_time('mysql'),
+      'context' => $context,
+      'error_message' => $error_message,
+      'smtp_config' => [
+        'smtp_enabled' => get_option('mailpn_smtp_enabled'),
+        'smtp_host' => get_option('mailpn_smtp_host'),
+        'smtp_port' => get_option('mailpn_smtp_port'),
+        'smtp_secure' => get_option('mailpn_smtp_secure'),
+        'smtp_auth' => get_option('mailpn_smtp_auth'),
+        'smtp_from_email' => get_option('mailpn_smtp_from_email'),
+      ],
+      'server_info' => [
+        'php_version' => PHP_VERSION,
+        'wordpress_version' => get_bloginfo('version'),
+        'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'Unknown',
+        'server_ip' => $_SERVER['SERVER_ADDR'] ?? 'Unknown',
+      ],
+      'additional_data' => $additional_data,
+    ];
+
+    // Log to WordPress error log
+    error_log('[MAILPN Email Error] ' . $context . ': ' . $error_message);
+
+    // Log to custom mailpn log file
+    $log_file = WP_CONTENT_DIR . '/mailpn-email-errors.log';
+    $log_message = sprintf(
+      "[%s] %s: %s\nDetails: %s\n\n",
+      $log_entry['timestamp'],
+      $context,
+      $error_message,
+      print_r($log_entry, true)
+    );
+
+    file_put_contents($log_file, $log_message, FILE_APPEND | LOCK_EX);
+
+    // Optionally send to admin if configured
+    if (get_option('mailpn_errors_to_admin') == 'on') {
+      $admin_email = get_option('admin_email');
+      $site_name = get_bloginfo('name');
+      $subject = sprintf('[%s] Email Test Error', $site_name);
+
+      $body = sprintf(
+        "An email sending error occurred on %s\n\n" .
+        "Context: %s\n" .
+        "Time: %s\n" .
+        "Error: %s\n\n" .
+        "SMTP Configuration:\n" .
+        "- SMTP Enabled: %s\n" .
+        "- SMTP Host: %s\n" .
+        "- SMTP Port: %s\n" .
+        "- SMTP Secure: %s\n\n" .
+        "Additional Information:\n%s\n",
+        $site_name,
+        $context,
+        $log_entry['timestamp'],
+        $error_message,
+        $log_entry['smtp_config']['smtp_enabled'] === 'on' ? 'Yes' : 'No',
+        $log_entry['smtp_config']['smtp_host'],
+        $log_entry['smtp_config']['smtp_port'],
+        $log_entry['smtp_config']['smtp_secure'],
+        print_r($additional_data, true)
+      );
+
+      wp_mail($admin_email, $subject, $body, ['Content-Type: text/plain; charset=UTF-8']);
+    }
   }
 }

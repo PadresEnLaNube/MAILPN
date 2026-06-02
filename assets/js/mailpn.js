@@ -512,7 +512,7 @@
         } else if (result.hit_daily_limit) {
           popup_content += '<p>' + (mailpn_i18n.paused_daily_limit || 'Paused due to daily limit') + '</p>';
           if (result.resume_tomorrow) {
-            popup_content += '<p style="margin-top:8px;"><i class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">schedule</i> ';
+            popup_content += '<p class="mailpn-mt-8-text"><i class="material-icons-outlined mailpn-icon-16-middle">schedule</i> ';
             popup_content += (mailpn_i18n.resume_at || 'Will resume at') + ': <strong>' + result.resume_tomorrow + '</strong></p>';
           }
         } else if (result.paused_daily_limit) {
@@ -536,9 +536,9 @@
       popup_content += '<div class="mailpn-queue-section">';
       popup_content += '<h4>' + (mailpn_i18n.statistics || 'Statistics') + '</h4>';
       popup_content += '<ul class="mailpn-queue-stats">';
-      popup_content += '<li><strong>' + (mailpn_i18n.total_pending || 'Total pending') + '</strong><div style="font-size:20px;font-weight:600;color:#2271b1;margin-top:4px;">' + result.total_pending + '</div></li>';
-      popup_content += '<li><strong>' + (mailpn_i18n.sent_today || 'Sent today') + '</strong><div style="font-size:20px;font-weight:600;color:#2271b1;margin-top:4px;">' + result.mails_sent_today + ' / ' + result.daily_limit + '</div></li>';
-      popup_content += '<li><strong>' + (mailpn_i18n.rate_limit || 'Rate limit') + '</strong><div style="font-size:20px;font-weight:600;color:#2271b1;margin-top:4px;">' + result.rate_limit + ' / 10min</div></li>';
+      popup_content += '<li><strong>' + (mailpn_i18n.total_pending || 'Total pending') + '</strong><div class="mailpn-queue-stat-value">' + result.total_pending + '</div></li>';
+      popup_content += '<li><strong>' + (mailpn_i18n.sent_today || 'Sent today') + '</strong><div class="mailpn-queue-stat-value">' + result.mails_sent_today + ' / ' + result.daily_limit + '</div></li>';
+      popup_content += '<li><strong>' + (mailpn_i18n.rate_limit || 'Rate limit') + '</strong><div class="mailpn-queue-stat-value">' + result.rate_limit + ' / 10min</div></li>';
       popup_content += '</ul>';
       popup_content += '</div>';
 

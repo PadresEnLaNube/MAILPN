@@ -254,13 +254,13 @@ class MAILPN_Forms {
               ?>
               
               <?php foreach ($mailpn_input['options'] as $mailpn_input_option_key => $mailpn_input_option_value): ?>
-                <option value="<?php echo esc_attr($mailpn_input_option_key); ?>" <?php echo ((array_key_exists('all_selected', $mailpn_input) && $mailpn_input['all_selected'] == 'true') || (is_array($mailpn_selected_values) && in_array($mailpn_input_option_key, $mailpn_selected_values)) ? 'selected' : ''); ?>><?php echo esc_html($mailpn_input_option_value) ?></option>
+                <option value="<?php echo esc_attr($mailpn_input_option_key); ?>" <?php echo ((array_key_exists('all_selected', $mailpn_input) && $mailpn_input['all_selected'] == 'true') || (is_array($mailpn_selected_values) && in_array($mailpn_input_option_key, $mailpn_selected_values)) ? 'selected' : ''); ?> <?php echo ($mailpn_input['id'] === 'mailpn_font_family' ? 'style="font-family: ' . esc_attr($mailpn_input_option_key) . ';"' : ''); ?>><?php echo esc_html($mailpn_input_option_value) ?></option>
               <?php endforeach ?>
             <?php else: ?>
               <option value="" <?php echo $mailpn_value == '' ? 'selected' : '';?>><?php esc_html_e('Select an option', 'mailpn'); ?></option>
               
               <?php foreach ($mailpn_input['options'] as $mailpn_input_option_key => $mailpn_input_option_value): ?>
-                <option value="<?php echo esc_attr($mailpn_input_option_key); ?>" <?php echo ((array_key_exists('all_selected', $mailpn_input) && $mailpn_input['all_selected'] == 'true') || ($mailpn_value != '' && $mailpn_input_option_key == $mailpn_value) ? 'selected' : ''); ?>><?php echo esc_html($mailpn_input_option_value); ?></option>
+                <option value="<?php echo esc_attr($mailpn_input_option_key); ?>" <?php echo ((array_key_exists('all_selected', $mailpn_input) && $mailpn_input['all_selected'] == 'true') || ($mailpn_value != '' && $mailpn_input_option_key == $mailpn_value) ? 'selected' : ''); ?> <?php echo ($mailpn_input['id'] === 'mailpn_font_family' ? 'style="font-family: ' . esc_attr($mailpn_input_option_key) . ';"' : ''); ?>><?php echo esc_html($mailpn_input_option_value); ?></option>
               <?php endforeach ?>
             <?php endif ?>
           </select>
@@ -508,12 +508,12 @@ class MAILPN_Forms {
         }
         ?>
         <div class="mailpn-header-analyzer-wrapper mailpn-mt-30" id="mailpn-header-analyzer">
-          <div class="mailpn-mb-20 mailpn-p-20" style="background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 4px;">
-            <p style="margin: 0; color: #1976d2;">
-              <i class="material-icons-outlined mailpn-vertical-align-middle" style="font-size: 20px;">info</i>
+          <div class="mailpn-info-box mailpn-info-box-blue">
+            <p>
+              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-info-box-icon">info</i>
               <strong><?php esc_html_e('How to get email headers:', 'mailpn'); ?></strong>
             </p>
-            <ul style="margin: 10px 0 0 20px; color: #555;">
+            <ul>
               <li><strong>Gmail:</strong> <?php esc_html_e('Open email → Click three dots (⋮) → Show original', 'mailpn'); ?></li>
               <li><strong>Outlook:</strong> <?php esc_html_e('Open email → File → Properties → Copy from "Internet headers"', 'mailpn'); ?></li>
               <li><strong>Yahoo:</strong> <?php esc_html_e('Open email → More → View raw message', 'mailpn'); ?></li>
@@ -524,7 +524,7 @@ class MAILPN_Forms {
             <label for="mailpn-header-textarea" class="mailpn-mb-10 mailpn-display-block">
               <?php esc_html_e('Paste complete email headers here:', 'mailpn'); ?>
             </label>
-            <textarea id="mailpn-header-textarea" class="mailpn-textarea mailpn-width-100-percent" rows="10" style="font-family: monospace; font-size: 12px;" placeholder="Received: from mail.example.com...&#10;Authentication-Results: mx.google.com;&#10;DKIM-Signature: v=1; a=rsa-sha256..."></textarea>
+            <textarea id="mailpn-header-textarea" class="mailpn-textarea mailpn-width-100-percent mailpn-textarea-monospace" rows="10" placeholder="Received: from mail.example.com...&#10;Authentication-Results: mx.google.com;&#10;DKIM-Signature: v=1; a=rsa-sha256..."></textarea>
           </div>
 
           <div class="mailpn-mb-20">
@@ -547,12 +547,12 @@ class MAILPN_Forms {
         }
         ?>
         <div class="mailpn-external-tester-wrapper mailpn-mt-30" id="mailpn-external-tester">
-          <div class="mailpn-mb-20 mailpn-p-20" style="background: #fff3e0; border-left: 4px solid #ff9800; border-radius: 4px;">
-            <p style="margin: 0; color: #e65100;">
-              <i class="material-icons-outlined mailpn-vertical-align-middle" style="font-size: 20px;">info</i>
+          <div class="mailpn-info-box mailpn-info-box-orange">
+            <p>
+              <i class="material-icons-outlined mailpn-vertical-align-middle mailpn-info-box-icon">info</i>
               <strong><?php esc_html_e('How to use Mail-Tester:', 'mailpn'); ?></strong>
             </p>
-            <ol style="margin: 10px 0 0 20px; color: #555;">
+            <ol>
               <li><?php esc_html_e('Click "Open Mail-Tester" to get a unique test email address', 'mailpn'); ?></li>
               <li><?php esc_html_e('Copy the email address (e.g., test-xxxxx@srv1.mail-tester.com)', 'mailpn'); ?></li>
               <li><?php esc_html_e('Paste it below and click "Send Test Email"', 'mailpn'); ?></li>
@@ -572,10 +572,10 @@ class MAILPN_Forms {
               <strong><?php esc_html_e('Paste the test email address:', 'mailpn'); ?></strong>
             </label>
             <div class="mailpn-display-table mailpn-width-100-percent">
-              <div class="mailpn-display-inline-table" style="width: calc(100% - 180px); padding-right: 10px;">
+              <div class="mailpn-display-inline-table">
                 <input type="email" id="mailpn-tester-email" class="mailpn-input mailpn-width-100-percent" placeholder="test-xxxxx@srv1.mail-tester.com" />
               </div>
-              <div class="mailpn-display-inline-table" style="width: 180px;">
+              <div class="mailpn-display-inline-table">
                 <button type="button" class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-width-100-percent" id="mailpn-send-test-email-btn">
                   <i class="material-icons-outlined mailpn-vertical-align-middle">send</i>
                   <?php esc_html_e('Send Test Email', 'mailpn'); ?>
@@ -917,12 +917,12 @@ class MAILPN_Forms {
         switch ($type) {
           case 'select-multiple':
             foreach ($value as $key => $values) {
-              $value[$key] = sanitize_key($values);
+              $value[$key] = sanitize_text_field($values);
             }
 
             return $value;
           default:
-            return sanitize_key($value);
+            return sanitize_text_field($value);
         }
       case 'textarea':
         return wp_kses_post($value);

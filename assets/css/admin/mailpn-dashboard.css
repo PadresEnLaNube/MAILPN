@@ -314,6 +314,13 @@
     color: #e65100;
 }
 
+.mailpn-stats-opened-date {
+    font-size: 11px;
+    color: #787c82;
+    margin-top: 4px;
+    font-style: italic;
+}
+
 .mailpn-stats-actions {
     display: flex;
     gap: 8px;

@@ -123,7 +123,7 @@ class MAILPN_Notifications_Manager {
                         <div class="mailpn-notification-content">
                             <div class="mailpn-notification-header">
                                 <div class="mailpn-notification-title">
-                                    <h4 class="mailpn-notification-subject expandable-title" data-notification-id="<?php echo esc_attr($post_id); ?>" style="cursor: pointer; margin: 0;">
+                                    <h4 class="mailpn-notification-subject expandable-title mailpn-cursor-pointer mailpn-m-0" data-notification-id="<?php echo esc_attr($post_id); ?>">
                                         <?php echo esc_html($mail_subject ?: get_the_title()); ?>
                                     </h4>
                                 </div>
@@ -575,7 +575,7 @@ class MAILPN_Notifications_Manager {
         $unread_count = $this->get_unread_notifications_count($current_user_id);
         
         if ($unread_count == 0) {
-            $no_notifications = '<div class="mailpn-no-notifications" style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; text-align: center; color: #6c757d;">';
+            $no_notifications = '<div class="mailpn-no-notifications">';
             $no_notifications .= '<p>No hay notificaciones de correo electrónico sin leer.</p>';
             $no_notifications .= '</div>';
             return $content . $no_notifications;

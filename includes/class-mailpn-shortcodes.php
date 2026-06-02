@@ -75,7 +75,7 @@ class MAILPN_Shortcodes {
     
     ob_start();
     ?>
-    <div style="background: #f1f1f1; padding: 20px; margin: 20px 0; border: 1px solid #ccc;">
+    <div class="mailpn-debug-box">
       <h3>MailPN Cart Abandonment Debug</h3>
       <pre><?php echo esc_html(print_r($debug_info, true)); ?></pre>
     </div>
@@ -99,7 +99,7 @@ class MAILPN_Shortcodes {
     
     ob_start();
     ?>
-    <div style="background: #f1f1f1; padding: 20px; margin: 20px 0; border: 1px solid #ccc;">
+    <div class="mailpn-debug-box">
       <h3>MailPN Purchase Email Debug</h3>
       <pre><?php echo esc_html(print_r($debug_info, true)); ?></pre>
     </div>
@@ -123,7 +123,7 @@ class MAILPN_Shortcodes {
     
     ob_start();
     ?>
-    <div style="background: #f1f1f1; padding: 20px; margin: 20px 0; border: 1px solid #ccc;">
+    <div class="mailpn-debug-box">
       <h3>MailPN Cart Abandonment Processing Test</h3>
       <pre><?php echo esc_html(print_r($results, true)); ?></pre>
     </div>

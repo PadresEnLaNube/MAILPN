@@ -64,7 +64,7 @@
                 });
             } else {
                 // Fallback if QRCode library is not loaded
-                $('#' + elementId).html('<p style="text-align: center; color: #666;">QR Code library not loaded</p>');
+                $('#' + elementId).html('<p class="mailpn-qr-error-message">QR Code library not loaded</p>');
             }
         },
 
@@ -242,8 +242,8 @@
 
         showValidationResult: function(data) {
             var resultHtml = `
-                <div class="mailpn-qr-validation-result" style="margin: 20px 0; padding: 15px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 6px; color: #155724;">
-                    <h4 style="margin: 0 0 10px 0; color: #155724;">Validation Successful!</h4>
+                <div class="mailpn-qr-validation-result">
+                    <h4>Validation Successful!</h4>
                     <p><strong>Order ID:</strong> #${data.order_info.order_id}</p>
                     <p><strong>Customer:</strong> ${data.order_info.customer_name}</p>
                     <p><strong>Total:</strong> ${data.order_info.order_total}</p>
@@ -269,7 +269,7 @@
                     <video id="qr-scanner-video" autoplay playsinline></video>
                     <div class="mailpn-qr-scanner-overlay"></div>
                 </div>
-                <div class="mailpn-qr-scanner-controls" style="margin-top: 15px; text-align: center;">
+                <div class="mailpn-qr-scanner-controls">
                     <button type="button" class="mailpn-qr-modal-btn secondary" id="stop-scanner">
                         Stop Scanner
                     </button>
@@ -324,7 +324,7 @@
 
         showSuccess: function(message) {
             var successHtml = `
-                <div class="mailpn-qr-success" style="margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724; text-align: center;">
+                <div class="mailpn-qr-success">
                     ${message}
                 </div>
             `;

@@ -369,9 +369,119 @@ class MAILPN_Debug {
      */
     public static function clear_debug_log() {
         $debug_file = WP_CONTENT_DIR . '/mailpn-debug.log';
-        
+
         if (file_exists($debug_file)) {
             unlink($debug_file);
         }
+    }
+
+    /**
+     * Get email error log content
+     *
+     * @param int $lines Number of lines to read from the end of the file (default: 100, 0 for all)
+     * @return string Email error log content
+     * @since    1.0.55
+     */
+    public static function get_email_error_log($lines = 100) {
+        $error_file = WP_CONTENT_DIR . '/mailpn-email-errors.log';
+
+        if (!file_exists($error_file)) {
+            return 'Email error log file does not exist yet. No errors have been logged.';
+        }
+
+        $content = file_get_contents($error_file);
+
+        if ($content === false) {
+            return 'Could not read email error log file.';
+        }
+
+        if (empty($content)) {
+            return 'Email error log is empty. No errors have been logged.';
+        }
+
+        // If lines is 0 or less, return all content
+        if ($lines <= 0) {
+            return $content;
+        }
+
+        // Get last N lines
+        $lines_array = explode("\n", $content);
+        $total_lines = count($lines_array);
+
+        if ($total_lines <= $lines) {
+            return $content;
+        }
+
+        // Return last N lines
+        $last_lines = array_slice($lines_array, -$lines);
+        return implode("\n", $last_lines);
+    }
+
+    /**
+     * Clear email error log
+     *
+     * @since    1.0.55
+     */
+    public static function clear_email_error_log() {
+        $error_file = WP_CONTENT_DIR . '/mailpn-email-errors.log';
+
+        if (file_exists($error_file)) {
+            unlink($error_file);
+        }
+    }
+
+    /**
+     * Get email error log statistics
+     *
+     * @return array Statistics about email errors
+     * @since    1.0.55
+     */
+    public static function get_email_error_stats() {
+        $error_file = WP_CONTENT_DIR . '/mailpn-email-errors.log';
+
+        if (!file_exists($error_file)) {
+            return [
+                'exists' => false,
+                'total_errors' => 0,
+                'file_size' => 0,
+                'last_error' => null,
+            ];
+        }
+
+        $content = file_get_contents($error_file);
+
+        if ($content === false || empty($content)) {
+            return [
+                'exists' => true,
+                'total_errors' => 0,
+                'file_size' => 0,
+                'last_error' => null,
+            ];
+        }
+
+        // Count error entries (each starts with a timestamp in brackets)
+        $error_count = preg_match_all('/^\[[\d\-: ]+\]/m', $content);
+
+        // Get file size
+        $file_size = filesize($error_file);
+
+        // Get last error (last timestamp entry)
+        $lines = explode("\n", $content);
+        $last_error_line = null;
+
+        for ($i = count($lines) - 1; $i >= 0; $i--) {
+            if (preg_match('/^\[([\d\-: ]+)\]/', $lines[$i], $matches)) {
+                $last_error_line = $matches[1];
+                break;
+            }
+        }
+
+        return [
+            'exists' => true,
+            'total_errors' => $error_count,
+            'file_size' => $file_size,
+            'file_size_human' => size_format($file_size),
+            'last_error' => $last_error_line,
+        ];
     }
 }

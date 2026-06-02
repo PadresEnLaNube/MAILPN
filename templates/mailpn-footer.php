@@ -24,7 +24,7 @@
   $mailpn_data = $GLOBALS['mailpn_data'];
 ?>
 
-<div id="mailpn-main-message" class="mailpn-main-message mailpn-display-none-soft mailpn-z-index-top" style="display:none;" data-user-id="<?php echo esc_attr($mailpn_data['user_id']); ?>" data-post-id="<?php echo esc_attr($mailpn_data['post_id']); ?>">
+<div id="mailpn-main-message" class="mailpn-main-message mailpn-display-none-soft mailpn-z-index-top" data-user-id="<?php echo esc_attr($mailpn_data['user_id']); ?>" data-post-id="<?php echo esc_attr($mailpn_data['post_id']); ?>">
   <span id="mailpn-main-message-span"></span><i class="material-icons-outlined mailpn-vertical-align-bottom mailpn-ml-20 mailpn-cursor-pointer mailpn-color-white mailpn-close-icon">close</i>
 
   <div id="mailpn-bar-wrapper">

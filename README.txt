@@ -3,8 +3,8 @@ Contributors: felixmartinez, hamlet237
 Donate link: https://padresenlanube.com/
 Tags: email, mailing, notifications, sender, mail address
 Requires at least: 3.0
-Tested up to: 6.9.1
-Stable tag: 1.0.55
+Tested up to: 7.0
+Stable tag: 1.0.60
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Effortlessly manage your email campaigns. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.

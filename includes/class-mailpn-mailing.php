@@ -355,7 +355,17 @@ class MAILPN_Mailing {
         'smtp_port' => get_option('mailpn_smtp_port')
       ];
 
-      // Error logging removed
+      // Log to custom error file for debugging
+      $log_file = WP_CONTENT_DIR . '/mailpn-email-errors.log';
+      $log_message = sprintf(
+        "[%s] Email Send Failed\nRecipient: %s\nType: %s\nSubject: %s\nError: %s\n\n",
+        current_time('mysql'),
+        $user_email,
+        $mailpn_type,
+        $mailpn_subject,
+        $error_message
+      );
+      file_put_contents($log_file, $log_message, FILE_APPEND | LOCK_EX);
 
       $post_functions->mailpn_insert_post($mailpn_subject, $mailpn_message, '', esc_url($mailpn_subject), 'mailpn_rec', 'publish', 1, 0, [], [], [
         'mailpn_rec_content' => $mailpn_message,
@@ -653,6 +663,36 @@ class MAILPN_Mailing {
     // Replace default button color with main color in CSS
     $mailpn_template_css = str_replace('#007cba', $main_color, $mailpn_template_css);
 
+    // Get design settings
+    $font_family = get_option('mailpn_font_family', 'Arial, sans-serif');
+    $font_size_desktop = get_option('mailpn_font_size_desktop', '14');
+    $font_size_mobile = get_option('mailpn_font_size_mobile', '16');
+    $heading_h1 = get_option('mailpn_heading_size_h1', '26');
+    $heading_h2 = get_option('mailpn_heading_size_h2', '22');
+    $heading_h3 = get_option('mailpn_heading_size_h3', '20');
+    $line_height = get_option('mailpn_line_height', '1.6');
+    $bg_color = get_option('mailpn_background_color', '#ffffff');
+    $text_color = get_option('mailpn_text_color', '#333333');
+    $button_bg = get_option('mailpn_button_bg_color', '#ffffff');
+    $button_text = get_option('mailpn_button_text_color', '#ffffff');
+    $button_radius = get_option('mailpn_button_border_radius', '4');
+    $header_bg = get_option('mailpn_header_bg_color', '#ffffff');
+    $footer_bg = get_option('mailpn_footer_bg_color', '#ffffff');
+    $footer_text = get_option('mailpn_footer_text_color', '#6c757d');
+
+    // Apply design settings to CSS
+    $mailpn_template_css = str_replace('Arial, sans-serif', $font_family, $mailpn_template_css);
+    $mailpn_template_css = str_replace('font-size: 16px', 'font-size: ' . $font_size_mobile . 'px', $mailpn_template_css);
+    $mailpn_template_css = str_replace('font-size: 26px', 'font-size: ' . $heading_h1 . 'px', $mailpn_template_css);
+    $mailpn_template_css = str_replace('font-size: 22px', 'font-size: ' . $heading_h2 . 'px', $mailpn_template_css);
+    $mailpn_template_css = str_replace('font-size: 20px', 'font-size: ' . $heading_h3 . 'px', $mailpn_template_css);
+    $mailpn_template_css = str_replace('#ffffff', $bg_color, $mailpn_template_css);
+    $mailpn_template_css = str_replace('background-color: #86b3ac', 'background-color: ' . $button_bg, $mailpn_template_css);
+    $mailpn_template_css = str_replace('color: #ffffff !important', 'color: ' . $button_text . ' !important', $mailpn_template_css);
+    $mailpn_template_css = str_replace('border-radius: 4px', 'border-radius: ' . $button_radius . 'px', $mailpn_template_css);
+    $mailpn_template_css = str_replace('background-color: #f8f9fa', 'background-color: ' . $header_bg, $mailpn_template_css);
+    $mailpn_template_css = str_replace('color: #6c757d', 'color: ' . $footer_text, $mailpn_template_css);
+
     wp_register_style('mail-template-css', false);
     wp_enqueue_style('mail-template-css');
     wp_add_inline_style('mail-template-css', $mailpn_template_css);
@@ -673,13 +713,13 @@ class MAILPN_Mailing {
           <title><?php echo esc_html($mailpn_subject); ?></title>
         </head>
 
-        <body class="mailpn-content" style="margin:0;padding:0;">
-          <table class="mailpn-table-main" width="<?php echo esc_attr($mailpn_max_width_val); ?>" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:<?php echo esc_attr($mailpn_max_width_val); ?>px;margin:0 auto;">
+        <body class="mailpn-content" style="margin:0;padding:0;font-family:<?php echo esc_attr($font_family); ?>;font-size:<?php echo esc_attr($font_size_desktop); ?>px;color:<?php echo esc_attr($text_color); ?>;line-height:<?php echo esc_attr($line_height); ?>;background-color:<?php echo esc_attr($bg_color); ?>;">
+          <table class="mailpn-table-main" width="<?php echo esc_attr($mailpn_max_width_val); ?>" cellpadding="0" cellspacing="0" border="0" align="center" style="width:100%;max-width:<?php echo esc_attr($mailpn_max_width_val); ?>px;margin:0 auto;font-family:<?php echo esc_attr($font_family); ?>;background-color:<?php echo esc_attr($bg_color); ?>;">
             <tbody>
               <?php if (!empty(get_option('mailpn_image_header'))): ?>
-                <tr style="text-align:center;">
-                  <td class="text-align-center mailpn-mb-30" align="center">
-                    <a target="_blank" href="<?php echo esc_url(home_url()); ?>" class="mailpn-header-image" style="color:#3d731a;text-decoration:none;"><img src="<?php echo esc_url(wp_get_attachment_image_src(get_option('mailpn_image_header'), 'full')[0]); ?>" border="0" alt="<?php echo esc_attr($mailpn_legal_name); ?>" style="max-height:150px;width:auto;margin-right:5px;margin-left:5px;margin-bottom:30px;"></a>
+                <tr style="text-align:center;background-color:<?php echo esc_attr($header_bg); ?>;">
+                  <td class="text-align-center mailpn-mb-30" align="center" style="background-color:<?php echo esc_attr($header_bg); ?>;">
+                    <a target="_blank" href="<?php echo esc_url(home_url()); ?>" class="mailpn-header-image" style="color:<?php echo esc_attr($main_color); ?>;text-decoration:none;"><img src="<?php echo esc_url(wp_get_attachment_image_src(get_option('mailpn_image_header'), 'full')[0]); ?>" border="0" alt="<?php echo esc_attr($mailpn_legal_name); ?>" style="max-height:150px;width:auto;margin-right:5px;margin-left:5px;margin-bottom:30px;"></a>
                   </td>
                 </tr>
               <?php endif ?>
@@ -688,17 +728,17 @@ class MAILPN_Mailing {
                 <tr style="text-align:center;">
                   <td style="padding:20px 20px 10px 20px;">
                     <?php if (!empty($mailpn_subject)): ?>
-                      <h1 style="margin:0 0 10px 0;font-size:28px;font-weight:600;color:#333333;line-height:1.3;"><?php echo esc_html($mailpn_subject); ?></h1>
+                      <h1 style="margin:0 0 10px 0;font-size:28px;font-weight:600;color:<?php echo esc_attr($text_color); ?>;line-height:1.3;font-family:<?php echo esc_attr($font_family); ?>;"><?php echo esc_html($mailpn_subject); ?></h1>
                     <?php endif; ?>
                     <?php if (!empty($mailpn_subtitle)): ?>
-                      <h2 style="margin:0;font-size:18px;font-weight:400;color:#666666;line-height:1.5;"><?php echo esc_html($mailpn_subtitle); ?></h2>
+                      <h2 style="margin:0;font-size:18px;font-weight:400;color:<?php echo esc_attr($text_color); ?>;line-height:1.5;font-family:<?php echo esc_attr($font_family); ?>;"><?php echo esc_html($mailpn_subtitle); ?></h2>
                     <?php endif; ?>
                   </td>
                 </tr>
               <?php endif; ?>
 
               <tr style="text-align:left;">
-                <td>
+                <td style="font-family:<?php echo esc_attr($font_family); ?>;font-size:<?php echo esc_attr($font_size_desktop); ?>px;color:<?php echo esc_attr($text_color); ?>;line-height:<?php echo esc_attr($line_height); ?>;">
                   <?php echo do_shortcode($mailpn_content); ?>
                 </td>
               </tr>
@@ -726,17 +766,17 @@ class MAILPN_Mailing {
               <?php endif ?>
 
               <?php if (!empty(get_option('mailpn_image_footer'))): ?>
-                <tr>
-                  <td class="text-align-center" align="center">
+                <tr style="background-color:<?php echo esc_attr($footer_bg); ?>;">
+                  <td class="text-align-center" align="center" style="background-color:<?php echo esc_attr($footer_bg); ?>;">
                     <a target="_blank" href="<?php echo esc_url(home_url()); ?>" class="mailpn-header-image"><img src="<?php echo esc_url(wp_get_attachment_image_src(get_option('mailpn_image_footer'), 'full')[0]); ?>" border="0" alt="<?php echo esc_attr($mailpn_legal_name); ?>" style="height:50px;width:auto;margin-right:5px;margin-left:5px;"></a>
                   </td>
                 </tr>
               <?php endif ?>
 
-              <tr>
-                <td width="100%" valign="top" align="center">
-                  <div style="padding:20px;" class="mailpn-td-footer text-align-center">
-                    <small class="text-align-center">
+              <tr style="background-color:<?php echo esc_attr($footer_bg); ?>;">
+                <td width="100%" valign="top" align="center" style="background-color:<?php echo esc_attr($footer_bg); ?>;">
+                  <div style="padding:20px;font-family:<?php echo esc_attr($font_family); ?>;color:<?php echo esc_attr($footer_text); ?>;" class="mailpn-td-footer text-align-center">
+                    <small class="text-align-center" style="color:<?php echo esc_attr($footer_text); ?>;">
                       <p>© <?php echo esc_html($mailpn_legal_name); ?> <?php echo esc_html(gmdate('Y')); ?>.<br><?php esc_html_e('All rights reserved', 'mailpn'); ?>.</p>
                       <p><?php 
                         $footer_reason = get_option('mailpn_footer_reason');
@@ -934,8 +974,8 @@ class MAILPN_Mailing {
     ob_start();
     foreach ($posts as $mail_post_id) {
       ?>
-        <div style="padding:8px 0;border-bottom:1px solid #eee;">
-          <a href="<?php echo esc_url(get_permalink($mail_post_id)); ?>" style="color:#007cba;text-decoration:none;font-weight:bold;"><?php echo esc_html(get_the_title($mail_post_id)); ?></a>
+        <div class="mailpn-email-list-item">
+          <a href="<?php echo esc_url(get_permalink($mail_post_id)); ?>" class="mailpn-email-link"><?php echo esc_html(get_the_title($mail_post_id)); ?></a>
         </div>
       <?php
     }
@@ -1144,7 +1184,7 @@ class MAILPN_Mailing {
                       );
                     ?>
                   </p>
-                  <p class="mailpn-status-error-hint" style="font-size: 13px; color: #787c82; margin-top: 8px;">
+                  <p class="mailpn-status-error-hint">
                     <?php esc_html_e('Click "Resend errors" button below to retry sending to all failed recipients.', 'mailpn'); ?>
                   </p>
                 </div>
@@ -1353,7 +1393,7 @@ class MAILPN_Mailing {
               </div>
             <?php endif; ?>
             <?php if (is_user_logged_in()): $current_user = wp_get_current_user(); ?>
-              <div class="mailpn-status-actions" style="margin-top:8px;">
+              <div class="mailpn-status-actions mailpn-mt-8">
                 <?php if ($mailpn_type === 'email_periodic' && get_post_status($post_id) === 'publish'): ?>
                 <div class="mailpn-actions-group">
                   <span class="mailpn-actions-group-label"><?php esc_html_e('Send', 'mailpn'); ?></span>
@@ -1467,17 +1507,17 @@ class MAILPN_Mailing {
             if (!empty($pending_for_tpl)) {
               $now_ts = current_time('timestamp');
               ?>
-              <div class="mailpn-status-body" style="margin-top:12px;">
-                <h4 style="margin:0 0 8px;font-size:13px;display:flex;align-items:center;gap:6px;">
-                  <i class="material-icons-outlined" style="font-size:18px;">schedule_send</i>
+              <div class="mailpn-status-body mailpn-section-body">
+                <h4 class="mailpn-section-header-mini">
+                  <i class="material-icons-outlined mailpn-icon-size-18">schedule_send</i>
                   <?php echo esc_html(sprintf(__('Scheduled sends (%d)', 'mailpn'), count($pending_for_tpl))); ?>
                 </h4>
-                <table class="mailpn-emails-table" style="width:100%;border-collapse:separate;border-spacing:0 2px;">
+                <table class="mailpn-emails-table mailpn-emails-table-compact">
                   <thead>
                     <tr>
-                      <th style="text-align:left;padding:6px 10px;font-size:12px;color:#787c82;"><?php esc_html_e('User', 'mailpn'); ?></th>
-                      <th style="text-align:left;padding:6px 10px;font-size:12px;color:#787c82;"><?php esc_html_e('Scheduled date', 'mailpn'); ?></th>
-                      <th style="text-align:left;padding:6px 10px;font-size:12px;color:#787c82;"><?php esc_html_e('Time remaining', 'mailpn'); ?></th>
+                      <th class="mailpn-table-header-muted"><?php esc_html_e('User', 'mailpn'); ?></th>
+                      <th class="mailpn-table-header-muted"><?php esc_html_e('Scheduled date', 'mailpn'); ?></th>
+                      <th class="mailpn-table-header-muted"><?php esc_html_e('Time remaining', 'mailpn'); ?></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1496,26 +1536,26 @@ class MAILPN_Mailing {
                       }
                     ?>
                     <tr>
-                      <td style="padding:6px 10px;font-size:13px;">
+                      <td class="mailpn-table-cell-normal">
                         <?php if ($sched_user): ?>
-                          <i class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#787c82;">person</i>
+                          <i class="material-icons-outlined mailpn-icon-size-14 mailpn-vertical-align-middle mailpn-icon-gray">person</i>
                           <?php echo esc_html($sched_user->display_name); ?>
-                          <span style="color:#a7aaad;font-size:11px;">(<?php echo esc_html($sched_user->user_email); ?>)</span>
+                          <span class="mailpn-user-email-small">(<?php echo esc_html($sched_user->user_email); ?>)</span>
                         <?php else: ?>
-                          <span style="color:#a7aaad;"><?php echo esc_html(sprintf(__('User #%d (deleted)', 'mailpn'), $sched_entry['user_id'])); ?></span>
+                          <span class="mailpn-user-email-small"><?php echo esc_html(sprintf(__('User #%d (deleted)', 'mailpn'), $sched_entry['user_id'])); ?></span>
                         <?php endif; ?>
                       </td>
-                      <td style="padding:6px 10px;font-size:13px;">
+                      <td class="mailpn-table-cell-normal">
                         <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', $sched_time)); ?>
                       </td>
-                      <td style="padding:6px 10px;font-size:13px;color:#787c82;">
+                      <td class="mailpn-table-cell-normal mailpn-icon-gray">
                         <?php echo esc_html($sched_remaining); ?>
                       </td>
                     </tr>
                     <?php endforeach; ?>
                     <?php if (count($pending_for_tpl) > 10): ?>
                     <tr>
-                      <td colspan="3" style="padding:6px 10px;color:#787c82;font-style:italic;font-size:12px;">
+                      <td colspan="3" class="mailpn-table-cell-empty">
                         <?php echo esc_html(sprintf(__('... and %d more', 'mailpn'), count($pending_for_tpl) - 10)); ?>
                       </td>
                     </tr>
@@ -1542,30 +1582,30 @@ class MAILPN_Mailing {
             }
             if (!empty($unprocessed_regs)) {
               ?>
-              <div class="mailpn-status-body" style="margin-top:12px;">
-                <h4 style="margin:0 0 8px;font-size:13px;display:flex;align-items:center;gap:6px;">
-                  <i class="material-icons-outlined" style="font-size:18px;">pending</i>
+              <div class="mailpn-status-body mailpn-mt-12">
+                <h4 class="mailpn-section-header-mini">
+                  <i class="material-icons-outlined mailpn-font-size-18">pending</i>
                   <?php echo esc_html(sprintf(__('Pending registrations (%d)', 'mailpn'), count($unprocessed_regs))); ?>
                 </h4>
-                <table class="mailpn-emails-table" style="width:100%;border-collapse:separate;border-spacing:0 2px;">
+                <table class="mailpn-emails-table mailpn-emails-table-compact">
                   <tbody>
                     <?php foreach (array_slice($unprocessed_regs, 0, 10) as $preg):
                       $preg_user = get_userdata($preg['user_id']);
                     ?>
                     <tr>
-                      <td style="padding:6px 10px;font-size:13px;">
-                        <i class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#dba617;">person</i>
+                      <td class="mailpn-table-td-default mailpn-font-size-13">
+                        <i class="material-icons-outlined mailpn-icon-size-14 mailpn-vertical-align-middle mailpn-icon-warning">person</i>
                         <?php echo esc_html($preg_user->display_name); ?>
-                        <span style="color:#a7aaad;font-size:11px;">(<?php echo esc_html($preg_user->user_email); ?>)</span>
+                        <span class="mailpn-table-td-pending-email">(<?php echo esc_html($preg_user->user_email); ?>)</span>
                       </td>
-                      <td style="padding:6px 10px;font-size:13px;color:#787c82;">
+                      <td class="mailpn-table-td-default mailpn-font-size-13 mailpn-color-muted">
                         <?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', $preg['registration_time'])); ?>
                       </td>
                     </tr>
                     <?php endforeach; ?>
                     <?php if (count($unprocessed_regs) > 10): ?>
                     <tr>
-                      <td colspan="2" style="padding:6px 10px;color:#787c82;font-style:italic;font-size:12px;">
+                      <td colspan="2" class="mailpn-table-cell-empty">
                         <?php echo esc_html(sprintf(__('... and %d more', 'mailpn'), count($unprocessed_regs) - 10)); ?>
                       </td>
                     </tr>

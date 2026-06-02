@@ -405,10 +405,28 @@ class MAILPN_Dashboard {
 						$post_author = is_object($row) ? ($row->post_author ?? 0) : 0;
 						$edit_url    = $post_id ? get_edit_post_link($post_id, 'raw') : '#';
 
-						// Get recipient info
-						$user = $post_author ? get_userdata($post_author) : false;
+						// Get recipient info from meta fields
+						$user_id       = get_post_meta($post_id, 'mailpn_rec_to', true);
+						$rec_to_email  = get_post_meta($post_id, 'mailpn_rec_to_email', true);
+						$user          = $user_id ? get_userdata($user_id) : false;
 
-						$is_opened    = $post_id ? get_post_meta($post_id, '_mailpn_opened', true) : false;
+						// Fallback for direct email addresses
+						$fallback_email = !empty($rec_to_email) ? $rec_to_email : (filter_var($user_id, FILTER_VALIDATE_EMAIL) ? $user_id : '');
+
+						if (!$user && !empty($fallback_email)) {
+							// Create a fake user object for display
+							$user = (object) [
+								'ID' => 0,
+								'first_name' => '',
+								'last_name' => '',
+								'display_name' => $fallback_email,
+								'user_email' => $fallback_email
+							];
+							$user_id = 0;
+						}
+
+						$is_opened    = $post_id ? get_post_meta($post_id, 'mailpn_rec_opened', true) : false;
+						$opened_at    = $post_id ? get_post_meta($post_id, 'mailpn_rec_opened_at', true) : '';
 						$status_icon  = $is_opened ? 'mark_email_read' : 'mark_email_unread';
 						$status_label = $is_opened ? __('Opened', 'mailpn') : __('Not opened', 'mailpn');
 						$status_class = $is_opened ? 'mailpn-badge-opened' : 'mailpn-badge-pending';
@@ -421,11 +439,16 @@ class MAILPN_Dashboard {
 						</td>
 						<td>
 							<?php if ($user): ?>
-								<a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $post_author)); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold" target="_blank">
-									<i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i>
-									#<?php echo esc_html($post_author); ?> <?php echo esc_html($user->first_name . ' ' . $user->last_name); ?>
-								</a>
-								(<a href="mailto:<?php echo esc_attr($user->user_email); ?>" target="_blank"><?php echo esc_html($user->user_email); ?></a>)
+								<?php if ($user_id > 0): ?>
+									<a href="<?php echo esc_url(admin_url('user-edit.php?user_id=' . $user_id)); ?>" class="mailpn-color-main-0 mailpn-font-weight-bold" target="_blank">
+										<i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">person</i>
+										#<?php echo esc_html($user_id); ?> <?php echo esc_html($user->first_name . ' ' . $user->last_name); ?>
+									</a>
+									(<a href="mailto:<?php echo esc_attr($user->user_email); ?>" target="_blank"><?php echo esc_html($user->user_email); ?></a>)
+								<?php else: ?>
+									<i class="material-icons-outlined mailpn-vertical-align-middle mailpn-font-size-20 mailpn-color-main-0">email</i>
+									<a href="mailto:<?php echo esc_attr($user->user_email); ?>" target="_blank"><?php echo esc_html($user->user_email); ?></a>
+								<?php endif; ?>
 							<?php else: ?>
 								—
 							<?php endif; ?>
@@ -439,6 +462,11 @@ class MAILPN_Dashboard {
 								<span class="material-icons-outlined mailpn-stats-tbl-icon"><?php echo esc_html($status_icon); ?></span>
 								<?php echo esc_html($status_label); ?>
 							</span>
+							<?php if ($is_opened && !empty($opened_at)): ?>
+								<div class="mailpn-stats-opened-date">
+									<?php echo esc_html(date_i18n(get_option('date_format') . ' H:i', strtotime($opened_at))); ?>
+								</div>
+							<?php endif; ?>
 						</td>
 						<td class="mailpn-stats-actions">
 							<?php if ($edit_url !== '#'): ?>
@@ -590,7 +618,7 @@ class MAILPN_Dashboard {
 				<h1><?php esc_html_e('Statistics', 'mailpn'); ?></h1>
 				<div class="mailpn-stats-period-selector">
 					<label for="mailpn-stats-period-select">
-						<span class="material-icons-outlined" style="vertical-align:middle;">date_range</span>
+						<span class="material-icons-outlined mailpn-vertical-align-middle">date_range</span>
 						<?php esc_html_e('Period:', 'mailpn'); ?>
 					</label>
 					<select id="mailpn-stats-period-select">
@@ -659,21 +687,21 @@ class MAILPN_Dashboard {
 				<div class="mailpn-stats-charts-grid">
 					<div class="mailpn-stats-chart-card mailpn-stats-chart-wide">
 						<h3 id="mailpn-stats-chart-combined-title">
-							<span class="material-icons-outlined" style="font-size:20px;color:#787c82;">show_chart</span>
+							<span class="material-icons-outlined mailpn-icon-size-20-gray">show_chart</span>
 							<span><?php echo esc_html(self::get_chart_title($period)); ?></span>
 						</h3>
 						<div class="mailpn-stats-chart-wrap"><canvas id="mailpn-stats-chart-combined"></canvas></div>
 					</div>
 					<div class="mailpn-stats-chart-card">
-						<h3><span class="material-icons-outlined" style="font-size:20px;color:#787c82;">send</span> <?php esc_html_e('Emails sent', 'mailpn'); ?></h3>
+						<h3><span class="material-icons-outlined mailpn-icon-size-20-gray">send</span> <?php esc_html_e('Emails sent', 'mailpn'); ?></h3>
 						<div class="mailpn-stats-chart-wrap"><canvas id="mailpn-stats-chart-sent"></canvas></div>
 					</div>
 					<div class="mailpn-stats-chart-card">
-						<h3><span class="material-icons-outlined" style="font-size:20px;color:#787c82;">mark_email_read</span> <?php esc_html_e('Emails opened', 'mailpn'); ?></h3>
+						<h3><span class="material-icons-outlined mailpn-icon-size-20-gray">mark_email_read</span> <?php esc_html_e('Emails opened', 'mailpn'); ?></h3>
 						<div class="mailpn-stats-chart-wrap"><canvas id="mailpn-stats-chart-opened"></canvas></div>
 					</div>
 					<div class="mailpn-stats-chart-card mailpn-stats-chart-wide">
-						<h3><span class="material-icons-outlined" style="font-size:20px;color:#787c82;">ads_click</span> <?php esc_html_e('Clicks', 'mailpn'); ?></h3>
+						<h3><span class="material-icons-outlined mailpn-icon-size-20-gray">ads_click</span> <?php esc_html_e('Clicks', 'mailpn'); ?></h3>
 						<div class="mailpn-stats-chart-wrap"><canvas id="mailpn-stats-chart-clicked"></canvas></div>
 					</div>
 				</div>

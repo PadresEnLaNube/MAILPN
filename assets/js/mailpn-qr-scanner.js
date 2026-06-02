@@ -393,7 +393,7 @@
             var historyHtml = '';
             
             if (history.length === 0) {
-                historyHtml = '<p style="text-align: center; color: #666; padding: 20px;">No recent scans found.</p>';
+                historyHtml = '<p class="mailpn-qr-history-empty">No recent scans found.</p>';
             } else {
                 history.forEach(function(scan) {
                     var validationStatus = scan.validated ? 'valid' : 'pending';
@@ -516,7 +516,7 @@
         // Popup integration functions
         showQRCodePopup: function(qrData, orderInfo) {
             var popupHtml = `
-                <div id="mailpn-qr-code-popup" class="mailpn-popup mailpn-scanner-popup" style="display: none;">
+                <div id="mailpn-qr-code-popup" class="mailpn-popup mailpn-scanner-popup mailpn-display-none-soft">
                     <div class="mailpn-popup-content">
                         <div class="mailpn-qr-code-display">
                             <h3>QR Code Details</h3>
