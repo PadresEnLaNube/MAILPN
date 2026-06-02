@@ -88,6 +88,33 @@ Transform your WordPress site into a powerful email management hub with our intu
   - Social media links support
   - Responsive design for mobile devices
 
+* **Email Design System**: Comprehensive design customization with live preview:
+  - **Typography Settings**:
+    - Font family selector with visual preview of each font option
+    - Separate font sizes for desktop and mobile devices
+    - Customizable heading sizes (H1, H2, H3)
+    - Adjustable line height for better readability
+  - **Color Customization**:
+    - Background color control
+    - Text color customization
+    - Button background and text colors
+    - Header and footer background colors
+    - Footer text color settings
+  - **Button Styling**:
+    - Configurable border radius
+    - Custom colors for background and text
+  - **Live Preview System**:
+    - Real-time preview of design changes
+    - Desktop and mobile view toggle
+    - Sample content with all formatting elements (headings, paragraphs, lists, buttons)
+    - Instant visual feedback while adjusting settings
+  - **Design Consistency**:
+    - All design settings automatically applied to ALL email types
+    - Native WordPress emails (password reset, new user notifications)
+    - WooCommerce emails
+    - Custom templates and mass mailings
+    - Test emails with comprehensive formatting examples
+
 * **Dynamic Content & Shortcodes**: Powerful shortcode system for personalization:
   - `[user-name]` - Display recipient's name
   - `[post-name]` - Display post titles with links
@@ -104,6 +131,9 @@ Transform your WordPress site into a powerful email management hub with our intu
   - Option to email admin on send failures
   - Error retry functionality
   - Comprehensive error logs with timestamps and details
+  - Global error log viewer with full log access and clearing functionality
+  - Error popup integration for quick troubleshooting
+  - Improved message contrast for better readability of error and success notifications
 
 * **Role-Based Permissions**: Fine-grained access control:
   - Custom capabilities for email management

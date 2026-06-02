@@ -2598,64 +2598,16 @@ class MAILPN_Mailing {
     }
 
     // Get MailPN template settings
-    $header_image = get_option('mailpn_image_header');
-    $footer_image = get_option('mailpn_image_footer');
     $legal_name = get_option('mailpn_legal_name');
     $legal_address = get_option('mailpn_legal_address');
-    $footer_reason = get_option('mailpn_footer_reason');
-    $max_width = get_option('mailpn_max_width', '600');
-    $links_color = get_option('mailpn_links_color', '#0073aa');
 
-    // Build wrapped email
-    $wrapped_html = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0; padding:0; background-color:#f7f7f7;">';
-    $wrapped_html .= '<table class="mailpn-table-main" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f7f7f7; padding:40px 0;">';
-    $wrapped_html .= '<tr><td align="center">';
-    $wrapped_html .= '<table width="' . esc_attr($max_width) . '" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border:1px solid #dedede; border-radius:3px;">';
+    // Extract subject from args
+    $subject = isset($args['subject']) ? $args['subject'] : '';
 
-    // Header
-    if (!empty($header_image)) {
-      $wrapped_html .= '<tr><td style="text-align:center; padding:20px 0;">';
-      $wrapped_html .= '<img src="' . esc_url($header_image) . '" alt="' . esc_attr(get_bloginfo('name')) . '" style="max-width:100%; height:auto;">';
-      $wrapped_html .= '</td></tr>';
-    }
+    // Use mailpn_template to apply design settings
+    $wrapped_message = $this->mailpn_template($subject, $args['message'], [], $legal_name, $legal_address, 0, 0);
 
-    // Content
-    $wrapped_html .= '<tr><td style="padding:20px 40px;">';
-    $wrapped_html .= $args['message'];
-    $wrapped_html .= '</td></tr>';
-
-    // Footer image
-    if (!empty($footer_image)) {
-      $wrapped_html .= '<tr><td style="text-align:center; padding:20px 0;">';
-      $wrapped_html .= '<img src="' . esc_url($footer_image) . '" alt="' . esc_attr(get_bloginfo('name')) . '" style="max-width:100%; height:auto;">';
-      $wrapped_html .= '</td></tr>';
-    }
-
-    $wrapped_html .= '</table>';
-
-    // Legal footer
-    if (!empty($legal_name) || !empty($legal_address)) {
-      $wrapped_html .= '<table width="' . esc_attr($max_width) . '" cellpadding="0" cellspacing="0" style="margin-top:20px;">';
-      $wrapped_html .= '<tr><td style="text-align:center; font-size:12px; color:#666; padding:20px;">';
-
-      if (!empty($legal_name)) {
-        $wrapped_html .= '<p style="margin:5px 0;">' . esc_html($legal_name) . '</p>';
-      }
-
-      if (!empty($legal_address)) {
-        $wrapped_html .= '<p style="margin:5px 0;">' . esc_html($legal_address) . '</p>';
-      }
-
-      if (!empty($footer_reason)) {
-        $wrapped_html .= '<p style="margin:15px 0 5px 0;">' . esc_html($footer_reason) . '</p>';
-      }
-
-      $wrapped_html .= '</td></tr></table>';
-    }
-
-    $wrapped_html .= '</td></tr></table></body></html>';
-
-    $args['message'] = $wrapped_html;
+    $args['message'] = $wrapped_message;
 
     // Ensure content type is HTML
     if (!empty($args['headers'])) {
