@@ -444,7 +444,11 @@ class MAILPN_Post_Type_Rec
     $columns['mailpn_rec_mail_template'] = __('Mail Template', 'mailpn');
     $columns['mailpn_rec_to'] = __('Recipient', 'mailpn');
     $columns['mailpn_rec_mail_result'] = __('Result', 'mailpn');
-    $columns['mailpn_rec_opened'] = __('Opened', 'mailpn');
+
+    // Only show Opened column if tracking is enabled
+    if (get_option('mailpn_open_tracking') == 'on' || get_option('mailpn_click_tracking') == 'on') {
+      $columns['mailpn_rec_opened'] = __('Opened', 'mailpn');
+    }
 
     return $columns;
   }

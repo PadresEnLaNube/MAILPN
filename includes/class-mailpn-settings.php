@@ -473,14 +473,17 @@ class MAILPN_Settings {
         'label' => __('Format all WordPress emails', 'mailpn'),
         'description' => __('Automatically wrap all WordPress core emails (password change, email change, admin notifications, etc.) with the MailPN email template. Adds header/footer, makes links clickable, removes [Site Name] from subjects, and logs all sends.', 'mailpn'),
       ];
-      $mailpn_options['mailpn_wc_emails_wrapper'] = [
-        'id' => 'mailpn_wc_emails_wrapper',
-        'class' => 'mailpn-input mailpn-width-100-percent',
-        'input' => 'input',
-        'type' => 'checkbox',
-        'label' => __('Format all WooCommerce emails', 'mailpn'),
-        'description' => __('Automatically wrap all WooCommerce emails (order confirmations, shipping notifications, etc.) with the MailPN email template. Requires WooCommerce plugin to be active. Adds header/footer, applies custom styling, and logs all sends.', 'mailpn'),
-      ];
+      // Only show WooCommerce option if WooCommerce is installed
+      if (class_exists('WooCommerce')) {
+        $mailpn_options['mailpn_wc_emails_wrapper'] = [
+          'id' => 'mailpn_wc_emails_wrapper',
+          'class' => 'mailpn-input mailpn-width-100-percent',
+          'input' => 'input',
+          'type' => 'checkbox',
+          'label' => __('Format all WooCommerce emails', 'mailpn'),
+          'description' => __('Automatically wrap all WooCommerce emails (order confirmations, shipping notifications, etc.) with the MailPN email template. Requires WooCommerce plugin to be active. Adds header/footer, applies custom styling, and logs all sends.', 'mailpn'),
+        ];
+      }
       $mailpn_options['mailpn_exception_emails'] = [
         'id' => 'mailpn_exception_emails',
         'class' => 'mailpn-input mailpn-width-100-percent',

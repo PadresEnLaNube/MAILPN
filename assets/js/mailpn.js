@@ -388,11 +388,20 @@
 
       if (mailpn_action.popup != '') {
         $(window).on('load', function(e) {
+          var isLoggedIn = $('body').hasClass('mailpn-body-logged-in');
+          var requestedTab = mailpn_action.tab;
+          console.log('[MAILPN] Tab requested:', requestedTab, '| User logged in:', isLoggedIn);
+
+          if (requestedTab === 'register' && isLoggedIn) {
+            console.log('[MAILPN] User is logged in - blocking register popup');
+            return;
+          }
+
           MAILPN_Popups.open($('#' + mailpn_action.popup));
 
-          if (typeof mailpn_action.tab != '') {
-            $('.userspn-tab-links[data-userspn-id="userspn-tab-' + mailpn_action.tab + '"]').click();
-            $('#userspn-' + mailpn_action.tab + ' input#userspn_email').focus();
+          if (requestedTab && requestedTab != '') {
+            $('.userspn-tab-links[data-userspn-id="userspn-tab-' + requestedTab + '"]').click();
+            $('#userspn-' + requestedTab + ' input#userspn_email').focus();
           }else{
             $('.userspn-tab-links[data-userspn-id="userspn-tab-login"]').click();
             $('#userspn-login input#user_login').focus();
