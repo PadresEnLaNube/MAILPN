@@ -1861,7 +1861,7 @@ class MAILPN_Settings {
    * @return string HTML content
    */
   public static function mailpn_get_daily_rate_calculation_html() {
-    $current_rate = get_option('mailpn_sent_every_ten_minutes', 5);
+    $current_rate = (int) get_option('mailpn_sent_every_ten_minutes', 5);
     $calculated_daily = $current_rate * 6 * 24; // 6 intervals per hour × 24 hours
 
     ob_start();

@@ -390,10 +390,8 @@
         $(window).on('load', function(e) {
           var isLoggedIn = $('body').hasClass('mailpn-body-logged-in');
           var requestedTab = mailpn_action.tab;
-          console.log('[MAILPN] Tab requested:', requestedTab, '| User logged in:', isLoggedIn);
 
           if (requestedTab === 'register' && isLoggedIn) {
-            console.log('[MAILPN] User is logged in - blocking register popup');
             return;
           }
 
