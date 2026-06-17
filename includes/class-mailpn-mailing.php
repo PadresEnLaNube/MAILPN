@@ -1826,6 +1826,15 @@ class MAILPN_Mailing {
     $mailpn_queue = get_option('mailpn_queue');
     $mailpn_queue_paused = get_option('mailpn_queue_paused');
     $mailing_counter = 0;
+
+    // Check if we need to reset the daily counter
+    $last_reset_date = get_option('mailpn_mails_sent_today_last_reset');
+    $current_date = date('Y-m-d');
+    if ($last_reset_date !== $current_date) {
+      delete_option('mailpn_mails_sent_today');
+      update_option('mailpn_mails_sent_today_last_reset', $current_date);
+    }
+
     $mailpn_mails_sent_today = (!empty(get_option('mailpn_mails_sent_today'))) ? get_option('mailpn_mails_sent_today') : 0;
     $mails_sent_every_ten_minutes = (!empty(get_option('mailpn_sent_every_ten_minutes'))) ? get_option('mailpn_sent_every_ten_minutes') : 5;
     $mails_sent_every_day = (!empty(get_option('mailpn_sent_every_day'))) ? get_option('mailpn_sent_every_day') : 500;

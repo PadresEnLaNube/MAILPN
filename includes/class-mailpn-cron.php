@@ -45,11 +45,14 @@ class MAILPN_Cron {
 	 * @since       1.0.0
 	 */
 	public function mailpn_cron_daily() {
+		// Reset daily email counter
+		$this->mailpn_reset_daily_counter();
+
 		$posts_user_removed_atts = [
       'fields' => 'ids',
       'numberposts' => -1,
       'post_type' => 'mailpn_rec',
-      'post_status' => 'publish', 
+      'post_status' => 'publish',
     ];
 
     $posts_user_removed = get_posts($posts_user_removed_atts);
@@ -68,19 +71,37 @@ class MAILPN_Cron {
         }
       }
     }
-    
+
     // Clean up old scheduled welcome email logs (older than 30 days)
     $this->mailpn_cleanup_old_scheduled_logs();
-    
+
     // Clean up old pending welcome registrations (older than 7 days)
     $settings_plugin = new MAILPN_Settings();
     $settings_plugin->mailpn_cleanup_old_pending_registrations();
-    
+
     // Clean up stuck pending registrations (older than 30 days)
     $settings_plugin->mailpn_cleanup_stuck_pending_registrations();
-    
+
     // Clean up problematic pending registrations
     $settings_plugin->mailpn_cleanup_problematic_pending_registrations();
+  }
+
+  /**
+   * Reset daily email counter
+   *
+   * Resets the daily email counter to 0 once per day to ensure accurate counting
+   *
+   * @since       1.0.71
+   */
+  public function mailpn_reset_daily_counter() {
+    $last_reset_date = get_option('mailpn_mails_sent_today_last_reset');
+    $current_date = date('Y-m-d');
+
+    // Only reset if we haven't reset today yet
+    if ($last_reset_date !== $current_date) {
+      delete_option('mailpn_mails_sent_today');
+      update_option('mailpn_mails_sent_today_last_reset', $current_date);
+    }
   }
 
   /**

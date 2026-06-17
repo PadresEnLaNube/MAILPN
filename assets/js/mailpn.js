@@ -473,6 +473,201 @@
 (function($) {
   'use strict';
 
+  // Function to render queue popup content
+  window.mailpn_render_queue_popup_content = function(result) {
+    var popup_content = '<div class="mailpn-global-queue-popup">';
+    popup_content += '<h3><i class="material-icons-outlined">assessment</i>' + (mailpn_i18n.queue_status || 'Queue Status') + '</h3>';
+
+    // Status badge
+    if (result.is_paused) {
+      popup_content += '<div class="mailpn-queue-status mailpn-status-paused-badge">';
+      popup_content += '<div>';
+      popup_content += '<i class="material-icons-outlined">pause_circle</i> ';
+      popup_content += '</div>';
+      popup_content += '<div>';
+      popup_content += '<strong>' + (mailpn_i18n.paused || 'Paused') + '</strong>';
+      if (result.paused_by_errors) {
+        popup_content += '<p>' + (mailpn_i18n.paused_by_errors_msg || 'Paused due to consecutive errors') + '</p>';
+      } else if (result.hit_daily_limit) {
+        popup_content += '<p>' + (mailpn_i18n.paused_daily_limit || 'Paused due to daily limit') + '</p>';
+        if (result.resume_tomorrow) {
+          popup_content += '<p class="mailpn-mt-8-text"><i class="material-icons-outlined mailpn-icon-16-middle">schedule</i> ';
+          popup_content += (mailpn_i18n.resume_at || 'Will resume at') + ': <strong>' + result.resume_tomorrow + '</strong></p>';
+        }
+      } else if (result.paused_daily_limit) {
+        popup_content += '<p>' + (mailpn_i18n.paused_daily_limit || 'Paused due to daily limit') + '</p>';
+      }
+      popup_content += '</div>';
+      popup_content += '</div>';
+    } else if (result.is_active) {
+      popup_content += '<div class="mailpn-queue-status mailpn-status-active-badge">';
+      popup_content += '<div>';
+      popup_content += '<i class="material-icons-outlined">check_circle</i> ';
+      popup_content += '</div>';
+      popup_content += '<div>';
+      popup_content += '<strong>' + (mailpn_i18n.active || 'Active') + '</strong>';
+      popup_content += '<p>' + (mailpn_i18n.processing_queue || 'Processing queue') + '</p>';
+      popup_content += '</div>';
+      popup_content += '</div>';
+    }
+
+    // Statistics
+    popup_content += '<div class="mailpn-queue-section">';
+    popup_content += '<h4>' + (mailpn_i18n.statistics || 'Statistics') + '</h4>';
+    popup_content += '<ul class="mailpn-queue-stats">';
+    popup_content += '<li><strong>' + (mailpn_i18n.total_pending || 'Total pending') + '</strong><div class="mailpn-queue-stat-value">' + result.total_pending + '</div></li>';
+    popup_content += '<li><strong>' + (mailpn_i18n.sent_today || 'Sent today') + '</strong><div class="mailpn-queue-stat-value">' + result.mails_sent_today + ' / ' + result.daily_limit + '</div></li>';
+    popup_content += '<li><strong>' + (mailpn_i18n.rate_limit || 'Rate limit') + '</strong><div class="mailpn-queue-stat-value">' + result.rate_limit + ' / 10min</div></li>';
+    popup_content += '</ul>';
+    popup_content += '</div>';
+
+    // Templates in queue
+    if (result.templates_in_queue.length > 0) {
+      popup_content += '<div class="mailpn-queue-section">';
+      popup_content += '<h4>' + (mailpn_i18n.templates_in_queue || 'Templates in Queue') + '</h4>';
+      popup_content += '<ul class="mailpn-queue-templates-list">';
+      result.templates_in_queue.forEach(function(template) {
+        popup_content += '<li>';
+        popup_content += '<strong>' + template.title + '</strong>';
+        popup_content += '<span class="mailpn-template-pending">' + template.pending + ' ' + (mailpn_i18n.pending || 'pending') + '</span>';
+        popup_content += '</li>';
+      });
+      popup_content += '</ul>';
+      popup_content += '</div>';
+    }
+
+    // Next batch
+    if (result.next_batch.length > 0) {
+      popup_content += '<div class="mailpn-queue-section">';
+
+      // Group by date (today vs tomorrow) and then by batch
+      var todayBatches = {};
+      var tomorrowBatches = {};
+
+      result.next_batch.forEach(function(item) {
+        var batches = item.sends_tomorrow ? tomorrowBatches : todayBatches;
+        var key = item.estimated_send_formatted;
+
+        if (!batches[key]) {
+          batches[key] = {
+            items: [],
+            time: item.estimated_send_formatted,
+            batch_number: item.batch_number,
+            sends_tomorrow: item.sends_tomorrow
+          };
+        }
+        batches[key].items.push(item);
+      });
+
+      // Display today's batches first
+      var todayKeys = Object.keys(todayBatches);
+      if (todayKeys.length > 0) {
+        todayKeys.forEach(function(key, index) {
+          var batch = todayBatches[key];
+          var batchLabel = index === 0 && !result.hit_daily_limit ?
+            (mailpn_i18n.sending_now || 'Sending now') :
+            (mailpn_i18n.batch || 'Batch') + ' ' + (index + 1);
+
+          popup_content += '<div class="mailpn-batch-group">';
+          popup_content += '<h4 class="mailpn-batch-title">';
+          popup_content += '<span>' + batchLabel + '</span>';
+          popup_content += '<span class="mailpn-batch-time">';
+          popup_content += '<i class="material-icons-outlined">schedule</i> ';
+          popup_content += batch.time;
+          popup_content += '</span>';
+          popup_content += '</h4>';
+
+          popup_content += '<ul class="mailpn-queue-pending-list">';
+          batch.items.forEach(function(item) {
+            popup_content += '<li>';
+            popup_content += '<div class="mailpn-queue-item-info">';
+            popup_content += '<strong>#' + item.user_id + ' ' + item.name + '</strong>';
+            popup_content += '<span class="mailpn-user-email">' + item.email + '</span>';
+            popup_content += '<span class="mailpn-template-tag">' + item.template_title + '</span>';
+            popup_content += '</div>';
+            popup_content += '<button class="mailpn-btn-remove-from-queue" data-mail-id="' + item.template_id + '" data-user-id="' + item.user_id + '">';
+            popup_content += '<i class="material-icons-outlined">delete</i>';
+            popup_content += '</button>';
+            popup_content += '</li>';
+          });
+          popup_content += '</ul>';
+          popup_content += '</div>';
+        });
+      }
+
+      // Display tomorrow's batches
+      var tomorrowKeys = Object.keys(tomorrowBatches);
+      if (tomorrowKeys.length > 0) {
+        tomorrowKeys.forEach(function(key, index) {
+          var batch = tomorrowBatches[key];
+          var batchLabel = index === 0 ?
+            (mailpn_i18n.sending_tomorrow || 'Sending tomorrow') :
+            (mailpn_i18n.batch || 'Batch') + ' ' + (index + 1) + ' (' + (mailpn_i18n.sending_tomorrow || 'tomorrow') + ')';
+
+          popup_content += '<div class="mailpn-batch-group mailpn-batch-tomorrow">';
+          popup_content += '<h4 class="mailpn-batch-title">';
+          popup_content += '<span>' + batchLabel + '</span>';
+          popup_content += '<span class="mailpn-batch-time">';
+          popup_content += '<i class="material-icons-outlined">schedule</i> ';
+          popup_content += batch.time;
+          popup_content += '</span>';
+          popup_content += '</h4>';
+
+          popup_content += '<ul class="mailpn-queue-pending-list">';
+          batch.items.forEach(function(item) {
+            popup_content += '<li>';
+            popup_content += '<div class="mailpn-queue-item-info">';
+            popup_content += '<strong>#' + item.user_id + ' ' + item.name + '</strong>';
+            popup_content += '<span class="mailpn-user-email">' + item.email + '</span>';
+            popup_content += '<span class="mailpn-template-tag">' + item.template_title + '</span>';
+            popup_content += '</div>';
+            popup_content += '<button class="mailpn-btn-remove-from-queue" data-mail-id="' + item.template_id + '" data-user-id="' + item.user_id + '">';
+            popup_content += '<i class="material-icons-outlined">delete</i>';
+            popup_content += '</button>';
+            popup_content += '</li>';
+          });
+          popup_content += '</ul>';
+          popup_content += '</div>';
+        });
+      }
+
+      popup_content += '</div>';
+
+      // Add "Load more" button if there are more items
+      if (result.has_more_items) {
+        popup_content += '<div class="mailpn-queue-load-more-section">';
+        popup_content += '<p class="mailpn-queue-showing-info">';
+        popup_content += (mailpn_i18n.showing || 'Showing') + ' ' + result.next_batch_shown + ' ' + (mailpn_i18n.of || 'of') + ' ' + result.total_pending + ' ' + (mailpn_i18n.pending_emails || 'pending emails');
+        popup_content += '</p>';
+        popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-load-more-queue" data-current-multiplier="' + result.preview_multiplier + '">';
+        popup_content += (mailpn_i18n.load_more || 'Load more');
+        popup_content += '</button>';
+        popup_content += '</div>';
+      }
+    }
+
+    popup_content += '<div class="mailpn-popup-buttons">';
+
+    // Add pause/resume button
+    if (result.is_paused) {
+      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-resume-queue-popup" data-source="global-popup">';
+      popup_content += '<i class="material-icons-outlined">play_arrow</i> ';
+      popup_content += (mailpn_i18n.resume_queue || 'Resume Queue');
+      popup_content += '</button>';
+    } else if (result.is_active) {
+      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-pause-queue-popup" data-source="global-popup">';
+      popup_content += '<i class="material-icons-outlined">pause</i> ';
+      popup_content += (mailpn_i18n.pause_queue || 'Pause Queue');
+      popup_content += '</button>';
+    }
+
+    popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-close-global-queue">' + (mailpn_i18n.close || 'Close') + '</button>';
+    popup_content += '</div>';
+    popup_content += '</div>';
+
+    return popup_content;
+  };
+
   $(document).on('click', '#mailpn-open-queue-status', function(e) {
     e.preventDefault();
 
@@ -481,197 +676,31 @@
     var originalHTML = btn.html();
     btn.prop('disabled', true).html('<div class="mailpn-waiting"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div>');
 
-    $.post(mailpn_ajax.ajax_url, {
+    // Use stored multiplier if available, otherwise default to undefined (server will use 3)
+    var previewMultiplier = window.mailpn_preview_multiplier || undefined;
+
+    var ajaxData = {
       action: 'mailpn_ajax',
       mailpn_ajax_type: 'mailpn_get_global_queue_status',
       mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
-    }, function(response) {
+    };
+
+    if (previewMultiplier) {
+      ajaxData.preview_multiplier = previewMultiplier;
+    }
+
+    $.post(mailpn_ajax.ajax_url, ajaxData, function(response) {
       btn.prop('disabled', false).html(originalHTML);
 
       var result = $.parseJSON(response);
-
-      console.log('=== Queue Status Debug ===');
-      console.log('is_paused:', result.is_paused);
-      console.log('paused_by_errors:', result.paused_by_errors);
-      console.log('hit_daily_limit:', result.hit_daily_limit);
-      console.log('paused_daily_limit:', result.paused_daily_limit);
-      console.log('is_active:', result.is_active);
 
       if (result.error_key !== '') {
         alert('Error loading queue status');
         return;
       }
 
-      // Build popup content using MAILPN popup system
-      var popup_content = '<div class="mailpn-global-queue-popup">';
-      popup_content += '<h3><i class="material-icons-outlined">assessment</i>' + (mailpn_i18n.queue_status || 'Queue Status') + '</h3>';
-
-      // Status badge
-      if (result.is_paused) {
-        popup_content += '<div class="mailpn-queue-status mailpn-status-paused-badge">';
-        popup_content += '<div>';
-        popup_content += '<i class="material-icons-outlined">pause_circle</i> ';
-        popup_content += '</div>';
-        popup_content += '<div>';
-        popup_content += '<strong>' + (mailpn_i18n.paused || 'Paused') + '</strong>';
-        if (result.paused_by_errors) {
-          popup_content += '<p>' + (mailpn_i18n.paused_by_errors_msg || 'Paused due to consecutive errors') + '</p>';
-        } else if (result.hit_daily_limit) {
-          popup_content += '<p>' + (mailpn_i18n.paused_daily_limit || 'Paused due to daily limit') + '</p>';
-          if (result.resume_tomorrow) {
-            popup_content += '<p class="mailpn-mt-8-text"><i class="material-icons-outlined mailpn-icon-16-middle">schedule</i> ';
-            popup_content += (mailpn_i18n.resume_at || 'Will resume at') + ': <strong>' + result.resume_tomorrow + '</strong></p>';
-          }
-        } else if (result.paused_daily_limit) {
-          popup_content += '<p>' + (mailpn_i18n.paused_daily_limit || 'Paused due to daily limit') + '</p>';
-        }
-        popup_content += '</div>';
-        popup_content += '</div>';
-      } else if (result.is_active) {
-        popup_content += '<div class="mailpn-queue-status mailpn-status-active-badge">';
-        popup_content += '<div>';
-        popup_content += '<i class="material-icons-outlined">check_circle</i> ';
-        popup_content += '</div>';
-        popup_content += '<div>';
-        popup_content += '<strong>' + (mailpn_i18n.active || 'Active') + '</strong>';
-        popup_content += '<p>' + (mailpn_i18n.processing_queue || 'Processing queue') + '</p>';
-        popup_content += '</div>';
-        popup_content += '</div>';
-      }
-
-      // Statistics
-      popup_content += '<div class="mailpn-queue-section">';
-      popup_content += '<h4>' + (mailpn_i18n.statistics || 'Statistics') + '</h4>';
-      popup_content += '<ul class="mailpn-queue-stats">';
-      popup_content += '<li><strong>' + (mailpn_i18n.total_pending || 'Total pending') + '</strong><div class="mailpn-queue-stat-value">' + result.total_pending + '</div></li>';
-      popup_content += '<li><strong>' + (mailpn_i18n.sent_today || 'Sent today') + '</strong><div class="mailpn-queue-stat-value">' + result.mails_sent_today + ' / ' + result.daily_limit + '</div></li>';
-      popup_content += '<li><strong>' + (mailpn_i18n.rate_limit || 'Rate limit') + '</strong><div class="mailpn-queue-stat-value">' + result.rate_limit + ' / 10min</div></li>';
-      popup_content += '</ul>';
-      popup_content += '</div>';
-
-      // Templates in queue
-      if (result.templates_in_queue.length > 0) {
-        popup_content += '<div class="mailpn-queue-section">';
-        popup_content += '<h4>' + (mailpn_i18n.templates_in_queue || 'Templates in Queue') + '</h4>';
-        popup_content += '<ul class="mailpn-queue-templates-list">';
-        result.templates_in_queue.forEach(function(template) {
-          popup_content += '<li>';
-          popup_content += '<strong>' + template.title + '</strong>';
-          popup_content += '<span class="mailpn-template-pending">' + template.pending + ' ' + (mailpn_i18n.pending || 'pending') + '</span>';
-          popup_content += '</li>';
-        });
-        popup_content += '</ul>';
-        popup_content += '</div>';
-      }
-
-      // Next batch
-      if (result.next_batch.length > 0) {
-        popup_content += '<div class="mailpn-queue-section">';
-
-        // Group by date (today vs tomorrow) and then by batch
-        var todayBatches = {};
-        var tomorrowBatches = {};
-
-        result.next_batch.forEach(function(item) {
-          var batches = item.sends_tomorrow ? tomorrowBatches : todayBatches;
-          var key = item.estimated_send_formatted; // Use formatted date as key for better grouping
-
-          if (!batches[key]) {
-            batches[key] = {
-              items: [],
-              time: item.estimated_send_formatted,
-              batch_number: item.batch_number,
-              sends_tomorrow: item.sends_tomorrow
-            };
-          }
-          batches[key].items.push(item);
-        });
-
-        // Display today's batches first
-        var todayKeys = Object.keys(todayBatches);
-        if (todayKeys.length > 0) {
-          todayKeys.forEach(function(key, index) {
-            var batch = todayBatches[key];
-            var batchLabel = index === 0 && !result.hit_daily_limit ?
-              (mailpn_i18n.sending_now || 'Sending now') :
-              (mailpn_i18n.batch || 'Batch') + ' ' + (index + 1);
-
-            popup_content += '<div class="mailpn-batch-group">';
-            popup_content += '<h4 class="mailpn-batch-title">';
-            popup_content += '<span>' + batchLabel + '</span>';
-            popup_content += '<span class="mailpn-batch-time">';
-            popup_content += '<i class="material-icons-outlined">schedule</i> ';
-            popup_content += batch.time;
-            popup_content += '</span>';
-            popup_content += '</h4>';
-
-            popup_content += '<ul class="mailpn-queue-pending-list">';
-            batch.items.forEach(function(item) {
-              popup_content += '<li>';
-              popup_content += '<strong>#' + item.user_id + ' ' + item.name + '</strong>';
-              popup_content += '<span class="mailpn-user-email">' + item.email + '</span>';
-              popup_content += '<span class="mailpn-template-tag">' + item.template_title + '</span>';
-              popup_content += '</li>';
-            });
-            popup_content += '</ul>';
-            popup_content += '</div>';
-          });
-        }
-
-        // Display tomorrow's batches
-        var tomorrowKeys = Object.keys(tomorrowBatches);
-        if (tomorrowKeys.length > 0) {
-          tomorrowKeys.forEach(function(key, index) {
-            var batch = tomorrowBatches[key];
-            var batchLabel = index === 0 ?
-              (mailpn_i18n.sending_tomorrow || 'Sending tomorrow') :
-              (mailpn_i18n.batch || 'Batch') + ' ' + (index + 1) + ' (' + (mailpn_i18n.sending_tomorrow || 'tomorrow') + ')';
-
-            popup_content += '<div class="mailpn-batch-group mailpn-batch-tomorrow">';
-            popup_content += '<h4 class="mailpn-batch-title">';
-            popup_content += '<span>' + batchLabel + '</span>';
-            popup_content += '<span class="mailpn-batch-time">';
-            popup_content += '<i class="material-icons-outlined">schedule</i> ';
-            popup_content += batch.time;
-            popup_content += '</span>';
-            popup_content += '</h4>';
-
-            popup_content += '<ul class="mailpn-queue-pending-list">';
-            batch.items.forEach(function(item) {
-              popup_content += '<li>';
-              popup_content += '<strong>#' + item.user_id + ' ' + item.name + '</strong>';
-              popup_content += '<span class="mailpn-user-email">' + item.email + '</span>';
-              popup_content += '<span class="mailpn-template-tag">' + item.template_title + '</span>';
-              popup_content += '</li>';
-            });
-            popup_content += '</ul>';
-            popup_content += '</div>';
-          });
-        }
-
-        popup_content += '</div>';
-      }
-
-      popup_content += '<div class="mailpn-popup-buttons">';
-
-      // Add pause/resume button
-      if (result.is_paused) {
-        // Show resume button if paused
-        popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-resume-queue-popup" data-source="global-popup">';
-        popup_content += '<i class="material-icons-outlined">play_arrow</i> ';
-        popup_content += (mailpn_i18n.resume_queue || 'Resume Queue');
-        popup_content += '</button>';
-      } else if (result.is_active) {
-        // Show pause button if active
-        popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-pause-queue-popup" data-source="global-popup">';
-        popup_content += '<i class="material-icons-outlined">pause</i> ';
-        popup_content += (mailpn_i18n.pause_queue || 'Pause Queue');
-        popup_content += '</button>';
-      }
-
-      popup_content += '<button class="mailpn-btn mailpn-btn-mini mailpn-btn-transparent mailpn-btn-close-global-queue">' + (mailpn_i18n.close || 'Close') + '</button>';
-      popup_content += '</div>';
-      popup_content += '</div>';
+      // Build popup content using shared rendering function
+      var popup_content = window.mailpn_render_queue_popup_content(result);
 
       // Show popup using MAILPN_Popups
       var popup_id = 'mailpn-global-queue-popup';
@@ -690,6 +719,34 @@
           $('body').append('<div class="mailpn-popup-overlay"></div>');
           $('.mailpn-popup-overlay').fadeIn('fast');
         }
+      }
+
+      // Scroll to the first new item if we're loading more
+      if (window.mailpn_scroll_to_item !== undefined) {
+        setTimeout(function() {
+          var allItems = $('.mailpn-queue-pending-list li');
+          var targetIndex = window.mailpn_scroll_to_item;
+
+          if (allItems.length > targetIndex) {
+            var targetItem = allItems.eq(targetIndex);
+            if (targetItem.length) {
+              // Find the popup content wrapper to scroll
+              var popupContent = $('#' + popup_id).find('.mailpn-popup-content');
+              if (popupContent.length) {
+                var itemOffsetTop = targetItem.position().top;
+                var popupScrollTop = popupContent.scrollTop();
+                var targetScrollTop = popupScrollTop + itemOffsetTop - 100; // 100px offset from top
+
+                popupContent.animate({
+                  scrollTop: targetScrollTop
+                }, 400);
+              }
+            }
+          }
+
+          // Clear the scroll target
+          window.mailpn_scroll_to_item = undefined;
+        }, 100); // Small delay to ensure DOM is fully rendered
       }
     }).fail(function() {
       btn.prop('disabled', false).html(originalHTML);
@@ -776,6 +833,116 @@
           }
           location.reload();
         }, 1000);
+      }
+    }).fail(function() {
+      alert('Network error');
+      btn.prop('disabled', false).html(originalHTML);
+    });
+  });
+
+  // Load more queue items
+  $(document).on('click', '.mailpn-btn-load-more-queue', function(e) {
+    e.preventDefault();
+    var btn = $(this);
+    var currentMultiplier = parseInt(btn.data('current-multiplier')) || 3;
+    var newMultiplier = currentMultiplier + 3; // Load 3 more batches each time
+
+    // Count current number of items before loading more
+    var currentItemCount = $('.mailpn-queue-pending-list li').length;
+
+    var originalHTML = btn.html();
+    btn.prop('disabled', true).html('<div class="mailpn-waiting"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div> ' + (mailpn_i18n.loading || 'Loading...'));
+
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_get_global_queue_status',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+      preview_multiplier: newMultiplier
+    }, function(response) {
+      var result = $.parseJSON(response);
+
+      if (result.error_key !== '') {
+        alert('Error loading more items');
+        btn.prop('disabled', false).html(originalHTML);
+      } else {
+        // Update the popup content with new data (using the same rendering logic)
+        var popup_content = mailpn_render_queue_popup_content(result);
+
+        // Replace the content
+        $('#mailpn-global-queue-popup .mailpn-popup-content').html(popup_content);
+
+        // Scroll to the first new item
+        setTimeout(function() {
+          var allItems = $('.mailpn-queue-pending-list li');
+          var targetIndex = currentItemCount;
+
+          if (allItems.length > targetIndex) {
+            var targetItem = allItems.eq(targetIndex);
+            if (targetItem.length) {
+              // Get the popup content wrapper
+              var popupContent = $('#mailpn-global-queue-popup');
+
+              // Scroll to the target item
+              targetItem[0].scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+
+              // Adjust scroll position to add some padding at the top
+              setTimeout(function() {
+                var currentScroll = popupContent.scrollTop();
+                popupContent.scrollTop(currentScroll - 100);
+              }, 100);
+            }
+          }
+        }, 100);
+      }
+    }).fail(function() {
+      alert('Network error');
+      btn.prop('disabled', false).html(originalHTML);
+    });
+  });
+
+  // Reset preview multiplier when popup closes
+  $(document).on('click', '.mailpn-popup-close, .mailpn-popup-close-wrapper, .mailpn-popup-overlay', function(e) {
+    // Reset the multiplier and scroll position so next time it starts from default
+    window.mailpn_preview_multiplier = undefined;
+    window.mailpn_scroll_to_item = undefined;
+  });
+
+  // Remove item from queue
+  $(document).on('click', '.mailpn-btn-remove-from-queue', function(e) {
+    e.preventDefault();
+    var btn = $(this);
+    var mailId = btn.data('mail-id');
+    var userId = btn.data('user-id');
+
+    if (!confirm(mailpn_i18n.confirm_remove_from_queue || 'Are you sure you want to remove this email from the queue?')) {
+      return;
+    }
+
+    var originalHTML = btn.html();
+    btn.prop('disabled', true).html('<div class="mailpn-waiting"><div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div></div>');
+
+    $.post(mailpn_ajax.ajax_url, {
+      action: 'mailpn_ajax',
+      mailpn_ajax_type: 'mailpn_remove_from_queue',
+      mailpn_ajax_nonce: mailpn_ajax.mailpn_ajax_nonce,
+      mail_id: mailId,
+      user_id: userId
+    }, function(response) {
+      var result = $.parseJSON(response);
+
+      if (result.error_key !== '') {
+        alert('Error removing from queue');
+        btn.prop('disabled', false).html(originalHTML);
+      } else {
+        // Remove the item from the UI with animation
+        btn.closest('li').fadeOut(300, function() {
+          $(this).remove();
+          // Reload queue status to update counts
+          $('#mailpn-open-queue-status').trigger('click');
+        });
       }
     }).fail(function() {
       alert('Network error');

@@ -137,14 +137,12 @@
       $(this).siblings('.mailpn-input-stars').find('.mailpn-input-star').slice(0, $(this).val()).text('star');
     });
 
-    // Register event listener unconditionally (delegated events work for dynamic content)
-    $(document).on('change', '.mailpn-field[data-mailpn-parent~="this"]', function(e) {
-      mailpn_form_update();
-    });
-
-    // Call form update on document ready if fields exist
     if ($('.mailpn-field[data-mailpn-parent]').length) {
       mailpn_form_update();
+
+      $(document).on('change', '.mailpn-field[data-mailpn-parent~="this"]', function(e) {
+        mailpn_form_update();
+      });
     }
 
     if ($('.mailpn-html-multi-group').length) {

@@ -1053,10 +1053,11 @@ class MAILPN_Ajax {
             }
           }
 
-          // Get next batch to send (up to 3x rate limit for preview)
+          // Get next batch to send (up to 3x rate limit for preview by default)
           $next_batch = [];
           $batch_count = 0;
-          $preview_limit = $rate_limit * 3; // Show up to 3 batches
+          $preview_multiplier = isset($_POST['preview_multiplier']) ? intval($_POST['preview_multiplier']) : 3;
+          $preview_limit = $rate_limit * $preview_multiplier; // Show up to N batches
           $current_time = current_time('timestamp');
 
           // Check if we've hit the daily limit
@@ -1136,6 +1137,9 @@ class MAILPN_Ajax {
           // Determine if system is effectively paused
           $is_paused = !empty($queue_paused) || $hit_daily_limit || $will_send_tomorrow;
 
+          // Check if there are more items beyond what we're showing
+          $has_more_items = $total_pending > count($next_batch);
+
           echo wp_json_encode([
             'error_key' => '',
             'is_active' => !empty($queue_data) && !$is_paused,
@@ -1147,11 +1151,52 @@ class MAILPN_Ajax {
             'total_pending' => $total_pending,
             'templates_in_queue' => $templates_in_queue,
             'next_batch' => $next_batch,
+            'next_batch_shown' => count($next_batch),
+            'has_more_items' => $has_more_items,
+            'preview_multiplier' => $preview_multiplier,
             'mails_sent_today' => $mails_sent_today,
             'daily_limit' => $daily_limit,
             'rate_limit' => $rate_limit,
             'resume_tomorrow' => $hit_daily_limit || $will_send_tomorrow ? date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime('tomorrow', $current_time)) : '',
           ]);
+          exit;
+          break;
+        case 'mailpn_remove_from_queue':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode(['error_key' => 'permission_denied']);
+            exit;
+          }
+
+          $mail_id = isset($_POST['mail_id']) ? intval($_POST['mail_id']) : 0;
+          $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+
+          if (!$mail_id || !$user_id) {
+            echo wp_json_encode(['error_key' => 'invalid_params']);
+            exit;
+          }
+
+          $queue_data = get_option('mailpn_queue', []);
+
+          // Remove the user from the queue for this template
+          if (isset($queue_data[$mail_id])) {
+            $user_key = array_search($user_id, $queue_data[$mail_id]);
+            if ($user_key !== false) {
+              unset($queue_data[$mail_id][$user_key]);
+
+              // If the queue for this mail_id is now empty, remove it completely
+              if (empty($queue_data[$mail_id])) {
+                unset($queue_data[$mail_id]);
+              }
+
+              update_option('mailpn_queue', $queue_data);
+
+              echo wp_json_encode(['error_key' => '', 'success' => true]);
+            } else {
+              echo wp_json_encode(['error_key' => 'user_not_found']);
+            }
+          } else {
+            echo wp_json_encode(['error_key' => 'template_not_found']);
+          }
           exit;
           break;
         case 'mailpn_check_deliverability':

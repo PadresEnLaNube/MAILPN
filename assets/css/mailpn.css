@@ -3200,12 +3200,26 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   border-radius: 6px;
   border-left: 3px solid #2271b1;
   transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
 }
 
 .mailpn-queue-pending-list li:hover {
   background: #e8eaeb;
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mailpn-queue-pending-list li:hover .mailpn-btn-remove-from-queue {
+  opacity: 1;
+}
+
+.mailpn-queue-item-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .mailpn-queue-pending-list li strong {
@@ -3222,6 +3236,56 @@ header .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigati
   font-size: 13px;
   margin-bottom: 8px;
   word-break: break-word;
+}
+
+.mailpn-btn-remove-from-queue {
+  background: transparent;
+  color: #dc3232;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+.mailpn-btn-remove-from-queue:hover {
+  background: rgba(220, 50, 50, 0.1);
+  transform: scale(1.1);
+  color: #a00;
+}
+
+.mailpn-btn-remove-from-queue i {
+  font-size: 20px;
+}
+
+.mailpn-tooltip-red {
+  background-color: #dc3232;
+  color: white;
+}
+
+.mailpn-tooltip-red::after {
+  border-top-color: #dc3232;
+}
+
+.mailpn-queue-load-more-section {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 2px solid #dcdcde;
+  text-align: center;
+}
+
+.mailpn-queue-showing-info {
+  color: #50575e;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
 
 /* Popup buttons */
