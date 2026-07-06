@@ -1631,6 +1631,214 @@ class MAILPN_Ajax {
           }
           exit;
           break;
+
+        case 'mailpn_search_users_notifications':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode([
+              'error_key' => 'permission_denied',
+              'error_content' => esc_html__('You do not have permission to perform this action.', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          $search_term = !empty($_POST['search_term']) ? sanitize_text_field(wp_unslash($_POST['search_term'])) : '';
+
+          if (empty($search_term)) {
+            echo wp_json_encode([
+              'error_key' => 'empty_search',
+              'error_content' => esc_html__('Please enter a search term.', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          $args = [
+            'search' => '*' . $search_term . '*',
+            'search_columns' => ['user_login', 'user_email', 'display_name'],
+            'number' => 20,
+          ];
+
+          $user_query = new WP_User_Query($args);
+          $users = $user_query->get_results();
+          $users_data = [];
+
+          foreach ($users as $user) {
+            $notifications_status = get_user_meta($user->ID, 'userspn_notifications', true);
+            $is_active = ($notifications_status === 'on');
+
+            $user_data = [
+              'id' => $user->ID,
+              'display_name' => $user->display_name,
+              'email' => $user->user_email,
+              'notifications_active' => $is_active,
+            ];
+
+            // Generate autologin link if userspn is active
+            if (class_exists('USERSPN_Functions_User') && get_option('userspn_auto_login') === 'on') {
+              $user_functions = new USERSPN_Functions_User('userspn', '1.0.0');
+              $user_data['autologin_link'] = $user_functions->userspn_link_magic($user->ID, home_url());
+            }
+
+            $users_data[] = $user_data;
+          }
+
+          // Check if userspn is active
+          $userspn_active = class_exists('USERSPN_Functions_User') && get_option('userspn_auto_login') === 'on';
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'users' => $users_data,
+            'userspn_active' => $userspn_active,
+          ]);
+          exit;
+          break;
+
+        case 'mailpn_toggle_user_notifications':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode([
+              'error_key' => 'permission_denied',
+              'error_content' => esc_html__('You do not have permission to perform this action.', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          $user_id = !empty($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+          $new_status = !empty($_POST['new_status']) ? sanitize_text_field(wp_unslash($_POST['new_status'])) : '';
+
+          if (empty($user_id) || !in_array($new_status, ['on', 'off'], true)) {
+            echo wp_json_encode([
+              'error_key' => 'invalid_params',
+              'error_content' => esc_html__('Invalid parameters.', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          update_user_meta($user_id, 'userspn_notifications', $new_status);
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'message' => esc_html__('Notification status updated successfully.', 'mailpn'),
+          ]);
+          exit;
+          break;
+
+        case 'mailpn_get_user_notification_stats':
+          if (!current_user_can('manage_options')) {
+            echo wp_json_encode([
+              'error_key' => 'permission_denied',
+              'error_content' => esc_html__('You do not have permission to perform this action.', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          $user_id = !empty($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+
+          if (empty($user_id)) {
+            echo wp_json_encode([
+              'error_key' => 'invalid_user',
+              'error_content' => esc_html__('Invalid user.', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          $user = get_userdata($user_id);
+          if (!$user) {
+            echo wp_json_encode([
+              'error_key' => 'user_not_found',
+              'error_content' => esc_html__('User not found.', 'mailpn'),
+            ]);
+            exit;
+          }
+
+          // Get sending history
+          $args = [
+            'post_type' => 'mailpn_rec',
+            'posts_per_page' => 50,
+            'post_status' => 'publish',
+            'meta_query' => [
+              [
+                'key' => 'mailpn_rec_to',
+                'value' => $user_id,
+                'compare' => '=',
+              ],
+            ],
+            'orderby' => 'date',
+            'order' => 'DESC',
+          ];
+
+          $query = new WP_Query($args);
+          $history = [];
+          $stats = [
+            'total_sent' => 0,
+            'total_opened' => 0,
+            'total_clicked' => 0,
+            'last_sent' => '',
+            'last_opened' => '',
+          ];
+
+          if ($query->have_posts()) {
+            $stats['total_sent'] = $query->found_posts;
+
+            while ($query->have_posts()) {
+              $query->the_post();
+              $post_id = get_the_ID();
+
+              $subject = get_post_meta($post_id, 'mailpn_rec_subject', true);
+              $sent_date = get_post_meta($post_id, 'mailpn_rec_sent_datetime', true);
+              $opened = get_post_meta($post_id, 'mailpn_rec_opened', true);
+              $opened_at = get_post_meta($post_id, 'mailpn_rec_opened_at', true);
+              $clicks = get_post_meta($post_id, 'mailpn_rec_clicks', true);
+              $mail_type = get_post_meta($post_id, 'mailpn_rec_type', true);
+              $result = get_post_meta($post_id, 'mailpn_rec_mail_result', true);
+
+              if ($opened) {
+                $stats['total_opened']++;
+              }
+
+              if (is_array($clicks) && !empty($clicks)) {
+                $stats['total_clicked']++;
+              }
+
+              if (empty($stats['last_sent'])) {
+                $stats['last_sent'] = $sent_date;
+              }
+
+              if ($opened && empty($stats['last_opened'])) {
+                $stats['last_opened'] = $opened_at;
+              }
+
+              $history[] = [
+                'subject' => $subject,
+                'sent_date' => $sent_date,
+                'opened' => (bool) $opened,
+                'opened_at' => $opened_at,
+                'has_clicks' => is_array($clicks) && !empty($clicks),
+                'clicks_count' => is_array($clicks) ? count($clicks) : 0,
+                'mail_type' => $mail_type,
+                'success' => (bool) $result,
+              ];
+            }
+            wp_reset_postdata();
+          }
+
+          echo wp_json_encode([
+            'error_key' => '',
+            'user' => [
+              'id' => $user->ID,
+              'display_name' => $user->display_name,
+              'email' => $user->user_email,
+            ],
+            'stats' => $stats,
+            'history' => $history,
+          ]);
+          exit;
+          break;
+
+        case 'mailpn_complete_tutorial':
+          $completed = !empty($_POST['completed']) ? intval($_POST['completed']) : 0;
+          MAILPN_Tutorial::mark_completed($completed ? true : false);
+          echo wp_json_encode(['success' => true]);
+          exit;
+          break;
       }
 
       echo wp_json_encode([

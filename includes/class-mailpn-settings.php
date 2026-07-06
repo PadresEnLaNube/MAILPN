@@ -804,6 +804,21 @@ class MAILPN_Settings {
         'section' => 'end',
       ];
 
+      $mailpn_options['mailpn_subsection_user_notifications_start'] = [
+        'section' => 'start',
+        'label' => __('Users Receiving Emails', 'mailpn'),
+        'description' => __('Manage users who have email notifications enabled. Search for users, enable or disable their notifications, and view their sending history.', 'mailpn'),
+      ];
+
+      $mailpn_options['mailpn_user_notifications_manager'] = [
+        'id' => 'mailpn_user_notifications_manager',
+        'input' => 'user_notifications_manager',
+      ];
+
+      $mailpn_options['mailpn_subsection_user_notifications_end'] = [
+        'section' => 'end',
+      ];
+
     $mailpn_options['mailpn_section_deliverability_end'] = [
       'section' => 'end',
     ];
@@ -912,7 +927,8 @@ class MAILPN_Settings {
                 if ($in_design_section || (isset($mailpn_option['id']) && in_array($mailpn_option['id'], [
                   'mailpn_deliverability_checker',
                   'mailpn_header_analyzer',
-                  'mailpn_external_tester'
+                  'mailpn_external_tester',
+                  'mailpn_user_notifications_manager'
                 ]))) {
                   $format = 'full';
                 }
@@ -1051,6 +1067,7 @@ class MAILPN_Settings {
 
       wp_localize_script('mailpn-settings-footer', 'mailpnSettingsFooter', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
+        'adminUrl' => admin_url(),
         'nonce'   => wp_create_nonce('mailpn-nonce'),
         'settingsPages' => $pn_rp_settings,
         'i18n'    => [
@@ -1067,6 +1084,11 @@ class MAILPN_Settings {
           'activate'       => __('Activate', 'mailpn'),
         ],
       ]);
+	  ?>
+
+	  <?php
+	  // Render tutorial if not completed
+	  MAILPN_Tutorial::render();
 	  ?>
 	  <?php
 	}

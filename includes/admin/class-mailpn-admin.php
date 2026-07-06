@@ -49,7 +49,12 @@ class MAILPN_Admin {
 	 */
 	public function mailpn_enqueue_styles() {
 		wp_enqueue_style($this->plugin_name . '-admin', MAILPN_URL . 'assets/css/admin/mailpn-admin.css', [], $this->version, 'all');
-		
+
+		// Load tutorial styles on settings page
+		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_options') {
+			MAILPN_Tutorial::enqueue_assets();
+		}
+
 		// Load dashboard styles if on dashboard page
 		if (isset($_GET['page']) && $_GET['page'] === 'mailpn_dashboard') {
 			wp_enqueue_style($this->plugin_name . '-popups', MAILPN_URL . 'assets/css/mailpn-popups.css', [], $this->version, 'all');

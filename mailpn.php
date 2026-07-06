@@ -13,7 +13,7 @@
  * Plugin Name:       Mailing Manager - PN
  * Plugin URI:        https://padresenlanube.com/plugins/mailpn/
  * Description:       Effortlessly manage your email campaigns with our WordPress Email Management Plugin. Schedule, send, and track emails directly from your dashboard to engage your audience like never before.
- * Version:           1.0.75
+ * Version:           1.0.80
  * Requires at least: 3.0
  * Tested up to:      7.0
  * Requires PHP:      7.2
@@ -35,7 +35,7 @@ if (!defined('WPINC')) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('MAILPN_VERSION', '1.0.75');
+define('MAILPN_VERSION', '1.0.80');
 define('MAILPN_DIR', plugin_dir_path(__FILE__));
 define('MAILPN_URL', plugin_dir_url(__FILE__));
 
@@ -51,37 +51,37 @@ $mailpn_role_cpt_capabilities = [];
 
 foreach (MAILPN_CPTS as $cpt_key => $cpt_value) {
 	$mailpn_role_cpt_capabilities[$cpt_key] = [
-		'edit_post' 				=> 'edit_' . $cpt_key,
-		'edit_posts' 				=> 'edit_' . $cpt_key,
-		'edit_private_posts' 		=> 'edit_private_' . $cpt_key,
-		'edit_published_posts' 		=> 'edit_published_' . $cpt_key,
-		'edit_others_posts' 		=> 'edit_others_' . $cpt_key,
-		'publish_posts' 			=> 'publish_' . $cpt_key,
+		'edit_post' => 'edit_' . $cpt_key,
+		'edit_posts' => 'edit_' . $cpt_key,
+		'edit_private_posts' => 'edit_private_' . $cpt_key,
+		'edit_published_posts' => 'edit_published_' . $cpt_key,
+		'edit_others_posts' => 'edit_others_' . $cpt_key,
+		'publish_posts' => 'publish_' . $cpt_key,
 
 		// Post reading capabilities
-		'read_post' 				=> 'read_' . $cpt_key,
-		'read_private_posts' 		=> 'read_private_' . $cpt_key,
-		
+		'read_post' => 'read_' . $cpt_key,
+		'read_private_posts' => 'read_private_' . $cpt_key,
+
 		// Post deletion capabilities
-		'delete_post' 				=> 'delete_' . $cpt_key,
-		'delete_posts' 				=> 'delete_' . $cpt_key,
-		'delete_private_posts' 		=> 'delete_private_' . $cpt_key,
-		'delete_published_posts' 	=> 'delete_published_' . $cpt_key,
-		'delete_others_posts'		=> 'delete_others_' . $cpt_key,
+		'delete_post' => 'delete_' . $cpt_key,
+		'delete_posts' => 'delete_' . $cpt_key,
+		'delete_private_posts' => 'delete_private_' . $cpt_key,
+		'delete_published_posts' => 'delete_published_' . $cpt_key,
+		'delete_others_posts' => 'delete_others_' . $cpt_key,
 
 		// Media capabilities
-		'upload_files' 				=> 'upload_files',
+		'upload_files' => 'upload_files',
 
 		// Taxonomy capabilities
-		'manage_terms' 				=> 'manage_' . $cpt_key . '_category',
-		'edit_terms' 				=> 'edit_' . $cpt_key . '_category',
-		'delete_terms' 				=> 'delete_' . $cpt_key . '_category',
-		'assign_terms' 				=> 'assign_' . $cpt_key . '_category',
+		'manage_terms' => 'manage_' . $cpt_key . '_category',
+		'edit_terms' => 'edit_' . $cpt_key . '_category',
+		'delete_terms' => 'delete_' . $cpt_key . '_category',
+		'assign_terms' => 'assign_' . $cpt_key . '_category',
 
 		// Options capabilities
-		'manage_options' 			=> 'manage_' . $cpt_key . '_options'
+		'manage_options' => 'manage_' . $cpt_key . '_options'
 	];
-	
+
 	define('MAILPN_ROLE_' . strtoupper($cpt_key) . '_CAPABILITIES', $mailpn_role_cpt_capabilities[$cpt_key]);
 }
 
@@ -241,7 +241,8 @@ define('MAILPN_KSES', [
  * The code that runs during plugin activation.
  * This action is documented in includes/class-mailpn-activator.php
  */
-function mailpn_activate() {
+function mailpn_activate()
+{
 	require_once plugin_dir_path(__FILE__) . 'includes/class-mailpn-activator.php';
 	MAILPN_Activator::mailpn_activate();
 }
@@ -251,7 +252,8 @@ register_activation_hook(__FILE__, 'mailpn_activate');
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-mailpn-deactivator.php
  */
-function mailpn_deactivate() {
+function mailpn_deactivate()
+{
 	require_once plugin_dir_path(__FILE__) . 'includes/class-mailpn-deactivator.php';
 	MAILPN_Deactivator::mailpn_deactivate();
 }
@@ -269,7 +271,8 @@ require plugin_dir_path(__FILE__) . 'includes/class-mailpn.php';
  *
  * @since    1.0.0
  */
-function mailpn_run() {
+function mailpn_run()
+{
 	$plugin = new MAILPN();
 	$plugin->mailpn_run();
 }

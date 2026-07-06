@@ -13,7 +13,8 @@
  * @author     Padres en la Nube <info@padresenlanube.com>
  */
 
-class MAILPN {
+class MAILPN
+{
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power the plugin.
 	 *
@@ -48,11 +49,12 @@ class MAILPN {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		if (defined('MAILPN_VERSION')) {
 			$this->mailpn_version = MAILPN_VERSION;
 		} else {
-			$this->mailpn_version = '1.0.75';
+			$this->mailpn_version = '1.0.80';
 		}
 
 		$this->mailpn_plugin_name = 'mailpn';
@@ -73,7 +75,7 @@ class MAILPN {
 		self::mailpn_load_cron();
 		self::mailpn_load_notifications();
 	}
-			
+
 	/**
 	 * Load the required dependencies for this plugin.
 	 *
@@ -105,7 +107,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_dependencies() {
+	private function mailpn_load_dependencies()
+	{
 		/**
 		 * The class responsible for orchestrating the actions and filters of the core plugin.
 		 */
@@ -242,6 +245,11 @@ class MAILPN {
 		require_once MAILPN_DIR . 'includes/class-mailpn-notifications-manager.php';
 
 		/**
+		 * The class responsible for tutorial onboarding functionality.
+		 */
+		require_once MAILPN_DIR . 'includes/class-mailpn-tutorial.php';
+
+		/**
 		 * The class responsible for selector functionality.
 		 */
 		require_once MAILPN_DIR . 'includes/class-mailpn-selector.php';
@@ -257,7 +265,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_i18n() {
+	private function mailpn_load_i18n()
+	{
 		$plugin_i18n = new MAILPN_i18n();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_i18n, 'mailpn_load_plugin_textdomain', 20);
 
@@ -273,7 +282,8 @@ class MAILPN {
 	 *
 	 * @since    1.0.0
 	 */
-	public function mailpn_attempt_polylang_integration() {
+	public function mailpn_attempt_polylang_integration()
+	{
 		// First, try the standard approach using global functions
 		if (function_exists('pll_get_post_types') && function_exists('pll_get_taxonomies')) {
 			$plugin_i18n = new MAILPN_i18n();
@@ -291,10 +301,11 @@ class MAILPN {
 	 *
 	 * @since    1.0.0
 	 */
-	private function mailpn_register_post_types_directly_internal() {
+	private function mailpn_register_post_types_directly_internal()
+	{
 		// Try to access Polylang's internal model
 		global $polylang;
-		
+
 		if (isset($polylang) && is_object($polylang)) {
 			// Check if we can access the model property
 			if (property_exists($polylang, 'model') && is_object($polylang->model)) {
@@ -306,19 +317,19 @@ class MAILPN {
 						$options['post_types'] = array();
 					}
 					$options['post_types']['mailpn_mail'] = 'mailpn_mail';
-					
+
 					// Add our taxonomies to Polylang's translatable taxonomies
 					if (!isset($options['taxonomies'])) {
 						$options['taxonomies'] = array();
 					}
 					$options['taxonomies']['mailpn_mail_category'] = 'mailpn_mail_category';
-					
+
 					// Update the options
 					update_option('polylang', $options);
 				}
 			}
 		}
-		
+
 		// Also try using PLL() function if available
 		if (function_exists('PLL')) {
 			try {
@@ -331,12 +342,12 @@ class MAILPN {
 							$options['post_types'] = array();
 						}
 						$options['post_types']['mailpn_mail'] = 'mailpn_mail';
-						
+
 						if (!isset($options['taxonomies'])) {
 							$options['taxonomies'] = array();
 						}
 						$options['taxonomies']['mailpn_mail_category'] = 'mailpn_mail_category';
-						
+
 						update_option('polylang', $options);
 					}
 				}
@@ -352,7 +363,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_define_common_hooks() {
+	private function mailpn_define_common_hooks()
+	{
 		$plugin_common = new MAILPN_Common(self::mailpn_get_plugin_name(), self::mailpn_get_version());
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_common, 'mailpn_enqueue_styles');
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_common, 'mailpn_enqueue_scripts');
@@ -366,10 +378,10 @@ class MAILPN {
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
 		$this->mailpn_loader->mailpn_add_action('mailpn_form_save', $plugin_post_type_rec, 'mailpn_form_save', 4, 999);
-		
+
 		// Add AJAX hooks for rec post type
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_get_statistics', $plugin_post_type_rec, 'mailpn_get_statistics_data');
-		
+
 		// Add statistics button for rec post type
 		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_add_statistics_button');
 
@@ -378,28 +390,28 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_action('wp_footer', 'MAILPN_Mailing', 'mailpn_queue_status_button');
 
 		// Add click tracking endpoint
-		add_action('init', function() {
+		add_action('init', function () {
 			add_rewrite_rule(
 				'^mailpn-track/?$',
 				'index.php?mailpn-track=1',
 				'top'
 			);
 		});
-		
-		add_filter('query_vars', function($vars) {
+
+		add_filter('query_vars', function ($vars) {
 			$vars[] = 'mailpn-track';
 			$vars[] = 'mail_id';
 			$vars[] = 'user_id';
 			$vars[] = 'url';
 			return $vars;
 		});
-		
-		add_action('template_redirect', function() {
+
+		add_action('template_redirect', function () {
 			if (get_query_var('mailpn-track')) {
 				$mail_id = get_query_var('mail_id');
 				$user_id = get_query_var('user_id');
 				$url = urldecode(get_query_var('url'));
-				
+
 				if ($mail_id && $user_id && $url) {
 					MAILPN_Click_Tracking::track_click($mail_id, $user_id, $url);
 					wp_redirect($url);
@@ -407,7 +419,7 @@ class MAILPN {
 				}
 			}
 		});
-		
+
 		// Initialize WooCommerce integration
 		if (class_exists('WooCommerce')) {
 			new MAILPN_WooCommerce();
@@ -425,7 +437,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_define_admin_hooks() {
+	private function mailpn_define_admin_hooks()
+	{
 		$plugin_admin = new MAILPN_Admin(self::mailpn_get_plugin_name(), self::mailpn_get_version());
 		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_admin, 'mailpn_enqueue_styles');
 		$this->mailpn_loader->mailpn_add_action('admin_enqueue_scripts', $plugin_admin, 'mailpn_enqueue_scripts');
@@ -437,7 +450,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_define_public_hooks() {
+	private function mailpn_define_public_hooks()
+	{
 		$plugin_public = new MAILPN_Public(self::mailpn_get_plugin_name(), self::mailpn_get_version());
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_public, 'mailpn_enqueue_styles');
 		$this->mailpn_loader->mailpn_add_action('wp_enqueue_scripts', $plugin_public, 'mailpn_enqueue_scripts');
@@ -460,25 +474,26 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_define_post_types() {
+	private function mailpn_define_post_types()
+	{
 		$plugin_post_type_mail = new MAILPN_Post_Type_Mail();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_mail, 'mailpn_register_post_type', 10);
 
 		$plugin_post_type_rec = new MAILPN_Post_Type_Rec();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_post_type_rec, 'mailpn_register_post_type', 10);
-		
+
 		// Add meta boxes and related hooks for mail post type
 		$this->mailpn_loader->mailpn_add_action('add_meta_boxes', $plugin_post_type_mail, 'mailpn_add_meta_box');
 		$this->mailpn_loader->mailpn_add_action('save_post', $plugin_post_type_mail, 'mailpn_save_post');
 		$this->mailpn_loader->mailpn_add_action('manage_mailpn_mail_posts_columns', $plugin_post_type_mail, 'mailpn_mail_posts_columns');
 		$this->mailpn_loader->mailpn_add_action('manage_mailpn_mail_posts_custom_column', $plugin_post_type_mail, 'mailpn_mail_posts_custom_column', 10, 2);
-		
+
 		// Add meta boxes and related hooks for rec post type
 		$this->mailpn_loader->mailpn_add_action('add_meta_boxes', $plugin_post_type_rec, 'mailpn_add_meta_box');
 		$this->mailpn_loader->mailpn_add_action('save_post', $plugin_post_type_rec, 'mailpn_save_post');
 		$this->mailpn_loader->mailpn_add_action('manage_mailpn_rec_posts_columns', $plugin_post_type_rec, 'mailpn_rec_posts_columns');
 		$this->mailpn_loader->mailpn_add_action('manage_mailpn_rec_posts_custom_column', $plugin_post_type_rec, 'mailpn_rec_posts_custom_column', 10, 2);
-		
+
 		// Add filter hooks for rec post type
 		$this->mailpn_loader->mailpn_add_action('restrict_manage_posts', $plugin_post_type_rec, 'mailpn_rec_filter_dropdown');
 		$this->mailpn_loader->mailpn_add_action('pre_get_posts', $plugin_post_type_rec, 'mailpn_rec_filter_query');
@@ -490,7 +505,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_define_taxonomies() {
+	private function mailpn_define_taxonomies()
+	{
 		$plugin_taxonomies_mail = new MAILPN_Taxonomies_Mail();
 		$this->mailpn_loader->mailpn_add_action('init', $plugin_taxonomies_mail, 'mailpn_register_taxonomies', 15);
 
@@ -504,12 +520,13 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_data() {
+	private function mailpn_load_data()
+	{
 		$plugin_data = new MAILPN_Data();
 
 		if (is_admin()) {
 			$this->mailpn_loader->mailpn_add_action('init', $plugin_data, 'mailpn_load_plugin_data');
-		}else{
+		} else {
 			$this->mailpn_loader->mailpn_add_action('wp_head', $plugin_data, 'mailpn_load_plugin_data');
 		}
 
@@ -523,7 +540,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_templates() {
+	private function mailpn_load_templates()
+	{
 		if (!defined('DOING_AJAX')) {
 			$plugin_templates = new MAILPN_Templates();
 			$this->mailpn_loader->mailpn_add_action('wp_footer', $plugin_templates, 'load_plugin_templates');
@@ -537,7 +555,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_cron() {
+	private function mailpn_load_cron()
+	{
 		$plugin_cron = new MAILPN_Cron();
 
 		$this->mailpn_loader->mailpn_add_action('wp', $plugin_cron, 'cron_schedule');
@@ -553,7 +572,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_notifications() {
+	private function mailpn_load_notifications()
+	{
 		$plugin_notifications = new MAILPN_Notifications();
 		$this->mailpn_loader->mailpn_add_action('wp_body_open', $plugin_notifications, 'mailpn_wp_body_open');
 
@@ -564,14 +584,15 @@ class MAILPN {
 			$this->mailpn_loader->mailpn_add_action('wp_body_open', 'MAILPN_Notifications', 'mailpn_check_welcome_notice');
 		}
 	}
-	
+
 	/**
 	 * Register settings.
 	 *
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_settings() {
+	private function mailpn_load_settings()
+	{
 		$plugin_settings = new MAILPN_Settings();
 		$this->mailpn_loader->mailpn_add_action('admin_menu', $plugin_settings, 'mailpn_admin_menu');
 		$this->mailpn_loader->mailpn_add_action('activated_plugin', $plugin_settings, 'mailpn_activated_plugin');
@@ -593,7 +614,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_ajax() {
+	private function mailpn_load_ajax()
+	{
 		$plugin_ajax = new MAILPN_Ajax();
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax', $plugin_ajax, 'mailpn_ajax_server');
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_update_cart_timestamp', $plugin_ajax, 'mailpn_update_cart_timestamp');
@@ -609,7 +631,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_ajax_nopriv() {
+	private function mailpn_load_ajax_nopriv()
+	{
 		$plugin_ajax_nopriv = new MAILPN_Ajax_Nopriv();
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
 		$this->mailpn_loader->mailpn_add_action('wp_ajax_nopriv_mailpn_ajax_nopriv', $plugin_ajax_nopriv, 'mailpn_ajax_nopriv_server');
@@ -621,7 +644,8 @@ class MAILPN {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function mailpn_load_shortcodes() {
+	private function mailpn_load_shortcodes()
+	{
 		$plugin_shortcodes = new MAILPN_Shortcodes();
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-mail', $plugin_shortcodes, 'mailpn_mail');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-call-to-action', $plugin_shortcodes, 'mailpn_call_to_action');
@@ -629,7 +653,7 @@ class MAILPN {
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-test-cart-processing', $plugin_shortcodes, 'mailpn_test_cart_processing_shortcode');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-notifications', $plugin_shortcodes, 'mailpn_notifications');
 		$this->mailpn_loader->mailpn_add_shortcode('mailpn-notifications-counter', $plugin_shortcodes, 'mailpn_notifications_counter');
-		
+
 		$plugin_mailing = new MAILPN_Mailing();
 		// Use SMTP for native WordPress emails (password recovery, new user, comments, etc.) when both options are enabled.
 		if (get_option('mailpn_smtp_enabled') === 'on' && get_option('mailpn_smtp_wp_native_emails') === 'on') {
@@ -638,7 +662,7 @@ class MAILPN {
 		if (get_option('mailpn_password_new') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('wp_new_user_notification_email', $plugin_mailing, 'mailpn_wp_new_user_notification_email', 10, 3);
 		}
-		
+
 		if (get_option('mailpn_password_retrieve') == 'on') {
 			$this->mailpn_loader->mailpn_add_filter('retrieve_password_message', $plugin_mailing, 'mailpn_retrieve_password_message', 10, 4);
 		}
@@ -678,7 +702,8 @@ class MAILPN {
 	 *
 	 * @since    1.0.0
 	 */
-	public function mailpn_run() {
+	public function mailpn_run()
+	{
 		$this->mailpn_loader->mailpn_run();
 	}
 
@@ -688,7 +713,8 @@ class MAILPN {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function mailpn_get_plugin_name() {
+	public function mailpn_get_plugin_name()
+	{
 		return $this->mailpn_plugin_name;
 	}
 
@@ -698,7 +724,8 @@ class MAILPN {
 	 * @since     1.0.0
 	 * @return    MAILPN_Loader    Orchestrates the hooks of the plugin.
 	 */
-	public function mailpn_get_loader() {
+	public function mailpn_get_loader()
+	{
 		return $this->mailpn_loader;
 	}
 
@@ -708,7 +735,8 @@ class MAILPN {
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function mailpn_get_version() {
+	public function mailpn_get_version()
+	{
 		return $this->mailpn_version;
 	}
 }

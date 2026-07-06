@@ -588,6 +588,39 @@ class MAILPN_Forms {
         </div>
         <?php
         break;
+
+      case 'user_notifications_manager':
+        if (!current_user_can('manage_options')) {
+          echo '<div class="mailpn-info-box mailpn-info-box-red"><p>' . esc_html__('You do not have permission to access this feature.', 'mailpn') . '</p></div>';
+          break;
+        }
+        ?>
+        <div class="mailpn-user-notifications-manager-wrapper" id="mailpn-user-notifications-manager">
+          <div class="mailpn-mb-20">
+            <label for="mailpn-user-search-input" class="mailpn-mb-10 mailpn-display-block">
+              <strong><?php esc_html_e('Search user by email or name:', 'mailpn'); ?></strong>
+            </label>
+            <div class="mailpn-display-table mailpn-width-100-percent">
+              <div class="mailpn-display-inline-table mailpn-width-80-percent">
+                <input type="text" id="mailpn-user-search-input" class="mailpn-input mailpn-width-100-percent" placeholder="<?php esc_attr_e('Enter email or name...', 'mailpn'); ?>" />
+              </div>
+              <div class="mailpn-display-inline-table mailpn-width-20-percent">
+                <button type="button" class="mailpn-btn mailpn-btn-transparent mailpn-width-100-percent" id="mailpn-user-search-btn">
+                  <?php esc_html_e('Search', 'mailpn'); ?>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="mailpn-user-notifications-waiting mailpn-display-none-soft mailpn-text-align-center mailpn-mt-20">
+            <div class="mailpn-loader-circle-waiting"><div></div><div></div><div></div><div></div></div>
+            <span><?php esc_html_e('Searching users...', 'mailpn'); ?></span>
+          </div>
+
+          <div class="mailpn-user-notifications-results" id="mailpn-user-notifications-results"></div>
+        </div>
+        <?php
+        break;
     }
   }
 

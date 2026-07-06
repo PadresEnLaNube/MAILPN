@@ -4,7 +4,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
-  z-index: 9999;
+  z-index: 1000010 !important;
   display: none;
   max-height: 90vh; /* Maximium window height 90% */
   border-radius: 10px;
@@ -21,9 +21,9 @@
   border-radius: 8px;
   padding-top: 30px;
   padding-bottom: 30px;
-  z-index: 1;
+  z-index: 1000011 !important;
   -webkit-overflow-scrolling: touch; /* Better iOS scroll */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 .mailpn-popup.mailpn-popup-size-small,.mailpn-popup.mailpn-popup-size-small .mailpn-popup-content{
   max-width: 300px;
@@ -38,13 +38,13 @@
   max-width: 100%; /* Max width for large screens */
 }
 .mailpn-popup-overlay {
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: 9998;
+  z-index: 1000000 !important;
 }
 .mailpn-popup-close-wrapper {
   position: absolute;
